@@ -1,109 +1,146 @@
-import React, {useState, useEffect} from 'react';
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable no-lone-blocks */
+import React, {useRef, useState, useEffect} from 'react';
 import {
   Alert,
   TextInput,
   ScrollView,
-  TouchableHighlight,
   SafeAreaView,
   StyleSheet,
-  Dimensions,
   View,
   Text,
   Modal,
 } from 'react-native';
 import Mybutton from './Mybutton';
-import {openDatabase} from 'react-native-sqlite-storage';
-import {updateLocale} from 'moment';
-var db = openDatabase(
+import {SQLiteDatabase} from 'react-native-sqlite-storage';
+import SQLite from 'react-native-sqlite-storage';
+let db: SQLiteDatabase | undefined;
+db = (SQLite.openDatabase as any)(
   {name: 'database.db', createFromLocation: 1},
   () => {},
-  error => {
-    console.log('ERROR: ' + error);
+  (error: any) => {
+    console.log('ERROR:' + error);
   },
 );
-const {height, width} = Dimensions.get('window');
 
-const Model = props => {
-  const [liftingtotal, setLiftingtotal] = useState('');
-  const [liftingdriver, setliftingdriver] = useState('');
-  const [liftingcompany, setliftingcompany] = useState('');
-  const [levy, setLevy] = useState('');
-  const [drivercommrate, setDrivercommrate] = useState('');
-  const [companycommrate, setCompanycommrate] = useState('');
+type Transaction = {
+  executeSql: (
+    sql: string,
+    args?: any[],
+    success?: (transaction: Transaction, resultSet: ResultSet) => void,
+    error?: (transaction: Transaction, error: any) => void,
+  ) => void;
+};
+
+type ResultSet = {
+  rowsAffected: number;
+  insertId?: number;
+  rows: {
+    length: number;
+    item: (index: number) => any;
+    _array: any[];
+  };
+};
+
+interface Props {
+  onupdate: () => void;
+  onCancel: () => void;
+  modvisible: boolean;
+}
+
+const Model: React.FC<Props> = props => {
+  const [liftingtotal, setLiftingtotal] = useState<number | string>(0);
+  const [liftingdriver, setliftingdriver] = useState<number | string>(0);
+  const [liftingcompany, setliftingcompany] = useState<number | string>(0);
+  const [levy, setLevy] = useState<number | string>(0);
+  const [drivercommrate, setDrivercommrate] = useState<number | string>(0);
+  const [_companycommrate, setCompanycommrate] = useState<number | string>(0);
 
   useEffect(() => {
-    db.transaction(function (txn) {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='UpdateItems'",
-        [],
-        function (_tx, res) {
-          console.log(res.rows.length);
-          if (res.rows.length === 0) {
-            txn.executeSql('DROP TABLE IF EXISTS UpdateItems', []);
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS UpdateItems ( GovLFee NUMERIC, CompanyLFee NUMERIC, DriverLFee NUMERIC, Levy NUMERIC, Driver_Comm_Rate NUMERIC, Company_Comm_Rate NUMERIC)',
-              [],
-            );
-          }
-        },
-      );
-    });
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='UpdateItems'",
+          [],
+          (_tx: Transaction, res: ResultSet) => {
+            console.log(res.rows.length);
+            if (res.rows.length === 0) {
+              txn.executeSql('DROP TABLE IF EXISTS UpdateItems', []);
+              txn.executeSql(
+                'CREATE TABLE IF NOT EXISTS UpdateItems ( GovLFee NUMERIC, CompanyLFee NUMERIC, DriverLFee NUMERIC, Levy NUMERIC, Driver_Comm_Rate NUMERIC, Company_Comm_Rate NUMERIC)',
+                [],
+              );
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
   }, []);
 
   let UpdateItems = () => {
-    db.transaction(function (tx) {
-      tx.executeSql('Delete from UpdateItems', []);
-      tx.executeSql(
-        'INSERT INTO UpdateItems ( GovLFee, CompanyLFee, DriverLFee, Levy, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?,?)',
-        [
-          liftingtotal,
-          liftingcompany,
-          liftingdriver,
-          levy,
-          drivercommrate,
-          (100 - drivercommrate),
-        ],
-        (_tx, results) => {
-          if (results.rowsAffected > 0) {
-            props.onupdate();
-          } 
-        },
-      );
-    });
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql('Delete from UpdateItems', []);
+        txn.executeSql(
+          'INSERT INTO UpdateItems ( GovLFee, CompanyLFee, DriverLFee, Levy, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?,?)',
+          [
+            liftingtotal,
+            liftingcompany,
+            liftingdriver,
+            levy,
+            drivercommrate,
+            100 - Number(drivercommrate),
+          ],
+          (_tx: Transaction, res: ResultSet) => {
+            if (res.rowsAffected > 0) {
+              props.onupdate();
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
   };
 
   useEffect(() => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT GovLFee, CompanyLFee, DriverLFee, Levy, Driver_Comm_Rate, Company_Comm_Rate FROM UpdateItems',
-        [],
-        (_tx, results) => {
-          var len = results.rows.length;
-          if (len > 0) {         
-            let res = results.rows.item(0);
-            updateallstates(
-              res.GovLFee,
-              res.CompanyLFee,
-              res.DriverLFee,
-              res.Levy,
-              res.Driver_Comm_Rate,
-              res.Company_Comm_Rate,
-            );
-            /*  setuserdata(results.rows.item(0));
-            setLiftingtotal(Number(userdata.GovLFee).toFixed(2));
-            setliftingcompany(Number(userdata.CompanyLFee).toFixed(2));
-            setliftingdriver(Number(userdata.DriverLFee).toFixed(2));
-            setLevy(Number(userdata.Levy).toFixed(2));
-            setDrivercommrate(Number(userdata.Driver_Comm_Rate).toFixed(0));
-            setCompanycommrate(Number(userdata.Company_Comm_Rate).toFixed(0));*/
-          } else {
-            updateallstates('','','','','','');
-          }
-        },
-      );
-    });
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'SELECT GovLFee, CompanyLFee, DriverLFee, Levy, Driver_Comm_Rate, Company_Comm_Rate FROM UpdateItems',
+          [],
+          (_tx: Transaction, results: ResultSet) => {
+            var len = results.rows.length;
+            if (len > 0) {
+              let res = results.rows.item(0);
+              updateallstates(
+                res.GovLFee,
+                res.CompanyLFee,
+                res.DriverLFee,
+                res.Levy,
+                res.Driver_Comm_Rate,
+                res.Company_Comm_Rate,
+              );
+            } else {
+              updateallstates('', '', '', '', '', '');
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
   }, []);
-  let updateallstates = (a, b, c, d, e, f) => {
+  let updateallstates = (
+    a: number | string,
+    b: number | string,
+    c: number | string,
+    d: number | string,
+    e: number | string,
+    f: number | string,
+  ): void => {
     setLiftingtotal(a);
     setliftingcompany(b);
     setliftingdriver(c);
@@ -111,13 +148,19 @@ const Model = props => {
     setDrivercommrate(e);
     setCompanycommrate(f);
   };
-  let lev, liftdriver, liftcompany, driverrate, companyrate;
+
+  let refs = {
+    liftdriver: useRef(null),
+    liftcompany: useRef(null),
+    driverrate: useRef(null),
+    companyrate: useRef(null),
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <Modal
         transparent={true}
-        presentaitonStyle={'pageSheet'}
+        presentationStyle={'pageSheet'}
         visible={props.modvisible}
         animationType={'fade'}
         onRequestClose={() => {}}>
@@ -128,21 +171,19 @@ const Model = props => {
               <TextInput
                 placeholder="0.00"
                 placeholderTextColor="#ffffff"
-                 style={styles.textInput}
+                style={styles.textInput}
                 keyboardType="numeric"
-                onChangeText={num => setLiftingtotal(num)}
-               // value={liftingtotal}
+                onChangeText={num => setLiftingtotal(Number(num))}
+                // value={liftingtotal}
                 onSubmitEditing={() => {
                   {
-                    if (isNaN(liftingtotal)) {
+                    if (!liftingtotal) {
                       Alert.alert('Please input a correct number');
                     } else {
-                      //setLiftingtotal(Number(liftingtotal).toFixed(2));
-                      liftdriver.focus();
+                      refs.liftdriver.current?.focus();
                     }
                   }
-                }}
-                >
+                }}>
                 <Text style={styles.titletext}>{liftingtotal}</Text>
               </TextInput>
             </View>
@@ -162,14 +203,13 @@ const Model = props => {
                 }}
                 onSubmitEditing={() => {
                   {
-                    if (!liftingdriver && isNaN(liftingdriver)) {
+                    if (!liftingdriver) {
                       Alert.alert('Please input a correct number');
                     } else {
-                      liftcompany.focus();
+                      refs.liftcompany.current?.focus();
                     }
                   }
-                }}
-                >
+                }}>
                 <Text style={styles.titletext}>{liftingdriver}</Text>
               </TextInput>
             </View>
@@ -211,14 +251,13 @@ const Model = props => {
                   lev = input;
                 }}
                 onSubmitEditing={() => {
-                  if (isNaN(levy) && !levy) {
+                  if (!levy) {
                     Alert.alert('Please input a correct number');
                   } else {
-                    driverrate.focus();
+                    refs.driverrate.current?.focus();
                   }
-                }}
-                >
-                  <Text style={styles.titletext}>{levy}</Text>
+                }}>
+                <Text style={styles.titletext}>{levy}</Text>
               </TextInput>
             </View>
 
@@ -234,12 +273,11 @@ const Model = props => {
                 onChangeText={num => setDrivercommrate(num)}
                 //value={drivercommrate}
                 ref={input => {
-                  driverrate = input;
+                  refs.driverrate = input;
                 }}
                 onSubmitEditing={() => {
-                  companyrate.focus();
-                }}
-                >
+                  refs.companyrate.current?.focus();
+                }}>
                 <Text style={styles.titletext}>{drivercommrate}</Text>
               </TextInput>
             </View>

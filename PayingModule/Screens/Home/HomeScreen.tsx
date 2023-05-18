@@ -18,8 +18,6 @@ import {
   Alert,
 } from 'react-native';
 
-import {StackNavigationProp} from '@react-navigation/stack';
-
 import Mybutton from '../../Components/Mybutton';
 import Calendar from '../../Components/Calendar';
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
@@ -27,13 +25,13 @@ import SQLite from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './HomeScreen.style';
-import envs from '../../config/env';
+//import envs from '../../config/env';
 //const {DATABASE_NAME} = envs;
 
 type Transaction = {
   executeSql: (
     sql: string,
-    arguments?: any[],
+    args?: any[],
     success?: (transaction: Transaction, resultSet: ResultSet) => void,
     error?: (transaction: Transaction, error: any) => void,
   ) => void;
@@ -58,92 +56,118 @@ db = (SQLite.openDatabase as any)(
   },
 );
 
-type HomeScreenProps = {
-  navigation: StackNavigationProp<any>;
+import {DrawerNavigationProp} from '@react-navigation/drawer';
+type DrawerParamList = {
+  Home: undefined;
+  Notifications: undefined;
+  // Add other screens here
+};
+type HomeScreenNavigationProp = DrawerNavigationProp<DrawerParamList, 'Home'>;
+
+type Props = {
+  navigation: HomeScreenNavigationProp;
 };
 
-const HomeScreen = ({navigation}: HomeScreenProps) => {
+const HomeScreen = ({navigation}: Props) => {
   const [modalvisible, setModalvisible] = useState(true);
   const [date, setDate] = useState<string>('');
   const [name, setName] = useState<string>('');
+  const [_day, setDay] = useState<string>('');
   //const [showAlert, setShowAlert] = useState(false);
   //const [numberofEntries, setNumberofEntries] = useState<string>('');
+  console.log('db in homescreen==', db);
   useEffect(() => {
-    db.transaction((txn: Transaction) => {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='datatable'",
-        [],
-        (_tx:Transaction, res: ResultSet) => {
-          if (res.rows.length == 0) {
-            txn.executeSql('DROP TABLE IF EXISTS datatable', []);
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS datatable (user_id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Date TEXT, Day TEXT, Shift TEXT, Taxi TEXT, Jobs NUMERIC, Ins NUMERIC, Hours_Worked NUMERIC, Total_Levy NUMERIC, Car_Wash NUMERIC, Meter_Start NUMERIC, Meter_Finish NUMERIC, Shift_Total NUMERIC, Com_GTN NUMERIC, Com_Driver NUMERIC, Km_Start NUMERIC, Km_Finish NUMERIC, Kms NUMERIC, Paidkm_Start NUMERIC, Paidkm_Finish NUMERIC, Paid_Kms NUMERIC, Unpaid_kms NUMERIC, Eftpos_Total NUMERIC, Eftpos_LFee NUMERIC, Dockets NUMERIC, Charge_Authority NUMERIC, Manual_MPTP_Total NUMERIC, No_of_Manual_Lifts NUMERIC, Total_Lifting_Fee_Value NUMERIC, Misc NUMERIC, Acc_Fuel NUMERIC, Net_Payin NUMERIC, Week_Ending_Date TEXT, Current_Date TEXT, manual_lifting_fee_value NUMERIC, no_wheelchair_lifts NUMERIC, company_portion_lifting_fee NUMERIC, driver_portion_lifting_fee NUMERIC, Gov_Sub_Manual NUMERIC, Gov_Sub_Manual31 NUMERIC, CPK NUMERIC, Deductions NUMERIC, Driver_Comm_Rate NUMERIC, Company_Comm_Rate NUMERIC)',
-              [],
-            );
-          }
-        },
-      );
-    });
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='datatable'",
+          [],
+          (_tx: Transaction, res: ResultSet) => {
+            if (res.rows.length === 0) {
+              txn.executeSql('DROP TABLE IF EXISTS datatable', []);
+              txn.executeSql(
+                'CREATE TABLE IF NOT EXISTS datatable (user_id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Date TEXT, Day TEXT, Shift TEXT, Taxi TEXT, Jobs NUMERIC, Ins NUMERIC, Hours_Worked NUMERIC, Total_Levy NUMERIC, Car_Wash NUMERIC, Meter_Start NUMERIC, Meter_Finish NUMERIC, Shift_Total NUMERIC, Com_GTN NUMERIC, Com_Driver NUMERIC, Km_Start NUMERIC, Km_Finish NUMERIC, Kms NUMERIC, Paidkm_Start NUMERIC, Paidkm_Finish NUMERIC, Paid_Kms NUMERIC, Unpaid_kms NUMERIC, Eftpos_Total NUMERIC, Eftpos_LFee NUMERIC, Dockets NUMERIC, Charge_Authority NUMERIC, Manual_MPTP_Total NUMERIC, No_of_Manual_Lifts NUMERIC, Total_Lifting_Fee_Value NUMERIC, Misc NUMERIC, Acc_Fuel NUMERIC, Net_Payin NUMERIC, Week_Ending_Date TEXT, Current_Date TEXT, manual_lifting_fee_value NUMERIC, no_wheelchair_lifts NUMERIC, company_portion_lifting_fee NUMERIC, driver_portion_lifting_fee NUMERIC, Gov_Sub_Manual NUMERIC, Gov_Sub_Manual31 NUMERIC, CPK NUMERIC, Deductions NUMERIC, Driver_Comm_Rate NUMERIC, Company_Comm_Rate NUMERIC)',
+                [],
+              );
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
   }, []);
 
   useEffect(() => {
-    db.transaction((txn: Transaction) => {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='nameweekendingtable'",
-        [],
-        (_tx: Transaction, res: ResultSet) => {
-          console.log('table', res.rows.length);
-          if (res.rows.length === 0) {
-            txn.executeSql('DROP TABLE IF EXISTS nameweekendingtable', []);
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS nameweekendingtable (Name TEXT, Week_Ending_Date TEXT)',
-              [],
-            );
-          }
-        },
-      );
-    });
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='nameweekendingtable'",
+          [],
+          (_tx: Transaction, res: ResultSet) => {
+            console.log('table', res.rows.length);
+            if (res.rows.length === 0) {
+              txn.executeSql('DROP TABLE IF EXISTS nameweekendingtable', []);
+              txn.executeSql(
+                'CREATE TABLE IF NOT EXISTS nameweekendingtable (Name TEXT, Week_Ending_Date TEXT)',
+                [],
+              );
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
   }, []);
 
   //AlertBox
   const [showAlert, setShowAlert] = useState(false);
 
   let register = () => {
-    db.transaction((txn: Transaction) => {
-      txn.executeSql('Delete from nameweekendingtable', []);
-      txn.executeSql(
-        'INSERT INTO nameweekendingtable (Name, Week_Ending_Date) VALUES(?,?)',
-        [name, date],
-        (_tx: Transaction, res: ResultSet) => {
-          if (res.rowsAffected > 0) {
-            //setShowAlert(true);
-            setTimeout(() => {
-              navigation.navigate('HomeScreen');
-              setShowAlert(false);
-            }, 1000);
-          }
-        },
-      );
-    });
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql('Delete from nameweekendingtable', []);
+        txn.executeSql(
+          'INSERT INTO nameweekendingtable (Name, Week_Ending_Date) VALUES(?,?)',
+          [name, date],
+          (_tx: Transaction, res: ResultSet) => {
+            if (res.rowsAffected > 0) {
+              //setShowAlert(true);
+              setTimeout(() => {
+                navigation.navigate('Home');
+                setShowAlert(false);
+              }, 1000);
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
   };
 
   useEffect(() => {
-    db.transaction((txn: Transaction) => {
-      txn.executeSql(
-        'SELECT * FROM nameweekendingtable',
-        [],
-        (_tx: Transaction, res: ResultSet) => {
-          var len = res.rows.length;
-          console.log('len', len);
-          if (len > 0) {
-            let result = res.rows.item(0);
-            updateallstates(result.Name, result.Week_Ending_Date);
-          } else {
-            setuserdata('');
-          }
-        },
-      );
-    });
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'SELECT * FROM nameweekendingtable',
+          [],
+          (_tx: Transaction, res: ResultSet) => {
+            var len = res.rows.length;
+            console.log('len', len);
+            if (len > 0) {
+              let result = res.rows.item(0);
+              updateallstates({a: result.Name, b: result.Week_Ending_Date});
+            } else {
+              // setuserdata('');
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
   }, []);
 
   let updateallstates = ({a, b}: {a: string; b: string}) => {
@@ -167,20 +191,24 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
   };
 
   //number of Entries
-  const [numberofEntries, setNumberofEntries] = useState('');
+  const [numberofEntries, setNumberofEntries] = useState<number>(0);
   useEffect(() => {
-    db.transaction((txn: Transaction) => {
-      txn.executeSql(
-        'SELECT * from datatable',
-        [],
-        (_tx: Transaction, res: ResultSet) => {
-          let len = res.rows.length;
-          if (len >= 0) {
-            setNumberofEntries(len);
-          }
-        },
-      );
-    });
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'SELECT * from datatable',
+          [],
+          (_tx: Transaction, res: ResultSet) => {
+            let len = res.rows.length;
+            if (len >= 0) {
+              setNumberofEntries(len);
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
   }, []);
 
   return (
@@ -243,7 +271,7 @@ const HomeScreen = ({navigation}: HomeScreenProps) => {
       <ScrollView style={{marginEnd: 20, marginStart: 20, marginTop: 10}}>
         <Image
           style={{width: 100, height: 100, alignSelf: 'center'}}
-          source={require('../../components/Images/WFLogo.png')}
+          source={require('../../Components/Images/WFLogo.png')}
         />
         <Mybutton
           title="Add"

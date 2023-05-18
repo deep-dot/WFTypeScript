@@ -5,10 +5,10 @@
 import React, {useState, useEffect} from 'react';
 import {
   Alert,
-  TouchableOpacity,  
+  TouchableOpacity,
   Text,
   View,
-  TextInput,  
+  TextInput,
   ScrollView,
   SafeAreaView,
   Modal,
@@ -21,7 +21,7 @@ import Calculator from '../../Components/Calculator';
 import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
-import  envs  from '../../config/env';
+import envs from '../../config/env';
 const {DATABASE_NAME} = envs;
 var db = openDatabase(
   {name: DATABASE_NAME, createFromLocation: 1},
@@ -102,7 +102,7 @@ export default function RegisterUser({props, navigation}) {
     setResultpaidkm(Number(paidkm2 - paidkm1).toFixed(2));
     setCommissiondriver(Number(totalmeter * (drivercommrate / 100)).toFixed(2));
     setCommissiongtn(Number(totalmeter * (companycommrate / 100)).toFixed(2));
-    
+
     if (resultkm > 0) {
       setCpk(Number(totalmeter / resultkm).toFixed(2));
     } else {
@@ -186,7 +186,7 @@ export default function RegisterUser({props, navigation}) {
     let kullgtnlfee = kullnumberofchairs * liftingcompany;
     let kullcommdriver = kullmeter * (drivercommrate / 100);
     let kullcommgtn = kullmeter * (companycommrate / 100);
-    
+
     let Cdeductions = Number(a - a1 + b + c + d + e + f).toFixed(2);
     let Ddeductions = Number(a - a1 + b + c + d + e + f + g + h + i).toFixed(2);
 
@@ -786,7 +786,7 @@ export default function RegisterUser({props, navigation}) {
           [rego],
           (_tx, results) => {
             if (results.rowsAffected > 0) {
-             // Alert.alert('Added successfully.');
+              // Alert.alert('Added successfully.');
               navigation.navigate('HomeScreen');
             }
           },
@@ -925,7 +925,7 @@ export default function RegisterUser({props, navigation}) {
           </TextInput>
         </View>
 
-       {/* <View style={styles.textinputview}>
+        {/* <View style={styles.textinputview}>
           <Text style={styles.titletext}>
             Company's Commission{'\n'}Rate(%)
           </Text>
@@ -1835,4 +1835,3 @@ export default function RegisterUser({props, navigation}) {
     </SafeAreaView>
   );
 }
-

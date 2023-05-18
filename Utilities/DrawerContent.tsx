@@ -53,7 +53,7 @@ export function DrawerContent(props) {
             <DrawerItem
               label="Login before Entering Data"
               onPress={() => {
-                props.navigation.navigate('ProfileScreen');
+                props.navigation.navigate('Home');
               }}
             />
           </Drawer.Section>

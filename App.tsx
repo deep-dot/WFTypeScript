@@ -136,8 +136,19 @@ import {
 //import EnterDataScreen from './PayingModule/Screens/Enter/EnterDataScreen';
 import {DrawerContent} from './Utilities/DrawerContent';
 import {AuthContext} from './Utilities/UseContext';
+import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
+import {DrawerNavigationProp} from '@react-navigation/drawer';
+type DrawerParamList = {
+  Home: undefined;
+  Notifications: undefined;
+  // Add other screens here
+};
+type HomeScreenNavigationProp = DrawerNavigationProp<DrawerParamList, 'Home'>;
 
-function EnterDataScreen({navigation}) {
+type Props = {
+  navigation: HomeScreenNavigationProp;
+};
+function EnterDataScreen({navigation}: Props): React.JSX.Element {
   return (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Button
@@ -148,7 +159,7 @@ function EnterDataScreen({navigation}) {
   );
 }
 
-function NotificationsScreen({navigation}) {
+function NotificationsScreen({navigation}: Props): React.JSX.Element {
   return (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Button onPress={() => navigation.goBack()} title="Go back home" />
@@ -197,7 +208,7 @@ export default function App() {
         ...authContext,
       }}>
       <PaperProvider theme={theme}>
-      <NavigationContainer theme={theme}>
+        <NavigationContainer theme={theme}>
           <Drawer.Navigator
             initialRouteName="Enter Data"
             screenOptions={{
@@ -209,6 +220,7 @@ export default function App() {
               name="Notifications"
               component={NotificationsScreen}
             />
+            <Drawer.Screen name="Home" component={HomeScreen} />
           </Drawer.Navigator>
         </NavigationContainer>
       </PaperProvider>
