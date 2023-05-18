@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {FC} from 'react';
 import {StyleSheet, View, Text, Modal, Platform, StatusBar} from 'react-native';
 import {
@@ -12,17 +13,22 @@ import {
    WaveIndicator,*/
 } from 'react-native-indicators';
 
-Platform.select({
+const platformStatusBarStyle = Platform.select({
   ios: () => StatusBar.setBarStyle('light-content'),
   android: () => StatusBar.setBackgroundColor('#01579B'),
-})();
+});
+
+// If the function exists for the platform, invoke it
+if (platformStatusBarStyle) {
+  platformStatusBarStyle();
+}
 
 interface LoaderProps {
   loading: boolean;
   Transparency?: any;
 }
 
-const Loader: FC<LoaderProps> = ({loading, Transparency}) => {
+const Loader: FC<LoaderProps> = ({loading}) => {
   return (
     <Modal
       transparent={true}

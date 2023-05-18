@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {FC} from 'react';
 import {
   View,
@@ -5,12 +6,14 @@ import {
   StyleProp,
   ViewStyle,
   TextInputProps,
+  KeyboardTypeOptions,
+  ReturnKeyTypeOptions,
 } from 'react-native';
 
 interface MyTextInputProps extends TextInputProps {
   placeholder?: string;
-  keyboardType?: string;
-  returnKeyType?: string;
+  keyboardType?: KeyboardTypeOptions;
+  returnKeyType?: ReturnKeyTypeOptions;
   numberOfLines?: number;
   multiline?: boolean;
   onSubmitEditing?: () => void;

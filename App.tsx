@@ -133,7 +133,7 @@ import {
   DefaultTheme as PaperDefaultTheme,
   MD3DarkTheme,
 } from 'react-native-paper';
-import EnterData from './PayingModule/Screens/EnterDataScreen';
+//import EnterDataScreen from './PayingModule/Screens/Enter/EnterDataScreen';
 import {DrawerContent} from './Utilities/DrawerContent';
 import {AuthContext} from './Utilities/UseContext';
 
