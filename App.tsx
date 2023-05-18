@@ -1,118 +1,217 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable react-native/no-inline-styles */
+// /**
+//  * Sample React Native App
+//  * https://github.com/facebook/react-native
+//  *
+//  * @format
+//  */
+// import 'react-native-gesture-handler';
+// import React from 'react';
+// import type {PropsWithChildren} from 'react';
+// import {
+//   SafeAreaView,
+//   ScrollView,
+//   StatusBar,
+//   StyleSheet,
+//   Text,
+//   useColorScheme,
+//   View,
+// } from 'react-native';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+// import {
+//   Colors,
+//   DebugInstructions,
+//   Header,
+//   LearnMoreLinks,
+//   ReloadInstructions,
+// } from 'react-native/Libraries/NewAppScreen';
+
+// type SectionProps = PropsWithChildren<{
+//   title: string;
+// }>;
+
+// function Section({children, title}: SectionProps): JSX.Element {
+//   const isDarkMode = useColorScheme() === 'light';
+//   return (
+//     <View style={styles.sectionContainer}>
+//       <Text
+//         style={[
+//           styles.sectionTitle,
+//           {
+//             color: isDarkMode ? Colors.white : Colors.black,
+//           },
+//         ]}>
+//         {title}
+//       </Text>
+//       <Text
+//         style={[
+//           styles.sectionDescription,
+//           {
+//             color: isDarkMode ? Colors.light : Colors.dark,
+//           },
+//         ]}>
+//         {children}
+//       </Text>
+//     </View>
+//   );
+// }
+
+// function App(): JSX.Element {
+//   const isDarkMode = useColorScheme() === 'dark';
+
+//   const backgroundStyle = {
+//     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+//   };
+
+//   return (
+//     <SafeAreaView style={backgroundStyle}>
+//       <StatusBar
+//         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+//         backgroundColor={backgroundStyle.backgroundColor}
+//       />
+//       <ScrollView
+//         contentInsetAdjustmentBehavior="automatic"
+//         style={backgroundStyle}>
+//         <Header />
+//         <View
+//           style={{
+//             backgroundColor: isDarkMode ? Colors.black : Colors.white,
+//           }}>
+//           <Section title="Step One">
+//             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
+//             screen and then come back to see your edits.
+//           </Section>
+//           <Section title="See Your Changes">
+//             <ReloadInstructions />
+//           </Section>
+//           <Section title="Debug">
+//             <DebugInstructions />
+//           </Section>
+//           <Section title="Learn More">
+//             Read the docs to discover what to do next:
+//           </Section>
+//           <LearnMoreLinks />
+//         </View>
+//       </ScrollView>
+//     </SafeAreaView>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   sectionContainer: {
+//     marginTop: 32,
+//     paddingHorizontal: 24,
+//   },
+//   sectionTitle: {
+//     fontSize: 24,
+//     fontWeight: '600',
+//   },
+//   sectionDescription: {
+//     marginTop: 8,
+//     fontSize: 18,
+//     fontWeight: '400',
+//   },
+//   highlight: {
+//     fontWeight: '700',
+//   },
+// });
+
+// export default App;
+
+import * as React from 'react';
+import {Button, View} from 'react-native';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
+  NavigationContainer,
+  DefaultTheme as NavigationDefaultTheme,
+  DarkTheme as NavigationDarkTheme,
+} from '@react-navigation/native';
 import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  Provider as PaperProvider,
+  DefaultTheme as PaperDefaultTheme,
+  MD3DarkTheme,
+} from 'react-native-paper';
+import EnterData from './PayingModule/Screens/EnterDataScreen';
+import {DrawerContent} from './Utilities/DrawerContent';
+import {AuthContext} from './Utilities/UseContext';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function EnterDataScreen({navigation}) {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Button
+        onPress={() => navigation.navigate('Notifications')}
+        title="Go to notifications"
+      />
     </View>
   );
 }
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+function NotificationsScreen({navigation}) {
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Button onPress={() => navigation.goBack()} title="Go back home" />
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const Drawer = createDrawerNavigator();
 
-export default App;
+export default function App() {
+  const [isDarkTheme, setIsDarkTheme] = React.useState(true);
+  const CustomDefaultTheme = {
+    ...NavigationDefaultTheme,
+    ...PaperDefaultTheme,
+    colors: {
+      ...NavigationDefaultTheme.colors,
+      ...PaperDefaultTheme.colors,
+      background: '#ffffff',
+      text: '#333333',
+    },
+  };
+  const CustomDarkTheme = {
+    ...NavigationDarkTheme,
+    ...MD3DarkTheme,
+    colors: {
+      ...NavigationDarkTheme.colors,
+      ...MD3DarkTheme.colors,
+      background: '#333333',
+      text: '#ffffff',
+    },
+  };
+
+  const theme = isDarkTheme ? CustomDarkTheme : CustomDefaultTheme;
+
+  const authContext = React.useMemo(
+    () => ({
+      toggleTheme: () => {
+        setIsDarkTheme(isDarkTheme => !isDarkTheme);
+      },
+    }),
+    [],
+  );
+  return (
+    <AuthContext.Provider
+      value={{
+        ...authContext,
+      }}>
+      <PaperProvider theme={theme}>
+      <NavigationContainer theme={theme}>
+          <Drawer.Navigator
+            initialRouteName="Enter Data"
+            screenOptions={{
+              headerShown: true,
+            }}
+            drawerContent={props => <DrawerContent {...props} />}>
+            <Drawer.Screen name="Enter Data" component={EnterDataScreen} />
+            <Drawer.Screen
+              name="Notifications"
+              component={NotificationsScreen}
+            />
+          </Drawer.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
+    </AuthContext.Provider>
+  );
+}
