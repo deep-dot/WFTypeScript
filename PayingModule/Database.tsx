@@ -1,10 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, {useEffect} from 'react';
-import {Transaction, ResultSet} from '../../databaseTypes';
-import db from '../../databaseService';
+import {Transaction, ResultSet} from './databaseTypes';
+import db from './databaseService';
 
 const Database = () => {
   console.log('db in homescreen==', db);
+
+  //Home Screen
   useEffect(() => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -27,6 +29,7 @@ const Database = () => {
     }
   }, []);
 
+  //Home Screen
   useEffect(() => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -41,6 +44,26 @@ const Database = () => {
                 'CREATE TABLE IF NOT EXISTS nameweekendingtable (Name TEXT, Week_Ending_Date TEXT)',
                 [],
               );
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
+  }, []);
+
+  //Taxi Picker from Ener Data Screen
+  useEffect(() => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='cab'",
+          [],
+          (_tx: Transaction, res: ResultSet) => {
+            if (res.rows.length === 0) {
+              txn.executeSql('DROP TABLE IF EXISTS cab', []);
+              txn.executeSql('CREATE TABLE IF NOT EXISTS cab (Cab TEXT)', []);
             }
           },
         );

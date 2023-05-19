@@ -10,11 +10,12 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 const calendarIcon = require('./calender.png');
 
 interface CalendarProps {
+  value: string;
   onChange: (date: string) => void;
   OnChange: (day: string) => void;
 }
 
-const Calendar: FC<CalendarProps> = ({onChange, OnChange}) => {
+const Calendar: FC<CalendarProps> = ({onChange, OnChange, value}) => {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
 

@@ -138,7 +138,7 @@ import {DrawerContent} from './Utilities/DrawerContent';
 import {AuthContext} from './Utilities/UseContext';
 import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
 import {DrawerNavigationProp} from '@react-navigation/drawer';
-import Database from './PayingModule/Screens/Home/Database';
+import Database from './PayingModule/Database';
 type DrawerParamList = {
   Home: undefined;
   Notifications: undefined;
@@ -223,6 +223,7 @@ export default function App() {
               component={NotificationsScreen}
             />
             <Drawer.Screen name="Home" component={HomeScreen} />
+            <Drawer.Screen name="Enter Data" component={EnterData} />
           </Drawer.Navigator>
         </NavigationContainer>
       </PaperProvider>
