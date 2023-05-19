@@ -12,35 +12,8 @@ import {
   Modal,
 } from 'react-native';
 import Mybutton from './Mybutton';
-import {SQLiteDatabase} from 'react-native-sqlite-storage';
-import SQLite from 'react-native-sqlite-storage';
-let db: SQLiteDatabase | undefined;
-db = (SQLite.openDatabase as any)(
-  {name: 'database.db', createFromLocation: 1},
-  () => {},
-  (error: any) => {
-    console.log('ERROR:' + error);
-  },
-);
-
-type Transaction = {
-  executeSql: (
-    sql: string,
-    args?: any[],
-    success?: (transaction: Transaction, resultSet: ResultSet) => void,
-    error?: (transaction: Transaction, error: any) => void,
-  ) => void;
-};
-
-type ResultSet = {
-  rowsAffected: number;
-  insertId?: number;
-  rows: {
-    length: number;
-    item: (index: number) => any;
-    _array: any[];
-  };
-};
+import db from '../databaseService';
+import {Transaction, ResultSet} from '../databaseTypes';
 
 interface Props {
   onupdate: () => void;

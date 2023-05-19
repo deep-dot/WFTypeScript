@@ -16,22 +16,15 @@ import {
 import Model from '../../Components/Model';
 import Mybutton from '../../Components/Mybutton';
 import {Picker} from '@react-native-picker/picker';
-import {openDatabase} from 'react-native-sqlite-storage';
 import Calculator from '../../Components/Calculator';
 import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
-import envs from '../../config/env';
-const {DATABASE_NAME} = envs;
-var db = openDatabase(
-  {name: DATABASE_NAME, createFromLocation: 1},
-  () => {},
-  error => {
-    console.log('ERROR:' + error);
-  },
-);
+//import envs from '../../config/env';
+import db from '../../databaseService';
+import {Transaction, ResultSet} from '../../databaseTypes';
 
-export default function RegisterUser({props, navigation}) {
+export default function EnterData({props, navigation}) {
   const [liftingtotal, setLiftingtotal] = useState('');
   const [liftingdriver, setliftingdriver] = useState('');
   const [liftingcompany, setliftingcompany] = useState('');
@@ -236,8 +229,9 @@ export default function RegisterUser({props, navigation}) {
                   {
                     text: 'Yes',
                     onPress: () => {
-                      db.transaction(tx => {
-                        tx.executeSql(
+                      if (db){
+                      db.transaction((txn: Transaction) => {
+                        txn.executeSql(
                           'INSERT INTO datatable (Date, Day, Shift, Taxi, Jobs, Ins, Hours_Worked, Total_Levy, Car_Wash, Meter_Start, Meter_Finish, Shift_Total, Com_GTN, Com_Driver, Km_Start, Km_Finish, Kms, Paidkm_Start, Paidkm_Finish, Paid_Kms, Unpaid_kms, Eftpos_Total, Eftpos_LFee, Dockets, Charge_Authority, Manual_MPTP_Total, No_of_Manual_Lifts, Total_Lifting_Fee_Value, Misc, Acc_Fuel, Net_Payin, manual_lifting_fee_value, no_wheelchair_lifts, company_portion_lifting_fee, driver_portion_lifting_fee, Deductions, Gov_Sub_Manual31, CPK, Gov_Sub_Manual, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                           [
                             date,
@@ -282,7 +276,7 @@ export default function RegisterUser({props, navigation}) {
                             drivercommrate,
                             companycommrate,
                           ],
-                          (_tx, results) => {
+                          (_tx: Transaction, results: ResultSet) => {
                             console.log('Results', results.rowsAffected);
                             if (results.rowsAffected > 0) {
                               Alert.alert(
@@ -312,6 +306,9 @@ export default function RegisterUser({props, navigation}) {
                           },
                         );
                       });
+                    } else {
+                      console.log('db is undefined');
+                    }
                     },
                   },
                   {
@@ -336,8 +333,9 @@ export default function RegisterUser({props, navigation}) {
                   {
                     text: 'Yes',
                     onPress: () => {
-                      db.transaction(tx => {
-                        tx.executeSql(
+                      if (db) {
+                        db.transaction((txn: Transaction) => {
+                        txn.executeSql(
                           'INSERT INTO datatable (Date, Day, Shift, Taxi, Jobs, Ins, Hours_Worked, Total_Levy, Car_Wash, Meter_Start, Meter_Finish, Shift_Total, Com_GTN, Com_Driver, Km_Start, Km_Finish, Kms, Paidkm_Start, Paidkm_Finish, Paid_Kms, Unpaid_kms, Eftpos_Total, Eftpos_LFee, Dockets, Charge_Authority, Manual_MPTP_Total, No_of_Manual_Lifts, Total_Lifting_Fee_Value, Misc, Acc_Fuel, Net_Payin, manual_lifting_fee_value, no_wheelchair_lifts, company_portion_lifting_fee, driver_portion_lifting_fee, Deductions, Gov_Sub_Manual31, CPK, Gov_Sub_Manual, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                           [
                             date,
@@ -382,7 +380,7 @@ export default function RegisterUser({props, navigation}) {
                             drivercommrate,
                             companycommrate,
                           ],
-                          (_tx, results) => {
+                          (_tx: Transaction, results: ResultSet) => {
                             console.log('Results', results.rowsAffected);
                             if (results.rowsAffected > 0) {
                               Alert.alert(
@@ -412,6 +410,9 @@ export default function RegisterUser({props, navigation}) {
                           },
                         );
                       });
+                    } else {
+                      console.log('db is undefined');
+                    }
                     },
                   },
                   {
@@ -441,8 +442,9 @@ export default function RegisterUser({props, navigation}) {
           {
             text: 'Yes',
             onPress: () => {
-              db.transaction(tx => {
-                tx.executeSql(
+              if (db) {
+                db.transaction((txn: Transaction) => {
+                txn.executeSql(
                   'INSERT INTO datatable (Date, Day, Shift, Taxi, Jobs, Ins, Hours_Worked, Total_Levy, Car_Wash, Meter_Start, Meter_Finish, Shift_Total, Com_GTN, Com_Driver, Km_Start, Km_Finish, Kms, Paidkm_Start, Paidkm_Finish, Paid_Kms, Unpaid_kms, Eftpos_Total, Eftpos_LFee, Dockets, Charge_Authority, Manual_MPTP_Total, No_of_Manual_Lifts, Total_Lifting_Fee_Value, Misc, Acc_Fuel, Net_Payin, manual_lifting_fee_value, no_wheelchair_lifts, company_portion_lifting_fee, driver_portion_lifting_fee, Deductions, Gov_Sub_Manual31, CPK, Gov_Sub_Manual, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                   [
                     date,
@@ -487,7 +489,7 @@ export default function RegisterUser({props, navigation}) {
                     drivercommrate,
                     companycommrate,
                   ],
-                  (_tx, results) => {
+                  (_tx: Transaction, results: ResultSet) => {
                     console.log('Results', results.rowsAffected);
                     if (results.rowsAffected > 0) {
                       Alert.alert(
@@ -517,6 +519,9 @@ export default function RegisterUser({props, navigation}) {
                   },
                 );
               });
+            } else {
+              console.log('db is undefined');
+            }
             },
           },
           {
@@ -599,12 +604,17 @@ export default function RegisterUser({props, navigation}) {
   //number of Entries
   const [numberofEntries, setNumberofEntries] = useState('');
   useEffect(() => {
-    db.transaction(tx => {
-      tx.executeSql('SELECT * from datatable', [], (_tx, results) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+      txn.executeSql('SELECT * from datatable', [], 
+      (_tx: Transaction, results: ResultSet) => {
         var len = results.rows.length;
         setNumberofEntries(len);
       });
     });
+  } else {
+    console.log('db is undefined');
+  }
   }, []);
 
   const [indicator, setIndicator] = useState(false);
@@ -617,8 +627,9 @@ export default function RegisterUser({props, navigation}) {
         {
           text: 'Yes',
           onPress: () => {
-            db.transaction(tx => {
-              tx.executeSql(
+            if (db) {
+              db.transaction((txn: Transaction) => {
+              txn.executeSql(
                 'INSERT INTO datatable (Date, Day, Shift, Taxi, Jobs, Ins, Hours_Worked, Total_Levy, Car_Wash, Meter_Start, Meter_Finish, Shift_Total, Com_GTN, Com_Driver, Km_Start, Km_Finish, Kms, Paidkm_Start, Paidkm_Finish, Paid_Kms, Unpaid_kms, Eftpos_Total, Eftpos_LFee, Dockets, Charge_Authority, Manual_MPTP_Total, No_of_Manual_Lifts, Total_Lifting_Fee_Value, Misc, Acc_Fuel, Net_Payin, manual_lifting_fee_value, no_wheelchair_lifts, company_portion_lifting_fee, driver_portion_lifting_fee, Deductions, Gov_Sub_Manual31, CPK, Gov_Sub_Manual, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
                   date,
@@ -663,7 +674,7 @@ export default function RegisterUser({props, navigation}) {
                   drivercommrate,
                   companycommrate,
                 ],
-                (_tx, results) => {
+                (_tx: Transaction, results: ResultSet) => {
                   console.log('date', date);
                   if (results.rowsAffected > 0) {
                     setIndicator(true);
@@ -699,6 +710,9 @@ export default function RegisterUser({props, navigation}) {
                 },
               );
             });
+          } else {
+            console.log('db is undefined');
+          }
           },
         },
         {
@@ -711,11 +725,12 @@ export default function RegisterUser({props, navigation}) {
   };
 
   useEffect(() => {
-    db.transaction(tx => {
-      tx.executeSql(
+    if (db) {
+      db.transaction((txn: Transaction) => {
+      txn.executeSql(
         'SELECT GovLFee, CompanyLFee, DriverLFee, Levy, Driver_Comm_Rate, Company_Comm_Rate FROM UpdateItems',
         [],
-        (_tx, results) => {
+        (_tx: Transaction, results: ResultSet) => {
           var len = results.rows.length;
           if (len > 0) {
             let res = results.rows.item(0);
@@ -733,6 +748,9 @@ export default function RegisterUser({props, navigation}) {
         },
       );
     });
+  } else {
+    console.log('db is undefined');
+  }
   }, []);
   let updateallstates = (a, b, c, d, e, f) => {
     setLiftingtotal(Number(a).toFixed(2));
@@ -760,11 +778,12 @@ export default function RegisterUser({props, navigation}) {
 
   //Taxi Picker
   useEffect(() => {
-    db.transaction(function (txn) {
+    if (db) {
+      db.transaction((txn:Transaction) => {
       txn.executeSql(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='cab'",
         [],
-        function (_tx, res) {
+        (_tx: Transaction, res: ResultSet) => {
           if (res.rows.length === 0) {
             txn.executeSql('DROP TABLE IF EXISTS cab', []);
             txn.executeSql('CREATE TABLE IF NOT EXISTS cab (Cab TEXT)', []);
@@ -772,6 +791,9 @@ export default function RegisterUser({props, navigation}) {
         },
       );
     });
+  } else {
+    console.log('db is undefined');
+  }
   }, []);
 
   const [rego, setRego] = useState('');
@@ -780,11 +802,12 @@ export default function RegisterUser({props, navigation}) {
     if (!rego) {
       Alert.alert('Please put rego in.');
     } else {
-      db.transaction(tx => {
-        tx.executeSql(
+      if (db) {
+        db.transaction((txn: Transaction) => {
+        txn.executeSql(
           'INSERT INTO cab (Cab) VALUES (?)',
           [rego],
-          (_tx, results) => {
+          (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
               // Alert.alert('Added successfully.');
               navigation.navigate('HomeScreen');
@@ -792,12 +815,17 @@ export default function RegisterUser({props, navigation}) {
           },
         );
       });
+    } else {
+      console.log('db is undefined');
+    }
     }
   };
 
   useEffect(() => {
-    db.transaction(tx => {
-      tx.executeSql('SELECT * FROM cab', [], (_tx, results) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+      txn.executeSql('SELECT * FROM cab', [], 
+      (_tx: Transaction, results: ResultSet) => {
         var len = results.rows.length;
         if (len > 0) {
           const temp = [];
@@ -808,6 +836,9 @@ export default function RegisterUser({props, navigation}) {
         }
       });
     });
+  } else {
+    console.log('db is undefined');
+  }
   }, []);
 
   const [cabData, setcabData] = useState(['']);
@@ -818,11 +849,12 @@ export default function RegisterUser({props, navigation}) {
     if (!rego) {
       Alert.alert('Please put rego in.');
     } else {
-      db.transaction(tx => {
-        tx.executeSql(
+      if (db) {
+        db.transaction((txn: Transaction) => {
+        txn.executeSql(
           'DELETE FROM cab where Cab = ?',
           [rego],
-          (_tx, results) => {
+          (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
               Alert.alert('Deleted successfully');
               navigation.navigate('HomeScreen');
@@ -830,7 +862,9 @@ export default function RegisterUser({props, navigation}) {
           },
         );
       });
-    }
+    } else {
+    console.log('db is undefined');
+  }
   };
   const Onupdate = () => {
     setLiftingmodalvisible(!liftingmodalvisible);
