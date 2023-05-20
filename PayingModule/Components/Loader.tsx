@@ -31,8 +31,8 @@ interface LoaderProps {
 const Loader: FC<LoaderProps> = ({loading}) => {
   return (
     <Modal
-      transparent={true}
-      presentationStyle={'pageSheet'}
+      // transparent={true}
+      // presentationStyle={'pageSheet'}
       visible={loading}
       animationType={'fade'}
       onRequestClose={() => {}}>

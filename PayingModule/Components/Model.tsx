@@ -132,8 +132,8 @@ const Model: React.FC<Props> = props => {
   return (
     <SafeAreaView style={styles.container}>
       <Modal
-        transparent={true}
-        presentationStyle={'pageSheet'}
+        //  transparent={true}
+        //presentationStyle={'pageSheet'}
         visible={props.modvisible}
         animationType={'fade'}
         onRequestClose={() => {}}>

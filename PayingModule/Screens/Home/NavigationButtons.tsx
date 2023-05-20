@@ -13,6 +13,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   changeweekendingdate,
 }) => {
   const navigation = useNavigation();
+
   return (
     <ScrollView style={{marginEnd: 20, marginStart: 20, marginTop: 10}}>
       <Image

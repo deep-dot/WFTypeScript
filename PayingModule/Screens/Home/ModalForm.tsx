@@ -28,8 +28,8 @@ const ModalForm: React.FC<ModalFormProps> = ({
   setDay,
 }) => (
   <Modal
-    transparent={true}
-    presentationStyle={'pageSheet'}
+    //transparent={true}
+    // presentationStyle={'pageSheet'}
     visible={modalvisible}
     animationType={'fade'}
     onRequestClose={() => {}}>
@@ -46,7 +46,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
         </TextInput>
 
         <View style={{marginTop: 40, alignItems: 'center', marginBottom: 20}}>
-          <Calendar onChange={setDate} OnChange={setDay} />
+          <Calendar onChange={setDate} OnChange={setDay} value={''} />
 
           <TextInput
             placeholder="Select Date"

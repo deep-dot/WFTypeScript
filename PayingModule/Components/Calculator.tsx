@@ -134,8 +134,8 @@ const Calculator: React.FC<Props> = props => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#54cb77'}}>
       <Modal
-        transparent={true}
-        presentationStyle={'pageSheet'}
+        // transparent={true}
+        // presentationStyle={'pageSheet'}
         visible={calculatorVisible}
         animationType={'fade'}
         onRequestClose={() => {}}>
