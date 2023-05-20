@@ -1,15 +1,5 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-undef */
-/* eslint-disable react/jsx-no-duplicate-props */
 /* eslint-disable react-native/no-inline-styles */
-import React, {
-  useState,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useContext,
-} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -54,225 +44,142 @@ type EnterDataScreenProps = {
 };
 
 const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
-
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {dispatch} = stateContext;
+  const {dispatch, state} = stateContext;
+  console.log('state in EnterDataScreen==', state);
 
-  const [liftingtotal, setLiftingtotal]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [liftingdriver, setliftingdriver]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [liftingcompany, setliftingcompany]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [levy, setLevy]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [drivercommrate, setDrivercommrate]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [companycommrate, setCompanycommrate]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [liftingmodalvisible, setLiftingmodalvisible] = useState(false);
+  const [liftingtotal, setLiftingtotal] = useState<string>('');
+  const [liftingdriver, setliftingdriver] = useState<string>('');
+  const [liftingcompany, setliftingcompany] = useState<string>('');
+  const [levy, setLevy] = useState<string>('');
+  const [drivercommrate, setDrivercommrate] = useState<string>('');
+  const [companycommrate, setCompanycommrate] = useState<string>('');
+  const [liftingmodalvisible, setLiftingmodalvisible] =
+    useState<boolean>(false);
 
-  //const [driverName, setDriverName] = React.useState('');
-  const [shift, setshift] = useState('');
-  const [hours, onChangeHours]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [numberofJobs, setNumberofJobs]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
+  //const [driverName, setDriverName] = React.useState<string>('');
+  const [shift, setshift] = useState<string>('');
+  const [hours, onChangeHours] = useState<string>('');
+  const [numberofJobs, setNumberofJobs] = useState<string>('');
 
-  const [totallevy, setTotalLevy]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [insurancefee, onChangeInsuranceFee]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [meter1, setmeter1]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [meter2, setmeter2]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [totalmeter, settotalmeter]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [km1, setkm1]: [number, Dispatch<SetStateAction<number>>] = useState(0);
-  const [km2, setkm2]: [number, Dispatch<SetStateAction<number>>] = useState(0);
-  const [resultkm, setResultkm]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [paidkm1, setpaidkm1]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [paidkm2, setpaidkm2]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [unpaidkm, setUnpaidkm]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [cpk, setCpk]: [number, Dispatch<SetStateAction<number>>] = useState(0);
-  const [resultpaidkm, setResultpaidkm]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [eftpos, onChangeEftpos]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [eftposlifting, setEftposLifting]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [cc, onChangeCc]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [manualMptp, setManualMptp]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [govSubManual31, setGovSubManual31]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
+  const [totallevy, setTotalLevy] = useState<string>('');
+  const [insurancefee, onChangeInsuranceFee] = useState<string>('');
+  const [meter1, setmeter1] = useState<string>('');
+  const [meter2, setmeter2] = useState<string>('');
+  const [totalmeter, settotalmeter] = useState<string>('');
+  const [km1, setkm1] = useState<string>('');
+  const [km2, setkm2] = useState<string>('');
+  const [resultkm, setResultkm] = useState<string>('');
+  const [paidkm1, setpaidkm1] = useState<string>('');
+  const [paidkm2, setpaidkm2] = useState<string>('');
+  const [unpaidkm, setUnpaidkm] = useState<string>('');
+  const [cpk, setCpk] = useState<string>(0);
+  const [resultpaidkm, setResultpaidkm] = useState<string>('');
+  const [eftpos, onChangeEftpos] = useState<string>('');
+  const [eftposlifting, setEftposLifting] = useState<string>('');
+  const [cc, onChangeCc] = useState<string>('');
+  const [manualMptp, setManualMptp] = useState<string>('');
+  const [govSubManual31, setGovSubManual31] = useState<string>('');
   const [cabData, setcabData] = useState<CabDataItem[]>([]);
-  const [Taxi, setTaxi] = useState('');
-  const [numberofmanuallifting, setNumberofManualLifting]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [manuallifting, setManualLifting]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [chargeAuthority, onChangeChargeAuthority]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [misc, onChangeMisc]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [carwash, onChangeCarWash]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [accountFuel, onChangeAccountFuel]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [totallifting, setTotalLifting]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [numberofChairs, setNumberofChairs]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [gtnLFee, setGtnLFee]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [driverLFee, setDriverLFee]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [deductions, setDeductions]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [date, setDate] = useState('');
-  const [day, setDay] = useState('');
+  const [Taxi, setTaxi] = useState<string>('');
+  const [numberofmanuallifting, setNumberofManualLifting] =
+    useState<string>('');
+  const [manuallifting, setManualLifting] = useState<string>('');
+  const [chargeAuthority, onChangeChargeAuthority] = useState<string>('');
+  const [misc, onChangeMisc] = useState<string>('');
+  const [carwash, onChangeCarWash] = useState<string>('');
+  const [accountFuel, onChangeAccountFuel] = useState<string>('');
+  const [totallifting, setTotalLifting] = useState<string>('');
+  const [numberofChairs, setNumberofChairs] = useState<string>('');
+  const [gtnLFee, setGtnLFee] = useState<string>('');
+  const [driverLFee, setDriverLFee] = useState<string>('');
+  const [deductions, setDeductions] = useState<string>('');
+  const [date, setDate] = useState<string>('');
+  const [day, setDay] = useState<string>('');
 
-  const [commissiongtn, setCommissiongtn]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [commissiondriver, setCommissiondriver]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [fare, setFare]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [netpayin, setNetpayin]: [number, Dispatch<SetStateAction<number>>] =
-    useState(0);
-  const [driverIncome, setDriverIncome]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
+  const [commissiongtn, setCommissiongtn] = useState<string>('');
+  const [commissiondriver, setCommissiondriver] = useState<string>('');
+  const [fare, setFare] = useState<string>('');
+  const [netpayin, setNetpayin] = useState<string>('');
+  const [driverIncome, setDriverIncome] = useState<string>('');
   // regomodal
-  const [regomodal, setRegomodal] = useState(false);
-  const [rego, setRego] = useState('');
-  const [calculatormodalvisible, setcalculatormodalvisible] = useState(false);
-  const [numberofEntries, setNumberofEntries]: [
-    number,
-    Dispatch<SetStateAction<number>>,
-  ] = useState(0);
-  const [indicator, setIndicator] = useState(false);
+  const [regomodal, setRegomodal] = useState<boolean>(false);
+  const [rego, setRego] = useState<string>('');
+  const [calculatormodalvisible, setcalculatormodalvisible] =
+    useState<boolean>(false);
+  const [numberofEntries, setNumberofEntries] = useState<string>('');
+  const [indicator, _setIndicator] = useState<boolean>(false);
 
   const calculatekm = () => {
-    setResultkm(parseFloat((km2 - km1).toFixed(2)));
-    //paidkmstart.focus();
+    setResultkm((Number(km2) - Number(km1)).toFixed(2));
+    paidkmstart.focus();
   };
   const calculatemeter = () => {
-    settotalmeter(parseFloat((meter2 - totallevy - meter1).toFixed(2)));
-    // kmstart.focus();
+    settotalmeter(
+      (Number(meter2) - Number(totallevy) - Number(meter1)).toFixed(2),
+    );
+    kmstart.focus();
   };
   const Totallevy = () => {
-    setTotalLevy(parseFloat((numberofJobs * levy).toFixed(2)));
-    //mis.focus();
+    setTotalLevy((Number(numberofJobs) * Number(levy)).toFixed(2));
+    mis.focus();
   };
 
   const calculateUnpaidkm = () => {
-    setUnpaidkm(parseFloat((resultkm - resultpaidkm).toFixed(2)));
+    setUnpaidkm((Number(resultkm) - Number(resultpaidkm)).toFixed(2));
   };
   const calculateManualLifting = () => {
     setManualLifting(
-      parseFloat((numberofmanuallifting * liftingtotal).toFixed(2)),
+      (Number(numberofmanuallifting) * Number(liftingtotal)).toFixed(2),
     );
     calculateUnpaidkm();
-    //eftps.focus();
+    eftps.focus();
   };
   const calculateTotalLifting = () => {
-    let a = numberofmanuallifting * liftingtotal;
-    let b = eftposlifting;
-    setTotalLifting(parseFloat((a + b).toFixed(2)));
+    let a = Number(numberofmanuallifting) * Number(liftingtotal);
+    let b = Number(eftposlifting);
+    setTotalLifting((a + b).toFixed(2));
     //calculateNumberofChairs();
   };
 
   useEffect(() => {
     const {resultPaidKm, commissionDriver, commissionGtn, newCpk} =
       calculatePaidKm(
-        paidkm1,
-        paidkm2,
-        totalmeter,
-        drivercommrate,
-        companycommrate,
-        resultkm,
-        cpk,
+        Number(paidkm1),
+        Number(paidkm2),
+        Number(totalmeter),
+        Number(drivercommrate),
+        Number(companycommrate),
+        Number(resultkm),
+        Number(cpk),
       );
-    setResultpaidkm(resultPaidKm);
-    setCommissiondriver(commissionDriver);
-    setCommissiongtn(commissionGtn);
-    setCpk(newCpk);
+    setResultpaidkm(resultPaidKm.toFixed(2));
+    setCommissiondriver(commissionDriver.toFixed(2));
+    setCommissiongtn(commissionGtn.toFixed(2));
+    setCpk(newCpk.toFixed(2));
 
     const [numberOfChairs, newGtnLFee] = calculateNumberofChairs(
-      numberofmanuallifting,
-      eftposlifting,
-      liftingtotal,
-      liftingcompany,
+      Number(numberofmanuallifting),
+      Number(eftposlifting),
+      Number(liftingtotal),
+      Number(liftingcompany),
     );
-    setNumberofChairs(parseFloat(numberOfChairs.toFixed(0)));
-    setGtnLFee(parseFloat(newGtnLFee.toFixed(2)));
+    setNumberofChairs(numberOfChairs.toFixed(0));
+    setGtnLFee(newGtnLFee.toFixed(2));
 
     const result = calculateDriverLFee(
-      liftingtotal,
-      eftposlifting,
-      liftingdriver,
-      numberofmanuallifting,
-      totalmeter,
-      hours,
+      Number(liftingtotal),
+      Number(eftposlifting),
+      Number(liftingdriver),
+      Number(numberofmanuallifting),
+      Number(totalmeter),
+      Number(hours),
     );
-    setDriverLFee(result.driverLFee);
-    setFare(result.fare);
+    setDriverLFee(result.driverLFee.toFixed(2));
+    setFare(result.fare.toFixed(2));
   }, [
     numberofmanuallifting,
     eftposlifting,
@@ -292,69 +199,68 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
   let submitalltogather = () => {
     let A = numberofmanuallifting;
     let B;
-    if (liftingtotal > 0) {
-      B = eftposlifting / liftingtotal;
+    if (Number(liftingtotal) > 0) {
+      B = Number(eftposlifting) / Number(liftingtotal);
     } else {
       B = 0;
     }
     let kullnumberofchairs = A + B;
-    let kulldriverlfee = kullnumberofchairs * liftingdriver;
-    let a = eftpos;
-    let a1 = eftposlifting;
-    let b = govSubManual31;
-    let c = manualMptp;
-    let d = cc;
-    let e = chargeAuthority;
-    //let f =driverLFee;
-    let f = kulldriverlfee;
-    let g = carwash;
-    let h = accountFuel;
-    let i = misc;
-    let kulllevy = numberofJobs * levy;
-    let kullmeter = meter2 - meter1 - kulllevy;
-    let kullkm = km2 - km1;
-    let kullpaidkm = paidkm2 - paidkm1;
+    let kulldriverlfee = Number(kullnumberofchairs) * Number(liftingdriver);
+    let a = Number(eftpos);
+    let a1 = Number(eftposlifting);
+    let b = Number(govSubManual31);
+    let c = Number(manualMptp);
+    let d = Number(cc);
+    let e = Number(chargeAuthority);
+    //let f =dNumber(riverLFee);
+    let f = Number(kulldriverlfee);
+    let g = Number(carwash);
+    let h = Number(accountFuel);
+    let i = Number(misc);
+    let kulllevy = Number(numberofJobs) * Number(levy);
+    let kullmeter = Number(meter2) - Number(meter1) - kulllevy;
+    let kullkm = Number(km2) - Number(km1);
+    let kullpaidkm = Number(paidkm2) - Number(paidkm1);
     let kullunpaidkm = kullkm - kullpaidkm;
-    let kullmanuallifting = numberofmanuallifting * liftingtotal;
+    let kullmanuallifting =
+      Number(numberofmanuallifting) * Number(liftingtotal);
     let kulltotallifting = kullmanuallifting + a1;
-    let kullgtnlfee = kullnumberofchairs * liftingcompany;
-    let kullcommdriver = kullmeter * (drivercommrate / 100);
-    let kullcommgtn = kullmeter * (companycommrate / 100);
+    let kullgtnlfee = Number(kullnumberofchairs) * Number(liftingcompany);
+    let kullcommdriver = kullmeter * (Number(drivercommrate) / 100);
+    let kullcommgtn = kullmeter * (Number(companycommrate) / 100);
 
-    let Cdeductions = parseFloat((a - a1 + b + c + d + e + f).toFixed(2));
-    let Ddeductions = parseFloat(
-      (a - a1 + b + c + d + e + f + g + h + i).toFixed(2),
-    );
+    let Cdeductions = a - a1 + b + c + d + e + f;
+    let Ddeductions = a - a1 + b + c + d + e + f + g + h + i;
 
-    let Cnetpayin = kullcommgtn - parseFloat(Cdeductions.toFixed(2));
-    let Dnetpayin = parseFloat((kullcommgtn - Ddeductions).toFixed(2));
-    let driverincome = parseFloat((kulldriverlfee + kullcommdriver).toFixed(2));
+    let Cnetpayin = kullcommgtn - Cdeductions;
+    let Dnetpayin = kullcommgtn - Ddeductions;
+    let driverincome = kulldriverlfee + kullcommdriver;
     if (kullkm > 0) {
       let kullcpk = kullmeter / kullkm;
-      setCpk(parseFloat(kullcpk.toFixed(2)));
+      setCpk(kullcpk.toFixed(2));
     } else {
-      setCpk(0);
+      setCpk('0.00');
     }
-    if (hours > 0) {
-      setFare(parseFloat((totalmeter / hours).toFixed(2)));
+    if (Number(hours) > 0) {
+      setFare((Number(totalmeter) / Number(hours)).toFixed(2));
     } else {
-      setFare(0);
+      setFare('0.00');
     }
-    setCommissiondriver(parseFloat(kullcommdriver.toFixed(2)));
-    setCommissiongtn(parseFloat(kullcommgtn.toFixed(2)));
-    setTotalLevy(parseFloat(kulllevy.toFixed(2)));
-    settotalmeter(parseFloat(kullmeter.toFixed(2)));
-    setResultkm(parseFloat(kullkm.toFixed(2)));
-    setResultpaidkm(parseFloat(kullpaidkm.toFixed(2)));
-    setUnpaidkm(parseFloat(kullunpaidkm.toFixed(2)));
-    setManualLifting(parseFloat(kullmanuallifting.toFixed(2)));
-    setTotalLifting(parseFloat(kulltotallifting.toFixed(2)));
-    setNumberofChairs(parseFloat(kullnumberofchairs.toFixed(0)));
-    setGtnLFee(parseFloat(kullgtnlfee.toFixed(2)));
-    setDriverLFee(parseFloat(kulldriverlfee.toFixed(2)));
-    setDriverIncome(parseFloat(driverincome.toFixed(2)));
+    setCommissiondriver(kullcommdriver.toFixed(2));
+    setCommissiongtn(kullcommgtn.toFixed(2));
+    setTotalLevy(kulllevy.toFixed(2));
+    settotalmeter(kullmeter.toFixed(2));
+    setResultkm(kullkm.toFixed(2));
+    setResultpaidkm(kullpaidkm.toFixed(2));
+    setUnpaidkm(kullunpaidkm.toFixed(2));
+    setManualLifting(kullmanuallifting.toFixed(2));
+    setTotalLifting(kulltotallifting.toFixed(2));
+    setNumberofChairs(kullnumberofchairs);
+    setGtnLFee(kullgtnlfee.toFixed(2));
+    setDriverLFee(kulldriverlfee.toFixed(2));
+    setDriverIncome(driverincome.toFixed(2));
 
-    if (accountFuel > 0 || carwash > 0 || misc > 0) {
+    if (Number(accountFuel) > 0 || Number(carwash) > 0 || Number(misc) > 0) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
         '',
@@ -362,8 +268,8 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
           {
             text: "Driver's ?",
             onPress: () => {
-              setDeductions(parseFloat(Ddeductions.toFixed(2)));
-              setNetpayin(parseFloat(Dnetpayin.toFixed(2)));
+              setDeductions(Ddeductions.toFixed(2));
+              setNetpayin(Dnetpayin.toFixed(2));
               //setDriverIncome(Number(Ddriverincome).toFixed(2));
               Alert.alert(
                 'Please confirm!',
@@ -429,7 +335,7 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
                                     {
                                       text: 'Yes',
                                       onPress: () => {
-                                        refresh();
+                                        Refresh();
                                       },
                                     },
                                     {
@@ -466,8 +372,8 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
           {
             text: "Company's ?",
             onPress: () => {
-              setDeductions(parseFloat(Cdeductions.toFixed(2)));
-              setNetpayin(parseFloat(Cnetpayin.toFixed(2)));
+              setDeductions(Cdeductions.toFixed(2));
+              setNetpayin(Cnetpayin.toFixed(2));
               //setDriverIncome(Number(Cdriverincome).toFixed(2));
               Alert.alert(
                 'Please confirm!',
@@ -533,7 +439,7 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
                                     {
                                       text: 'Yes',
                                       onPress: () => {
-                                        refresh();
+                                        Refresh();
                                       },
                                     },
                                     {
@@ -575,8 +481,8 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
         {cancelable: true},
       );
     } else {
-      setDeductions(parseFloat(Cdeductions.toFixed(2)));
-      setNetpayin(parseFloat(Cnetpayin.toFixed(2)));
+      setDeductions(Cdeductions.toFixed(2));
+      setNetpayin(Cnetpayin.toFixed(2));
       //setDriverIncome(Number(Cdriverincome).toFixed(2));
       Alert.alert(
         'Please confirm!',
@@ -642,7 +548,7 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
                             {
                               text: 'Yes',
                               onPress: () => {
-                                refresh();
+                                Refresh();
                               },
                             },
                             {
@@ -680,28 +586,29 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
   let hoursworked: any,
     insurance: any,
     job: any,
-    // lev: any,
+    lev: any,
     fuel: any,
     meterstart: any,
     meterfinish: any,
-    // kmstart: any,
+    kmstart: any,
     kmfinish: any,
     paidkmstart: any,
     paidkmfinish: any,
-    //sbmt: any,
+    sbmt: any,
     gsm: any,
     gsm31: any,
-    //manualmptp: any,
+    manualmptp: any,
     noofmanualmptplifts: any,
-    // eftps: any,
+    eftps: any,
     eftposliftingfee: any,
     docket: any,
     charge: any,
-    // mis: any,
+    mis: any,
     wash: any;
 
   const Refresh = () => {
     dispatch({type: 'REFRESH'});
+    onChangeInsuranceFee('');
   };
   //number of Entries
   useEffect(() => {
@@ -750,21 +657,21 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
     e: number,
     f: number,
   ) => {
-    setLiftingtotal(parseFloat(a.toFixed(2)));
-    setliftingcompany(parseFloat(b.toFixed(2)));
-    setliftingdriver(parseFloat(c.toFixed(2)));
-    setLevy(parseFloat(d.toFixed(2)));
-    setDrivercommrate(parseFloat(e.toFixed(0)));
-    setCompanycommrate(parseFloat(f.toFixed(0)));
+    setLiftingtotal(a.toFixed(2));
+    setliftingcompany(b.toFixed(2));
+    setliftingdriver(c.toFixed(2));
+    setLevy(d.toFixed(2));
+    setDrivercommrate(e.toFixed(0));
+    setCompanycommrate(f.toFixed(0));
   };
 
   //calculator...
   let Authoritycalculator = (num: number) => {
-    onChangeChargeAuthority(parseFloat(num.toFixed(2)));
+    onChangeChargeAuthority(num.toFixed(2));
     setcalculatormodalvisible(!calculatormodalvisible);
   };
   let CCcalculator = (num: number) => {
-    onChangeCc(parseFloat(num.toFixed(2)));
+    onChangeCc(num.toFixed(2));
     setcalculatormodalvisible(!calculatormodalvisible);
   };
   let Cancelcalculator = () => {
@@ -961,8 +868,8 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
         </TouchableOpacity>
 
         <Modal
-          transparent={true}
-          presentationStyle={'pageSheet'}
+          //transparent={true}
+          //presentationStyle={'pageSheet'}
           visible={regomodal}
           animationType={'fade'}
           onRequestClose={() => {}}>
@@ -1034,22 +941,21 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             style={styles.textInput}
             returnKeyType="next"
             keyboardType="numeric"
-            //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeInsuranceFee(Number(num))}
-            //value={insurancefee}
+            onChangeText={num => onChangeInsuranceFee(num)}
+            value={insurancefee}
             ref={input => {
               insurance = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(insurancefee)) {
-                Alert.alert('Please input a correct number');
+              let num = parseFloat((parseFloat(insurancefee) / 100).toFixed(2));
+              if (isNaN(num)) {
+                Alert.alert('Please input a number only');
               } else {
-                onChangeInsuranceFee(parseFloat(insurancefee.toFixed(2)));
+                onChangeInsuranceFee(insurancefee);
                 fuel.focus();
               }
-            }}>
-            <Text style={styles.titleText}>{insurancefee}</Text>
-          </TextInput>
+            }}
+          />
         </View>
         <View style={styles.textinputview}>
           <Text style={styles.titleText}>Account Fuel</Text>
@@ -1060,20 +966,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             // keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeAccountFuel(Number(num))}
-            //value={accountFuel}
+            onChangeText={num => onChangeAccountFuel(num)}
+            value={accountFuel}
             ref={input => {
               fuel = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(accountFuel)) {
+              if (isNaN(Number(accountFuel))) {
                 Alert.alert('Please input a correct number');
               } else {
-                onChangeAccountFuel(parseFloat(accountFuel.toFixed(2)));
+                onChangeAccountFuel(accountFuel);
                 hoursworked.focus();
               }
             }}>
-            <Text style={styles.titleText}>{accountFuel}</Text>
+            {/* <Text style={styles.titleText}>{accountFuel}</Text> */}
           </TextInput>
         </View>
 
@@ -1086,20 +992,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeHours(Number(num))}
-            //value={hours}
+            onChangeText={num => onChangeHours(num)}
+            value={hours}
             ref={input => {
               hoursworked = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(hours)) {
+              if (isNaN(Number(hours))) {
                 Alert.alert('Please input a correct number');
               } else {
-                onChangeHours(parseFloat(hours.toFixed(2)));
+                onChangeHours(hours);
                 job.focus();
               }
             }}>
-            <Text style={styles.titleText}>{hours}</Text>
+            {/* <Text style={styles.titleText}>{hours}</Text> */}
           </TextInput>
         </View>
 
@@ -1113,8 +1019,8 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
             style={styles.textInput}
-            onChangeText={num => setNumberofJobs(Number(num))}
-            //value={numberofJobs}
+            onChangeText={num => setNumberofJobs(num)}
+            value={numberofJobs}
             ref={input => {
               job = input;
             }}
@@ -1122,11 +1028,11 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
               if (!numberofJobs) {
                 Alert.alert('Please input number of jobs');
               } else {
-                setNumberofJobs(parseFloat(numberofJobs.toFixed(0)));
-                // Totallevy();
+                setNumberofJobs(numberofJobs);
+                Totallevy();
               }
             }}>
-            <Text style={styles.titleText}>{numberofJobs}</Text>
+            {/* <Text style={styles.titleText}>{numberofJobs}</Text> */}
           </TextInput>
         </View>
 
@@ -1150,22 +1056,22 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeMisc(Number(num))}
-            //value={misc}
+            onChangeText={num => onChangeMisc(num)}
+            value={misc}
             //returnKeyType="next"
             ref={input => {
               mis = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(misc)) {
+              if (isNaN(Number(misc))) {
                 Alert.alert('Please input a correct number');
               } else {
-                onChangeMisc(parseFloat(misc.toFixed(2)));
+                onChangeMisc(misc);
                 wash.focus();
               }
             }}
             blurOnSubmit={false}>
-            <Text style={styles.titleText}>{misc}</Text>
+            {/* <Text style={styles.titleText}>{misc}</Text> */}
           </TextInput>
         </View>
 
@@ -1178,21 +1084,21 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeCarWash(Number(num))}
-            //value={carWash}
+            onChangeText={num => onChangeCarWash(num)}
+            value={carwash}
             //returnKeyType="next"
             ref={input => {
               wash = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(carwash)) {
+              if (isNaN(Number(carwash))) {
                 Alert.alert('Please input a correct number');
               } else {
-                onChangeCarWash(parseFloat(carwash.toFixed(2)));
+                onChangeCarWash(carwash);
                 meterstart.focus();
               }
             }}>
-            <Text style={styles.titleText}>{carwash}</Text>
+            {/* <Text style={styles.titleText}>{carwash}</Text> */}
           </TextInput>
         </View>
 
@@ -1205,20 +1111,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setmeter1(Number(num))}
-            // value={meter1}
+            onChangeText={num => setmeter1(num)}
+            value={meter1}
             ref={input => {
               meterstart = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(meter1)) {
+              if (isNaN(Number(meter1))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setmeter1(parseFloat(meter1.toFixed(2)));
+                setmeter1(meter1);
                 meterfinish.focus();
               }
             }}>
-            <Text style={styles.titleText}>{meter1}</Text>
+            {/* <Text style={styles.titleText}>{meter1}</Text> */}
           </TextInput>
         </View>
 
@@ -1231,20 +1137,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setmeter2(Number(num))}
-            //value={meter2}
+            onChangeText={num => setmeter2(num)}
+            value={meter2}
             ref={input => {
               meterfinish = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(meter2)) {
+              if (isNaN(Number(meter2))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setmeter2(parseFloat(meter2.toFixed(2)));
+                setmeter2(meter2);
                 calculatemeter();
               }
             }}>
-            <Text style={styles.titleText}>{meter2}</Text>
+            {/* <Text style={styles.titleText}>{meter2}</Text> */}
           </TextInput>
         </View>
 
@@ -1254,8 +1160,9 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             placeholder="0.00"
             placeholderTextColor="#55a8fa"
             editable={false}
-            style={styles.Textinput}>
-            <Text style={styles.titletext}>{totalmeter}</Text>
+            style={styles.Textinput}
+            value={totalmeter}>
+            {/* <Text style={styles.titletext}>{totalmeter}</Text> */}
           </TextInput>
         </View>
 
@@ -1268,20 +1175,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setkm1(Number(num))}
-            //value={km1}
+            onChangeText={num => setkm1(num)}
+            value={km1}
             ref={input => {
               kmstart = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(km1)) {
+              if (isNaN(Number(km1))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setkm1(parseFloat(km1.toFixed(2)));
+                setkm1(km1);
                 kmfinish.focus();
               }
             }}>
-            <Text style={styles.titleText}>{km1}</Text>
+            {/* <Text style={styles.titleText}>{km1}</Text> */}
           </TextInput>
         </View>
 
@@ -1294,20 +1201,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setkm2(Number(num))}
-            //value={km2}
+            onChangeText={num => setkm2(num)}
+            value={km2}
             ref={input => {
               kmfinish = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(km2)) {
+              if (isNaN(Number(km2))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setkm2(parseFloat(km2.toFixed(2)));
+                setkm2(km2);
                 calculatekm();
               }
             }}>
-            <Text style={styles.titleText}>{km2}</Text>
+            {/* <Text style={styles.titleText}>{km2}</Text> */}
           </TextInput>
         </View>
 
@@ -1317,8 +1224,9 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             placeholder="0.00"
             placeholderTextColor="#55a8fa"
             editable={false}
-            style={styles.Textinput}>
-            <Text style={styles.titletext}>{resultkm}</Text>
+            style={styles.Textinput}
+            value={resultkm}>
+            {/* <Text style={styles.titletext}>{resultkm}</Text> */}
           </TextInput>
         </View>
 
@@ -1328,8 +1236,9 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             placeholder="0.00"
             placeholderTextColor="#55a8fa"
             editable={false}
-            style={styles.Textinput}>
-            <Text style={styles.titletext}>{cpk}</Text>
+            style={styles.Textinput}
+            value={cpk}>
+            {/* <Text style={styles.titletext}>{cpk}</Text> */}
           </TextInput>
         </View>
 
@@ -1342,20 +1251,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setpaidkm1(Number(num))}
-            //value={paidkm1}
+            onChangeText={num => setpaidkm1(num)}
+            value={paidkm1}
             ref={input => {
               paidkmstart = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(paidkm1)) {
+              if (isNaN(Number(paidkm1))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setpaidkm1(parseFloat(paidkm1.toFixed(2)));
+                setpaidkm1(paidkm1);
                 paidkmfinish.focus();
               }
             }}>
-            <Text style={styles.titleText}>{paidkm1}</Text>
+            {/* <Text style={styles.titleText}>{paidkm1}</Text> */}
           </TextInput>
         </View>
 
@@ -1368,20 +1277,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setpaidkm2(Number(num))}
-            //value={paidkm2}
+            onChangeText={num => setpaidkm2(num)}
+            value={paidkm2}
             ref={input => {
               paidkmfinish = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(paidkm2)) {
+              if (isNaN(Number(paidkm2))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setpaidkm2(parseFloat(paidkm2.toFixed(2)));
+                setpaidkm2(paidkm2);
                 //calculatepaidkm();
               }
             }}>
-            <Text style={styles.titleText}>{paidkm2}</Text>
+            {/* <Text style={styles.titleText}>{paidkm2}</Text> */}
           </TextInput>
         </View>
 
@@ -1391,8 +1300,9 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             placeholder="0.00"
             placeholderTextColor="#55a8fa"
             editable={false}
-            style={styles.Textinput}>
-            <Text style={styles.titletext}>{resultpaidkm}</Text>
+            style={styles.Textinput}
+            value={resultpaidkm}>
+            {/* <Text style={styles.titletext}>{resultpaidkm}</Text> */}
           </TextInput>
         </View>
 
@@ -1405,20 +1315,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={text => setManualMptp(Number(text))}
-            //value={manualMptp}
+            onChangeText={text => setManualMptp(text)}
+            value={manualMptp}
             ref={input => {
               gsm = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(manualMptp)) {
+              if (isNaN(Number(manualMptp))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setManualMptp(parseFloat(manualMptp.toFixed(2)));
+                setManualMptp(manualMptp);
                 gsm31.focus();
               }
             }}>
-            <Text style={styles.titleText}>{manualMptp}</Text>
+            {/* <Text style={styles.titleText}>{manualMptp}</Text> */}
           </TextInput>
         </View>
 
@@ -1431,20 +1341,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={text => setGovSubManual31(Number(text))}
-            //value={govSubManual31}
+            onChangeText={text => setGovSubManual31(text)}
+            value={govSubManual31}
             ref={input => {
               gsm31 = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(govSubManual31)) {
+              if (isNaN(Number(govSubManual31))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setGovSubManual31(parseFloat(govSubManual31.toFixed(2)));
+                setGovSubManual31(govSubManual31);
                 noofmanualmptplifts.focus();
               }
             }}>
-            <Text style={styles.titleText}>{govSubManual31}</Text>
+            {/* <Text style={styles.titleText}>{govSubManual31}</Text> */}
           </TextInput>
         </View>
 
@@ -1457,22 +1367,20 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={text => setNumberofManualLifting(Number(text))}
-            // value={numberofmanuallifting}
+            onChangeText={text => setNumberofManualLifting(text)}
+            value={numberofmanuallifting}
             ref={input => {
               noofmanualmptplifts = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(numberofmanuallifting)) {
+              if (isNaN(Number(numberofmanuallifting))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setNumberofManualLifting(
-                  parseFloat(numberofmanuallifting.toFixed(0)),
-                );
+                setNumberofManualLifting(numberofmanuallifting);
                 calculateManualLifting();
               }
             }}>
-            <Text style={styles.titleText}>{numberofmanuallifting}</Text>
+            {/* <Text style={styles.titleText}>{numberofmanuallifting}</Text> */}
           </TextInput>
         </View>
 
@@ -1482,8 +1390,9 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             placeholder="0.00"
             placeholderTextColor="#55a8fa"
             editable={false}
-            style={styles.Textinput}>
-            <Text style={styles.titletext}>{manuallifting}</Text>
+            style={styles.Textinput}
+            value={manuallifting}>
+            {/* <Text style={styles.titletext}>{manuallifting}</Text> */}
           </TextInput>
         </View>
 
@@ -1496,21 +1405,21 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeEftpos(Number(num))}
-            //value={eftpos}
+            onChangeText={num => onChangeEftpos(num)}
+            value={eftpos}
             ref={input => {
               eftps = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(eftpos)) {
+              if (isNaN(Number(eftpos))) {
                 Alert.alert('Please input a correct number');
               } else {
-                onChangeEftpos(parseFloat(eftpos.toFixed(2)));
+                onChangeEftpos(eftpos);
                 eftposliftingfee.focus();
               }
             }}
             blurOnSubmit={false}>
-            <Text style={styles.titleText}>{eftpos}</Text>
+            {/* <Text style={styles.titleText}>{eftpos}</Text> */}
           </TextInput>
         </View>
 
@@ -1523,16 +1432,16 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setEftposLifting(Number(num))}
+            onChangeText={num => setEftposLifting(num)}
             //value={eftposlifting}
             ref={input => {
               eftposliftingfee = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(eftposlifting)) {
+              if (isNaN(Number(eftposlifting))) {
                 Alert.alert('Please input a correct number');
               } else {
-                setEftposLifting(parseFloat(eftposlifting.toFixed(2)));
+                setEftposLifting(eftposlifting);
                 calculateTotalLifting();
               }
             }}>
@@ -1550,15 +1459,15 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeCc(Number(num))}
+            onChangeText={num => onChangeCc(num)}
             ref={input => {
               docket = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(cc)) {
+              if (isNaN(Number(cc))) {
                 Alert.alert('Please input a correct number');
               } else {
-                onChangeCc(parseFloat(cc.toFixed(2)));
+                onChangeCc(cc);
                 charge.focus();
               }
             }}>
@@ -1574,17 +1483,17 @@ const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeChargeAuthority(Number(num))}
+            onChangeText={num => onChangeChargeAuthority(num)}
             style={styles.textInput}
             ref={input => {
               charge = input;
             }}
             onSubmitEditing={() => {
-              if (isNaN(chargeAuthority)) {
+              if (isNaN(Number(chargeAuthority))) {
                 Alert.alert('Please input a correct number');
                 //option();
               } else {
-                onChangeChargeAuthority(parseFloat(chargeAuthority.toFixed(2)));
+                onChangeChargeAuthority(chargeAuthority);
                 Alert.alert(
                   'Press Submit Button to submit.',
                   '',

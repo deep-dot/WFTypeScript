@@ -757,6 +757,7 @@ export default function UpdateUser({props, navigation}) {
       );
     });
   }, []);
+  
   let updateallstates = (a, b, c, d, e, f) => {
     setLiftingtotal(Number(a).toFixed(2));
     setliftingcompany(Number(b).toFixed(2));
