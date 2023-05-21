@@ -1,28 +1,39 @@
 /* eslint-disable react-native/no-inline-styles */
 import * as React from 'react';
 import ThemeProvider from './ThemeProvider';
-import {createDrawerNavigator} from '@react-navigation/drawer';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
 import {DrawerContent} from './Utilities/DrawerContent';
 import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
 import Database from './PayingModule/Database';
-const Drawer = createDrawerNavigator();
-import {DrawerContentComponentProps} from '@react-navigation/drawer';
 import {StateProvider} from './PayingModule/Screens/Enter/StateProvider';
 import {useNavigation} from '@react-navigation/native';
-import {DrawerNavigationProp} from '@react-navigation/drawer';
+import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
+
+import {
+  DrawerNavigationProp,
+  DrawerContentComponentProps,
+  createDrawerNavigator,
+  DrawerScreenProps,
+} from '@react-navigation/drawer';
+
 type DrawerParamList = {
+  'Home Screen': undefined;
   'Enter Data': undefined;
-  // ... other routes
+  'View Records': undefined;
+  'Update Record': undefined;
+  'Delete Record': undefined;
+  'Display Report': undefined;
+  // Other routes...
 };
+const RootDrawer = createDrawerNavigator<DrawerParamList>();
 
 const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
   return <DrawerContent {...props} />;
 };
 
-function EnterDataWrapper() {
-  const navigation =
-    useNavigation<DrawerNavigationProp<DrawerParamList, 'Enter Data'>>();
+type EnterDataWrapperProps = DrawerScreenProps<DrawerParamList, 'Enter Data'>;
+
+function EnterDataWrapper({navigation}: EnterDataWrapperProps) {
   return (
     <StateProvider>
       <EnterData navigation={navigation} />
@@ -34,15 +45,16 @@ export default function App() {
   return (
     <ThemeProvider>
       <Database />
-      <Drawer.Navigator
+      <RootDrawer.Navigator
         initialRouteName="Enter Data"
         screenOptions={{
           headerShown: true,
         }}
         drawerContent={CustomDrawerContent}>
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Enter Data" component={EnterDataWrapper} />
-      </Drawer.Navigator>
+        <RootDrawer.Screen name="Home Screen" component={HomeScreen} />
+        <RootDrawer.Screen name="Enter Data" component={EnterDataWrapper} />
+        <RootDrawer.Screen name="View Records" component={ViewRecords} />
+      </RootDrawer.Navigator>
     </ThemeProvider>
   );
 }

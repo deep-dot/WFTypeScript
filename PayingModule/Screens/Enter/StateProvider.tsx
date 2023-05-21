@@ -107,7 +107,7 @@ interface Props {
 }
 export const StateProvider = ({children}: Props) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  console.log('refresh in stateprovider==', state);
+ // console.log('refresh in stateprovider==', state);
   return (
     <StateContext.Provider value={{state, dispatch}}>
       {children}

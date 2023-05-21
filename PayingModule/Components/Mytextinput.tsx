@@ -19,6 +19,7 @@ interface MyTextInputProps extends TextInputProps {
   onSubmitEditing?: () => void;
   style?: StyleProp<ViewStyle>;
   value?: string;
+  color?: string;
 }
 
 const MyTextInput: FC<MyTextInputProps> = props => {
@@ -39,7 +40,7 @@ const MyTextInput: FC<MyTextInputProps> = props => {
         numberOfLines={props.numberOfLines}
         multiline={props.multiline}
         onSubmitEditing={props.onSubmitEditing}
-        style={props.style}
+        style={{...props.style, color: props.color}}
         blurOnSubmit={false}
         value={props.value}
       />

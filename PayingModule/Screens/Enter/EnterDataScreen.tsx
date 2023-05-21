@@ -31,25 +31,21 @@ import {
   selectFromUpdateItems,
   selectCountFromDataTable,
 } from './dbUtility';
-//import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {StateContext} from './StateProvider';
 
-import {DrawerNavigationProp} from '@react-navigation/drawer';
+import type {DrawerScreenProps} from '@react-navigation/drawer';
 type DrawerParamList = {
   'Enter Data': undefined;
-  // Other routes...
 };
-type EnterDataScreenProps = {
-  navigation: DrawerNavigationProp<DrawerParamList, 'Enter Data'>;
-};
+type Props = DrawerScreenProps<DrawerParamList, 'Enter Data'>;
 
-const EnterData: React.FC<EnterDataScreenProps> = ({navigation}) => {
+const EnterData = ({navigation}: Props) => {
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {dispatch, state} = stateContext;
-  console.log('state in EnterDataScreen==', state);
+  const {dispatch} = stateContext;
+  //console.log('state in EnterDataScreen==', state);
 
   const [liftingtotal, setLiftingtotal] = useState<string>('');
   const [liftingdriver, setliftingdriver] = useState<string>('');

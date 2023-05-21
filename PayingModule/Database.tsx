@@ -4,7 +4,7 @@ import {Transaction, ResultSet} from './databaseTypes';
 import db from './databaseService';
 
 const Database = () => {
-  console.log('db in homescreen==', db);
+ // console.log('db in database.tsx ==', db);
 
   //Home Screen
   useEffect(() => {

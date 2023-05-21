@@ -15,14 +15,15 @@ import styles from './HomeScreen.style';
 import {Transaction, ResultSet} from '../../databaseTypes';
 import db from '../../databaseService';
 import NavigationButtons from './NavigationButtons';
-import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import ModalForm from './ModalForm';
 
-type HomeScreenProps = {
-  navigation: NavigationProp<ParamListBase>;
+import type {DrawerScreenProps} from '@react-navigation/drawer';
+type DrawerParamList = {
+  'Home Screen': undefined;
 };
+type Props = DrawerScreenProps<DrawerParamList, 'Home Screen', 'MyStack'>;
 
-const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
+const HomeScreen = (navigation: Props) => {
   const [modalvisible, setModalvisible] = useState(true);
   const [date, setDate] = useState<string>('');
   const [name, setName] = useState<string>('');
@@ -40,7 +41,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             if (res.rowsAffected > 0) {
               //setShowAlert(true);
               setTimeout(() => {
-                navigation.navigate('Home');
+                navigation.navigate('Enter Data');
                 setShowAlert(false);
               }, 1000);
             }
@@ -60,7 +61,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
           [],
           (_tx: Transaction, res: ResultSet) => {
             var len = res.rows.length;
-            console.log('len', len);
+            // console.log('len', len);
             if (len > 0) {
               let result = res.rows.item(0);
               updateallstates({a: result.Name, b: result.Week_Ending_Date});
@@ -131,7 +132,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         setDay={setDay}
       />
 
-      <NavigationButtons changeweekendingdate={changeweekendingdate} />
+      <NavigationButtons
+        navigation={navigation}
+        changeweekendingdate={changeweekendingdate}
+      />
 
       <Text style={styles.footertext}>Total Entries:{numberofEntries}</Text>
       <Text style={styles.footertext}>WageFigurer</Text>

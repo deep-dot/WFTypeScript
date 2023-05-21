@@ -45,15 +45,21 @@ export function DrawerContent(props) {
 
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
+              label="Home"
+              onPress={() => {
+                props.navigation.navigate('Home');
+              }}
+            />
+            <DrawerItem
               label="Enter Shift Data"
               onPress={() => {
                 props.navigation.navigate('Enter Data');
               }}
             />
             <DrawerItem
-              label="Login before Entering Data"
+              label="View"
               onPress={() => {
-                props.navigation.navigate('Home');
+                props.navigation.navigate('View Records');
               }}
             />
           </Drawer.Section>
