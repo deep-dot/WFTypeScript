@@ -56,7 +56,6 @@ const EnterData = ({navigation}: Props) => {
   const [companycommrate, setCompanycommrate] = useState<string>('');
   const [liftingmodalvisible, setLiftingmodalvisible] =
     useState<boolean>(false);
-
   //const [driverName, setDriverName] = React.useState<string>('');
   const [shift, setshift] = useState<string>('');
   const [hours, onChangeHours] = useState<string>('');

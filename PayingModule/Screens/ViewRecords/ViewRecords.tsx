@@ -10,6 +10,7 @@ import {
   FlatList,
   View,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import Mytextinput from '../../Components/Mytextinput';
 import Calendar from '../../Components/Calendar';
@@ -18,64 +19,65 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import db from '../../databaseService';
 import {Transaction, ResultSet} from '../../databaseTypes';
 interface ListItem {
-  Acc_Fuel?: number;
-  CPK?: number;
-  Car_Wash?: string;
-  Charge_Authority?: number;
-  Com_Driver?: number;
-  Com_GTN?: number;
-  Company_Comm_Rate?: number;
-  Current_Date?: string | null;
-  Date?: string;
-  Day?: string;
-  Deductions?: number;
-  Dockets?: string;
-  Driver_Comm_Rate?: number;
-  Eftpos_LFee?: number;
-  Eftpos_Total?: number;
-  Gov_Sub_Manual?: string;
-  Gov_Sub_Manual31?: string;
-  Hours_Worked?: number;
-  Ins?: number;
-  Jobs?: number;
-  Km_Finish?: number;
-  Km_Start?: number;
-  Kms?: number;
-  Manual_MPTP_Total?: string;
-  Meter_Finish?: number;
-  Meter_Start?: number;
-  Misc?: string;
-  Name?: string | null;
-  Net_Payin?: number;
-  No_of_Manual_Lifts?: number;
-  Paid_Kms?: number;
-  Paidkm_Finish?: number;
-  Paidkm_Start?: number;
-  Shift?: string;
-  Shift_Total?: number;
-  Taxi?: string;
-  Total_Levy?: number;
-  Total_Lifting_Fee_Value?: number;
-  Unpaid_kms?: string;
-  Week_Ending_Date?: string | null;
-  company_portion_lifting_fee?: number;
-  driver_portion_lifting_fee?: string;
-  manual_lifting_fee_value?: string;
-  no_wheelchair_lifts?: number;
-  user_id?: number;
-  [key: string]: number | string | null | undefined;
+  item: {
+    Acc_Fuel?: number;
+    CPK?: number;
+    Car_Wash?: string;
+    Charge_Authority?: number;
+    Com_Driver?: number;
+    Com_GTN?: number;
+    Company_Comm_Rate?: number;
+    Current_Date?: string | null;
+    Date?: string;
+    Day?: string;
+    Deductions?: number;
+    Dockets?: string;
+    Driver_Comm_Rate?: number;
+    Eftpos_LFee?: number;
+    Eftpos_Total?: number;
+    Gov_Sub_Manual?: string;
+    Gov_Sub_Manual31?: string;
+    Hours_Worked?: number;
+    Ins?: number;
+    Jobs?: number;
+    Km_Finish?: number;
+    Km_Start?: number;
+    Kms?: number;
+    Manual_MPTP_Total?: string;
+    Meter_Finish?: number;
+    Meter_Start?: number;
+    Misc?: string;
+    Name?: string | null;
+    Net_Payin?: number;
+    No_of_Manual_Lifts?: number;
+    Paid_Kms?: number;
+    Paidkm_Finish?: number;
+    Paidkm_Start?: number;
+    Shift?: string;
+    Shift_Total?: number;
+    Taxi?: string;
+    Total_Levy?: number;
+    Total_Lifting_Fee_Value?: number;
+    Unpaid_kms?: string;
+    Week_Ending_Date?: string | null;
+    company_portion_lifting_fee?: number;
+    driver_portion_lifting_fee?: string | typeof NaN;
+    manual_lifting_fee_value?: string;
+    no_wheelchair_lifts?: number;
+    user_id?: number;
+    [key: string]: number | string | null | undefined;
+  };
+  index: number;
+}
+import {NavigationProp, ParamListBase} from '@react-navigation/native';
+import MyButton from '../../Components/Mybutton';
+// import ListItem from 'react-native-paper/lib/typescript/src/components/List/ListItem';
+
+interface Props {
+  navigation: NavigationProp<ParamListBase>;
 }
 
-import {DrawerNavigationProp} from '@react-navigation/drawer';
-type DrawerParamList = {
-  'View Records': undefined;
-  // Other routes...
-};
-type EnterDataScreenProps = {
-  navigation: DrawerNavigationProp<DrawerParamList, 'View Records'>;
-};
-
-const ViewRecords: React.FC<EnterDataScreenProps> = ({navigation}) => {
+const ViewRecords = ({navigation}: Props) => {
   let [flatListItems, setFlatListItems] = useState<ListItem[]>([]);
   let [totalrecords, setTotalrecords] = useState<string>('');
 
@@ -120,6 +122,7 @@ const ViewRecords: React.FC<EnterDataScreenProps> = ({navigation}) => {
                 for (let i = 0; i < len; i++) {
                   temp.push(results.rows.item(i));
                 }
+                // console.log('temp in view records==',temp);
                 setFlatListItems(temp);
               } else {
                 setFlatListItems([]);
@@ -134,31 +137,207 @@ const ViewRecords: React.FC<EnterDataScreenProps> = ({navigation}) => {
     }
   };
 
+  const Delete = (idToDelete: number) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'DELETE FROM  datatable where user_id = ?',
+          [idToDelete],
+          (_tx: Transaction, results: ResultSet) => {
+            var len = results.rows.length;
+            setTotalrecords(len.toString());
+            if (len > 0) {
+              var temp = [];
+              for (let i = 0; i < len; i++) {
+                temp.push(results.rows.item(i));
+              }
+              const newList = temp.filter(item => item.user_id !== idToDelete);
+              console.log('new list in view records===', newList);
+              setFlatListItems(newList);
+            }
+            Alert.alert('Record deleted successfully!');
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
+  };
+
   let listViewItemSeparator = () => {
     return (
-      <View style={{height: 10, width: '100%', backgroundColor: '#ffffff'}} />
+      <View style={{height: 10, width: '100%', backgroundColor: '#000'}} />
     );
   };
 
   let listItemView = (item: ListItem) => {
-    // console.log('item in view screen===', item);
+    console.log(item?.item?.Day);
+    if (item == null || item === undefined) {
+      return null;
+    }
     return (
       <View
-        key={item.user_id}
-        style={{
-          alignContent: 'center',
-          backgroundColor: '#24252b',
-          marginTop: 10,
-          padding: 5,
-        }}>
-        {Object.keys(item).map(key => {
-          return (
-            <View key={key} style={styles.textinputview}>
-              <Text style={styles.titletext}>{key}</Text>
-              <Text style={styles.titletext}>{item[key]}</Text>
-            </View>
-          );
-        })}
+        key={item.index}
+        style={{backgroundColor: '#ffffff', marginTop: 10, padding: 5}}>
+        <MyButton
+          title="Delete"
+          customClick={() => Delete(item?.item?.user_id)}
+        />
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Record Id</Text>
+          <Text style={styles.titletext}>{item?.item?.user_id}</Text>
+        </View>
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Day</Text>
+          <Text style={styles.titletext}>{item?.item?.Day}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Date</Text>
+          <Text style={styles.titletext}>{item?.item?.Date}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Shift Worked</Text>
+          <Text style={styles.titletext}>{item?.item?.Shift}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Taxi Number</Text>
+          <Text style={styles.titletext}>{item?.item?.Taxi}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Number Of Jobs</Text>
+          <Text style={styles.titletext}>{item?.item?.Jobs}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Insurancefee</Text>
+          <Text style={styles.titletext}>{item?.item?.Ins}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Total fare</Text>
+          <Text style={styles.titletext}>{item?.item?.Shift_Total}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Commission Company</Text>
+          <Text style={styles.titletext}>{item?.item?.Com_GTN}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Total Km</Text>
+          <Text style={styles.titletext}>{item?.item?.Kms}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Total Paid Km</Text>
+          <Text style={styles.titletext}>{item?.item?.Paid_Kms}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Eftpos</Text>
+          <Text style={styles.titletext}>{item?.item?.Eftpos_Total}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Eftpos Lifting</Text>
+          <Text style={styles.titletext}>{item?.item?.Eftpos_LFee}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Dockets</Text>
+          <Text style={styles.titletext}>{item?.item?.Dockets}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Charge Authority</Text>
+          <Text style={styles.titletext}>{item?.item?.Charge_Authority}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Gov Sub Manual</Text>
+          <Text style={styles.titletext}>{item?.item?.Manual_MPTP_Total}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Gov Sub Manual-31</Text>
+          <Text style={styles.titletext}>{item?.item?.Gov_Sub_Manual31}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Number Of Manual Lifts</Text>
+          <Text style={styles.titletext}>{item?.item?.No_of_Manual_Lifts}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Total Lifting Fee Value</Text>
+          <Text style={styles.titletext}>
+            {item?.item?.Total_Lifting_Fee_Value}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Misc</Text>
+          <Text style={styles.titletext}>{item?.item?.Misc}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Fuel</Text>
+          <Text style={styles.titletext}>{item?.item?.Acc_Fuel}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>CPK</Text>
+          <Text style={styles.titletext}>{item?.item?.CPK}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>
+            Manual docket value {'\n'} (For M31 or M30){' '}
+          </Text>
+          <Text style={styles.titletext}>
+            {item?.item?.manual_lifting_fee_value}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Number of chairs</Text>
+          <Text style={styles.titletext}>
+            {item?.item?.no_wheelchair_lifts}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Company lifting fee</Text>
+          <Text style={styles.titletext}>
+            {item?.item?.company_portion_lifting_fee}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Driver lifting fee</Text>
+          <Text style={styles.titletext}>
+            {item?.item?.driver_portion_lifting_fee}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Deductions</Text>
+          <Text style={styles.titletext}>{item?.item?.Deductions}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={{fontSize: 18, color: '#000000', fontWeight: 'bold'}}>
+            Net Cash
+          </Text>
+          <Text style={{fontSize: 18, color: '#000000', fontWeight: 'bold'}}>
+            {item?.item?.Net_Payin}
+          </Text>
+        </View>
       </View>
     );
   };
@@ -204,8 +383,8 @@ const ViewRecords: React.FC<EnterDataScreenProps> = ({navigation}) => {
         <View style={styles.textinputview}>
           <Calendar
             value={start_date}
-            onChange={tareek => setstart_date(tareek)}
-            OnChange={tareek => setstart_day(tareek)}
+            onChange={(tareek: string) => setstart_date(tareek)}
+            OnChange={(tareek: string) => setstart_day(tareek)}
           />
           <Mytextinput
             placeholder="From"
@@ -219,8 +398,8 @@ const ViewRecords: React.FC<EnterDataScreenProps> = ({navigation}) => {
         <View style={styles.textinputview}>
           <Calendar
             value={finish_date}
-            onChange={tareek => setfinish_date(tareek)}
-            OnChange={tareek => setfinish_day(tareek)}
+            onChange={(tareek: string) => setfinish_date(tareek)}
+            OnChange={(tareek: string) => setfinish_day(tareek)}
           />
           <Mytextinput
             placeholder="To"
@@ -265,8 +444,8 @@ const ViewRecords: React.FC<EnterDataScreenProps> = ({navigation}) => {
       <FlatList
         data={flatListItems}
         ItemSeparatorComponent={listViewItemSeparator}
-        keyExtractor={(_item, index) => index.toString()}
-        renderItem={({item}) => listItemView(item)}
+        keyExtractor={(index: number) => index.toString()}
+        renderItem={(item: ListItem) => listItemView(item)}
       />
 
       <View
@@ -279,7 +458,7 @@ const ViewRecords: React.FC<EnterDataScreenProps> = ({navigation}) => {
           borderTopWidth: 2,
         }}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('Home Screen')}
           style={{
             justifyContent: 'center',
             alignItems: 'center',
@@ -313,7 +492,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   titletext: {
-    color: '#ffffff',
+    color: '#000',
     fontSize: 14,
   },
   textInput: {
