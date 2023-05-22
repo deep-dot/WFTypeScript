@@ -2,41 +2,50 @@
 import * as React from 'react';
 import ThemeProvider from './ThemeProvider';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
-import {DrawerContent} from './Utilities/DrawerContent';
+import DrawerContent from './Utilities/DrawerContent';
 import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
 import Database from './PayingModule/Database';
 import {StateProvider} from './PayingModule/Screens/Enter/StateProvider';
-import {useNavigation} from '@react-navigation/native';
 import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
 
 import {
-  DrawerNavigationProp,
   DrawerContentComponentProps,
   createDrawerNavigator,
-  DrawerScreenProps,
 } from '@react-navigation/drawer';
+import {createStackNavigator} from '@react-navigation/stack';
 
 type DrawerParamList = {
-  'Home Screen': undefined;
-  'Enter Data': undefined;
-  'View Records': undefined;
-  'Update Record': undefined;
-  'Delete Record': undefined;
-  'Display Report': undefined;
+  HomeScreenStack: StackParamList;
+  EnterData: undefined;
+  ViewRecords: undefined;
   // Other routes...
 };
 const RootDrawer = createDrawerNavigator<DrawerParamList>();
 
-const CustomDrawerContent: React.FC<DrawerContentComponentProps> = props => {
+export type StackParamList = {
+  'Home Screen': undefined;
+  'Enter Data': undefined;
+  'View Records': undefined;
+};
+const RootStack = createStackNavigator<StackParamList>();
+
+const HomeScreenStack = () => {
+  return (
+    <RootStack.Navigator>
+      <RootStack.Screen name="Home Screen" component={HomeScreen} />
+      <RootStack.Screen name="Enter Data" component={EnterDataWrapper} />
+      <RootStack.Screen name="View Records" component={ViewRecords} />
+    </RootStack.Navigator>
+  );
+};
+const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   return <DrawerContent {...props} />;
 };
 
-type EnterDataWrapperProps = DrawerScreenProps<DrawerParamList, 'Enter Data'>;
-
-function EnterDataWrapper({navigation}: EnterDataWrapperProps) {
+function EnterDataWrapper() {
   return (
     <StateProvider>
-      <EnterData navigation={navigation} />
+      <EnterData />
     </StateProvider>
   );
 }
@@ -46,12 +55,15 @@ export default function App() {
     <ThemeProvider>
       <Database />
       <RootDrawer.Navigator
-        initialRouteName="Enter Data"
+        initialRouteName="Home Screen Stack"
         screenOptions={{
           headerShown: true,
         }}
         drawerContent={CustomDrawerContent}>
-        <RootDrawer.Screen name="Home Screen" component={HomeScreen} />
+        <RootDrawer.Screen
+          name="Home Screen Stack"
+          component={HomeScreenStack}
+        />
         <RootDrawer.Screen name="Enter Data" component={EnterDataWrapper} />
         <RootDrawer.Screen name="View Records" component={ViewRecords} />
       </RootDrawer.Navigator>

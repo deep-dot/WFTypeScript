@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useRef, useState} from 'react';
-import {View, StyleSheet, ActivityIndicator} from 'react-native';
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
 import {
   useTheme,
   Avatar,
@@ -14,13 +14,19 @@ import {
   Switch,
   Alert,
 } from 'react-native-paper';
-import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
+import {
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerContentComponentProps,
+} from '@react-navigation/drawer';
 import {AuthContext} from './UseContext';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+//import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export function DrawerContent(props) {
+const DrawerContent = (props: DrawerContentComponentProps) => {
   const paperTheme = useTheme();
-  const {toggleTheme} = React.useContext(AuthContext);
+  // const {toggleTheme} = React.useContext(AuthContext);
+  const context = React.useContext(AuthContext);
+  const toggleTheme = context?.toggleTheme;
 
   return (
     <View style={{flex: 1}}>
@@ -29,15 +35,14 @@ export function DrawerContent(props) {
           <View style={styles.userInfoSection}>
             <View style={{flexDirection: 'row', marginTop: 15}}>
               <View style={{marginLeft: 15, flexDirection: 'column'}}>
-                <Title style={styles.title}></Title>
+                <Title style={styles.title} />
                 <Caption style={styles.caption}>@d_dee</Caption>
               </View>
             </View>
 
             <View style={styles.row}>
               <View style={styles.section}>
-                <Paragraph
-                  style={[styles.paragraph, styles.caption]}></Paragraph>
+                <Paragraph style={[styles.paragraph, styles.caption]} />
                 <Caption style={styles.caption}>Jobs done</Caption>
               </View>
             </View>
@@ -47,7 +52,7 @@ export function DrawerContent(props) {
             <DrawerItem
               label="Home"
               onPress={() => {
-                props.navigation.navigate('Home');
+                props.navigation.navigate('Home Screen');
               }}
             />
             <DrawerItem
@@ -80,7 +85,8 @@ export function DrawerContent(props) {
       </DrawerContentScrollView>
     </View>
   );
-}
+};
+export default DrawerContent;
 
 const styles = StyleSheet.create({
   drawerContent: {

@@ -33,13 +33,14 @@ import {
 } from './dbUtility';
 import {StateContext} from './StateProvider';
 
-import type {DrawerScreenProps} from '@react-navigation/drawer';
-type DrawerParamList = {
-  'Enter Data': undefined;
-};
-type Props = DrawerScreenProps<DrawerParamList, 'Enter Data'>;
+import {NavigationProp, ParamListBase} from '@react-navigation/native';
+
+interface Props {
+  navigation: NavigationProp<ParamListBase>;
+}
 
 const EnterData = ({navigation}: Props) => {
+  console.log('props in Enter Data screen===', navigation);
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
@@ -72,7 +73,7 @@ const EnterData = ({navigation}: Props) => {
   const [paidkm1, setpaidkm1] = useState<string>('');
   const [paidkm2, setpaidkm2] = useState<string>('');
   const [unpaidkm, setUnpaidkm] = useState<string>('');
-  const [cpk, setCpk] = useState<string>(0);
+  const [cpk, setCpk] = useState<string>('');
   const [resultpaidkm, setResultpaidkm] = useState<string>('');
   const [eftpos, onChangeEftpos] = useState<string>('');
   const [eftposlifting, setEftposLifting] = useState<string>('');
@@ -821,7 +822,7 @@ const EnterData = ({navigation}: Props) => {
           <Picker
             selectedValue={shift}
             style={{marginTop: -30, marginBottom: -30, width: 100}}
-            onValueChange={itemValue => setshift(itemValue)}>
+            onValueChange={(itemValue: string) => setshift(itemValue)}>
             <Picker.Item label="Select" value="  " />
             <Picker.Item label="Day" value="Day" />
             <Picker.Item label="Night" value="Night" />
@@ -849,7 +850,7 @@ const EnterData = ({navigation}: Props) => {
           <Picker
             selectedValue={Taxi}
             style={{marginBottom: -30, marginTop: -30, width: 100}}
-            onValueChange={itemValue => setTaxi(itemValue)}>
+            onValueChange={(itemValue: string) => setTaxi(itemValue)}>
             <Picker.Item label="Select" value=" " />
             {cabData.map((x: {Cab: string}, i: number) => (
               <Picker.Item label={x.Cab} key={i} value={x.Cab} />
@@ -885,7 +886,7 @@ const EnterData = ({navigation}: Props) => {
                 textAlign: 'center',
                 color: '#000000',
               }}
-              onChangeText={num => setRego(num)}>
+              onChangeText={(num: string) => setRego(num)}>
               <Text style={styles.titletext}>{rego}</Text>
             </TextInput>
             <View style={{flexDirection: 'row', marginTop: 10}}>
@@ -902,8 +903,8 @@ const EnterData = ({navigation}: Props) => {
         <View style={styles.textinputview}>
           <Calendar
             value={date}
-            onChange={tareek => setDate(tareek)}
-            OnChange={din => setDay(din)}
+            onChange={(tareek: string) => setDate(tareek)}
+            OnChange={(din: string) => setDay(din)}
           />
           <TextInput
             placeholder="Day"
@@ -937,9 +938,9 @@ const EnterData = ({navigation}: Props) => {
             style={styles.textInput}
             returnKeyType="next"
             keyboardType="numeric"
-            onChangeText={num => onChangeInsuranceFee(num)}
+            onChangeText={(num: string) => onChangeInsuranceFee(num)}
             value={insurancefee}
-            ref={input => {
+            ref={(input: any) => {
               insurance = input;
             }}
             onSubmitEditing={() => {
@@ -962,9 +963,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             // keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeAccountFuel(num)}
+            onChangeText={(num: string) => onChangeAccountFuel(num)}
             value={accountFuel}
-            ref={input => {
+            ref={(input: any) => {
               fuel = input;
             }}
             onSubmitEditing={() => {
@@ -988,9 +989,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeHours(num)}
+            onChangeText={(num: string) => onChangeHours(num)}
             value={hours}
-            ref={input => {
+            ref={(input: any) => {
               hoursworked = input;
             }}
             onSubmitEditing={() => {
@@ -1015,9 +1016,9 @@ const EnterData = ({navigation}: Props) => {
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
             style={styles.textInput}
-            onChangeText={num => setNumberofJobs(num)}
+            onChangeText={(num: string) => setNumberofJobs(num)}
             value={numberofJobs}
-            ref={input => {
+            ref={(input: any) => {
               job = input;
             }}
             onSubmitEditing={() => {
@@ -1052,10 +1053,10 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeMisc(num)}
+            onChangeText={(num: string) => onChangeMisc(num)}
             value={misc}
             //returnKeyType="next"
-            ref={input => {
+            ref={(input: any) => {
               mis = input;
             }}
             onSubmitEditing={() => {
@@ -1080,10 +1081,10 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeCarWash(num)}
+            onChangeText={(num: string) => onChangeCarWash(num)}
             value={carwash}
             //returnKeyType="next"
-            ref={input => {
+            ref={(input: any) => {
               wash = input;
             }}
             onSubmitEditing={() => {
@@ -1107,9 +1108,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setmeter1(num)}
+            onChangeText={(num: string) => setmeter1(num)}
             value={meter1}
-            ref={input => {
+            ref={(input: any) => {
               meterstart = input;
             }}
             onSubmitEditing={() => {
@@ -1133,9 +1134,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setmeter2(num)}
+            onChangeText={(num: string) => setmeter2(num)}
             value={meter2}
-            ref={input => {
+            ref={(input: any) => {
               meterfinish = input;
             }}
             onSubmitEditing={() => {
@@ -1171,9 +1172,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setkm1(num)}
+            onChangeText={(num: string) => setkm1(num)}
             value={km1}
-            ref={input => {
+            ref={(input: any) => {
               kmstart = input;
             }}
             onSubmitEditing={() => {
@@ -1197,9 +1198,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setkm2(num)}
+            onChangeText={(num: string) => setkm2(num)}
             value={km2}
-            ref={input => {
+            ref={(input: any) => {
               kmfinish = input;
             }}
             onSubmitEditing={() => {
@@ -1247,9 +1248,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setpaidkm1(num)}
+            onChangeText={(num: string) => setpaidkm1(num)}
             value={paidkm1}
-            ref={input => {
+            ref={(input: any) => {
               paidkmstart = input;
             }}
             onSubmitEditing={() => {
@@ -1273,9 +1274,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setpaidkm2(num)}
+            onChangeText={(num: string) => setpaidkm2(num)}
             value={paidkm2}
-            ref={input => {
+            ref={(input: any) => {
               paidkmfinish = input;
             }}
             onSubmitEditing={() => {
@@ -1311,9 +1312,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={text => setManualMptp(text)}
+            onChangeText={(text: string) => setManualMptp(text)}
             value={manualMptp}
-            ref={input => {
+            ref={(input: any) => {
               gsm = input;
             }}
             onSubmitEditing={() => {
@@ -1337,9 +1338,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={text => setGovSubManual31(text)}
+            onChangeText={(text: string) => setGovSubManual31(text)}
             value={govSubManual31}
-            ref={input => {
+            ref={(input: any) => {
               gsm31 = input;
             }}
             onSubmitEditing={() => {
@@ -1363,9 +1364,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={text => setNumberofManualLifting(text)}
+            onChangeText={(text: string) => setNumberofManualLifting(text)}
             value={numberofmanuallifting}
-            ref={input => {
+            ref={(input: any) => {
               noofmanualmptplifts = input;
             }}
             onSubmitEditing={() => {
@@ -1401,9 +1402,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeEftpos(num)}
+            onChangeText={(num: string) => onChangeEftpos(num)}
             value={eftpos}
-            ref={input => {
+            ref={(input: any) => {
               eftps = input;
             }}
             onSubmitEditing={() => {
@@ -1428,9 +1429,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => setEftposLifting(num)}
+            onChangeText={(num: string) => setEftposLifting(num)}
             //value={eftposlifting}
-            ref={input => {
+            ref={(input: any) => {
               eftposliftingfee = input;
             }}
             onSubmitEditing={() => {
@@ -1455,8 +1456,8 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeCc(num)}
-            ref={input => {
+            onChangeText={(num: string) => onChangeCc(num)}
+            ref={(input: any) => {
               docket = input;
             }}
             onSubmitEditing={() => {
@@ -1479,9 +1480,9 @@ const EnterData = ({navigation}: Props) => {
             returnKeyType="next"
             keyboardType="numeric"
             //keyboardType="numbers-and-punctuation"
-            onChangeText={num => onChangeChargeAuthority(num)}
+            onChangeText={(num: string) => onChangeChargeAuthority(num)}
             style={styles.textInput}
-            ref={input => {
+            ref={(input: any) => {
               charge = input;
             }}
             onSubmitEditing={() => {

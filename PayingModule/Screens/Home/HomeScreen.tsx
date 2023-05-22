@@ -17,13 +17,13 @@ import db from '../../databaseService';
 import NavigationButtons from './NavigationButtons';
 import ModalForm from './ModalForm';
 
-import type {DrawerScreenProps} from '@react-navigation/drawer';
-type DrawerParamList = {
-  'Home Screen': undefined;
-};
-type Props = DrawerScreenProps<DrawerParamList, 'Home Screen', 'MyStack'>;
+import {NavigationProp, ParamListBase} from '@react-navigation/native';
 
-const HomeScreen = (navigation: Props) => {
+interface Props {
+  navigation: NavigationProp<ParamListBase>;
+}
+
+const HomeScreen = ({navigation}: Props) => {
   const [modalvisible, setModalvisible] = useState(true);
   const [date, setDate] = useState<string>('');
   const [name, setName] = useState<string>('');
@@ -132,10 +132,7 @@ const HomeScreen = (navigation: Props) => {
         setDay={setDay}
       />
 
-      <NavigationButtons
-        navigation={navigation}
-        changeweekendingdate={changeweekendingdate}
-      />
+      <NavigationButtons changeweekendingdate={changeweekendingdate} />
 
       <Text style={styles.footertext}>Total Entries:{numberofEntries}</Text>
       <Text style={styles.footertext}>WageFigurer</Text>

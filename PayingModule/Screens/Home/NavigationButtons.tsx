@@ -3,16 +3,16 @@ import React from 'react';
 import {Image, Linking} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import MyButton from '../../Components/Mybutton';
+import {useNavigation} from '@react-navigation/core';
 
-type NavigationButtonsProps = {
-  navigation: DrawerNavigationProp<DrawerParamList, 'Enter Data'>;
-  changeweekendingdate: () => void;
-};
+import {StackNavigationProp} from '@react-navigation/stack';
+import {StackParamList} from '../../../App';
 
-const NavigationButtons: React.FC<NavigationButtonsProps> = ({
-  navigation,
-  changeweekendingdate,
-}) => {
+interface Props {
+  changeweekendingdate: (date: Date) => void;
+}
+const NavigationButtons = ({changeweekendingdate}: Props) => {
+  const navigation = useNavigation<StackNavigationProp<StackParamList>>();
   return (
     <ScrollView style={{marginEnd: 20, marginStart: 20, marginTop: 10}}>
       <Image
@@ -25,7 +25,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
       />
       <MyButton
         title="Update"
-        customClick={() => navigation.navigate('Update Record')}
+        customClick={() => navigation.navigate('UpdateRecord')}
       />
       <MyButton
         title="View"

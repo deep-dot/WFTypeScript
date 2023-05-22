@@ -1,4 +1,9 @@
-
 import React from 'react';
 
-export const AuthContext = React.createContext();
+type AuthContextType = {
+  toggleTheme: () => void;
+};
+
+export const AuthContext = React.createContext<AuthContextType | undefined>(
+  undefined,
+);
