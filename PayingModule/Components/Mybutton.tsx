@@ -1,12 +1,12 @@
 import React, {FC} from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
 
-interface MyButtonProps {
+interface Props {
   customClick: () => void;
   title: string;
 }
 
-const MyButton: FC<MyButtonProps> = ({customClick, title}) => {
+const MyButton = ({customClick, title}: Props) => {
   return (
     <TouchableOpacity style={styles.button} onPress={customClick}>
       <Text style={styles.text}>{title}</Text>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -13,8 +13,8 @@ import {Picker} from '@react-native-community/picker';
 import {openDatabase} from 'react-native-sqlite-storage';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './Update.style';
-import  envs  from '../../config/env';
-const {DATABASE_NAME} = envs
+import envs from '../../config/env';
+const {DATABASE_NAME} = envs;
 var db = openDatabase(
   {name: DATABASE_NAME, createFromLocation: 1},
   () => {},
@@ -27,8 +27,14 @@ import Calculator from '../../components/Calculator';
 import Calendar from '../../components/Calendar';
 import Model from '../../components/Model';
 import Loader from '../../components/Loader';
+import {StateContext} from './StateProvider';
 
 export default function UpdateUser({props, navigation}) {
+  const stateContext = useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {dispatch} = stateContext;
   const [liftingtotal, setLiftingtotal] = useState('');
   const [liftingmodalvisible, setLiftingmodalvisible] = useState(false);
   const [liftingdriver, setliftingdriver] = useState('');
@@ -151,7 +157,6 @@ export default function UpdateUser({props, navigation}) {
   };
 
   let submitalltogather = () => {
-
     let A = Number(numberofmanuallifting);
     let B;
     if (liftingtotal > 0) {
@@ -179,11 +184,9 @@ export default function UpdateUser({props, navigation}) {
     let kullunpaidkm = kullkm - kullpaidkm;
     let kullmanuallifting = numberofmanuallifting * liftingtotal;
     let kulltotallifting = kullmanuallifting + a1;
-   
 
-    
     let kullgtnlfee = kullnumberofchairs * liftingcompany;
-    
+
     let kullcommdriver = kullmeter * (drivercommrate / 100);
     let kullcommgtn = kullmeter * (companycommrate / 100);
     let Cdeductions = Number(a - a1 + b + c + d + e + f).toFixed(2);
@@ -191,7 +194,7 @@ export default function UpdateUser({props, navigation}) {
 
     let Cnetpayin = Number(kullcommgtn - Cdeductions).toFixed(2);
     let Dnetpayin = Number(kullcommgtn - Ddeductions).toFixed(2);
-    let driverincome = Number(kulldriverlfee + kullcommdriver).toFixed(2);    
+    let driverincome = Number(kulldriverlfee + kullcommdriver).toFixed(2);
     if (kullkm > 0) {
       let kullcpk = kullmeter / kullkm;
       setCpk(Number(kullcpk).toFixed(2));
@@ -541,86 +544,46 @@ export default function UpdateUser({props, navigation}) {
     mis,
     wash;
 
-  let updateAllStates = (
-    tareek,
-    din,
-    Shift,
-    Taxee,
-    Jobs,
-    Ins,
-    Hours,
-    Total_Levy,
-    Car_Wash,
-    Meter_Start,
-    Meter_Finish,
-    Shift_Total,
-    Com_GTN,
-    Com_Driver,
-    Km_Start,
-    Km_Finish,
-    Kms,
-    Paidkm_Start,
-    Paidkm_Finish,
-    Paid_Kms,
-    Unpaid_kms,
-    Eftpos_Total,
-    Eftpos_LFee,
-    Dockets,
-    Charge_Authority,
-    Manual_MPTP_Total,
-    No_of_Manual_Lifts,
-    Total_Lifting_Fee_Value,
-    Misc,
-    Acc_Fuel,
-    manual_lifting_fee_value,
-    no_wheelchair_lifts,
-    company_portion_lifting_fee,
-    driver_portion_lifting_fee,
-    Deductions,
-    Gov_Sub_Manual31,
-    CPK,
-    Manual_MPTP_Totol,
-    Net_Payin,
-  ) => {
-    setDate(tareek);
-    setDay(din);
-    setshift(Shift);
-    setTaxi(Taxee);
-    setNumberofJobs(Jobs);
-    onChangeInsuranceFee(Ins);
-    onChangeHours(Hours);
-    setTotalLevy(Total_Levy);
-    onChangeCarWash(Car_Wash);
-    setmeter1(Meter_Start);
-    setmeter2(Meter_Finish);
-    settotalmeter(Shift_Total);
-    setCommissiongtn(Com_GTN);
-    setCommissiondriver(Com_Driver);
-    setkm1(Km_Start);
-    setkm2(Km_Finish);
-    setResultkm(Kms);
-    setpaidkm1(Paidkm_Start);
-    setpaidkm2(Paidkm_Finish);
-    setResultpaidkm(Paid_Kms);
-    setUnpaidkm(Unpaid_kms);
-    onChangeEftpos(Eftpos_Total);
-    setEftposLifting(Eftpos_LFee);
-    onChangeCc(Dockets);
-    onChangeChargeAuthority(Charge_Authority);
-    setManualMptp(Manual_MPTP_Total);
-    setNumberofManualLifting(No_of_Manual_Lifts);
-    setTotalLifting(Total_Lifting_Fee_Value);
-    onChangeMisc(Misc);
-    onChangeAccountFuel(Acc_Fuel);
-    setManualLifting(manual_lifting_fee_value);
-    setNumberofChairs(no_wheelchair_lifts);
-    setGtnLFee(company_portion_lifting_fee);
-    setDriverLFee(driver_portion_lifting_fee);
-    setDeductions(Deductions);
-    setManualMptp(Gov_Sub_Manual31);
-    setCpk(CPK);
-    setGovSubManual(Manual_MPTP_Totol);
-    setNetpayin(Net_Payin);
+  let updateAllStates = res => {
+    setDate(res.Date);
+    setDay(res.Day);
+    setshift(res.Shift);
+    setTaxi(res.Taxi);
+    setNumberofJobs(res.Jobs);
+    onChangeInsuranceFee(res.Ins);
+    onChangeHours(res.Hours_Worked);
+    setTotalLevy(res.Total_Levy);
+    onChangeCarWash(res.Car_Wash);
+    setmeter1(res.Meter_Start);
+    setmeter2(res.Meter_Finish);
+    settotalmeter(res.Shift_Total);
+    setCommissiongtn(res.Com_GTN);
+    setCommissiondriver(res.Com_Driver);
+    setkm1(res.Km_Start);
+    setkm2(res.Km_Finish);
+    setResultkm(res.Kms);
+    setpaidkm1(res.Paidkm_Start);
+    setpaidkm2(res.Paidkm_Finish);
+    setResultpaidkm(res.Paid_Kms);
+    setUnpaidkm(res.Unpaid_kms);
+    onChangeEftpos(res.Eftpos_Total);
+    setEftposLifting(res.Eftpos_LFee);
+    onChangeCc(res.Dockets);
+    onChangeChargeAuthority(res.Charge_Authority);
+    setManualMptp(res.Manual_MPTP_Total);
+    setNumberofManualLifting(res.No_of_Manual_Lifts);
+    setTotalLifting(res.Total_Lifting_Fee_Value);
+    onChangeMisc(res.Misc);
+    onChangeAccountFuel(res.Acc_Fuel);
+    setManualLifting(res.manual_lifting_fee_value);
+    setNumberofChairs(res.no_wheelchair_lifts);
+    setGtnLFee(res.company_portion_lifting_fee);
+    setDriverLFee(res.driver_portion_lifting_fee);
+    setDeductions(res.Deductions);
+    setManualMptp(res.Gov_Sub_Manual31);
+    setCpk(res.CPK);
+    setGovSubManual(res.Gov_Sub_Manual);
+    setNetpayin(res.Net_Payin);
   };
 
   //const [res, setRes] = useState({});
@@ -636,47 +599,7 @@ export default function UpdateUser({props, navigation}) {
           cabList();
           if (len > 0) {
             let res = results.rows.item(0);
-            updateAllStates(
-              res.Date,
-              res.Day,
-              res.Shift,
-              res.Taxi,
-              res.Jobs,
-              res.Ins,
-              res.Hours_Worked,
-              res.Total_Levy,
-              res.Car_Wash,
-              res.Meter_Start,
-              res.Meter_Finish,
-              res.Shift_Total,
-              res.Com_GTN,
-              res.Com_Driver,
-              res.Km_Start,
-              res.Km_Finish,
-              res.Kms,
-              res.Paidkm_Start,
-              res.Paidkm_Finish,
-              res.Paid_Kms,
-              res.Unpaid_kms,
-              res.Eftpos_Total,
-              res.Eftpos_LFee,
-              res.Dockets,
-              res.Charge_Authority,
-              res.Manual_MPTP_Total,
-              res.No_of_Manual_Lifts,
-              res.Total_Lifting_Fee_Value,
-              res.Misc,
-              res.Acc_Fuel,
-              res.manual_lifting_fee_value,
-              res.no_wheelchair_lifts,
-              res.company_portion_lifting_fee,
-              res.driver_portion_lifting_fee,
-              res.Deductions,
-              res.Gov_Sub_Manual31,
-              res.CPK,
-              res.Gov_Sub_Manual,
-              res.Net_Payin,
-            );
+            updateAllStates(res);
           } else {
             //alert('No Data found');
             Alert.alert('Sorry !', 'No data found.');
@@ -689,48 +612,7 @@ export default function UpdateUser({props, navigation}) {
   };
 
   let refresh = () => {
-    updateAllStates(
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    );
+    dispatch({type: 'REFRESH'});
   };
 
   useEffect(() => {
@@ -740,7 +622,7 @@ export default function UpdateUser({props, navigation}) {
         [],
         (_tx, results) => {
           var len = results.rows.length;
-          if (len > 0) {         
+          if (len > 0) {
             let res = results.rows.item(0);
             updateallstates(
               res.GovLFee,
@@ -751,20 +633,20 @@ export default function UpdateUser({props, navigation}) {
               res.Company_Comm_Rate,
             );
           } else {
-            updateallstates('','','','','','');
+            updateallstates('', '', '', '', '', '');
           }
         },
       );
     });
   }, []);
-  
+
   let updateallstates = (a, b, c, d, e, f) => {
-    setLiftingtotal(Number(a).toFixed(2));
-    setliftingcompany(Number(b).toFixed(2));
-    setliftingdriver(Number(c).toFixed(2));
-    setLevy(Number(d).toFixed(2));
-    setDrivercommrate(Number(e).toFixed(0));
-    setCompanycommrate(Number(f).toFixed(0));
+    setLiftingtotal(a);
+    setliftingcompany(b);
+    setliftingdriver(c);
+    setLevy(d);
+    setDrivercommrate(e);
+    setCompanycommrate(f);
   };
 
   //calculator...
@@ -1043,7 +925,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => onChangeInsuranceFee(num)}
             //value = {insurancefee}
             ref={() => {
@@ -1069,7 +951,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => onChangeAccountFuel(num)}
             //value={accountFuel}
             ref={input => {
@@ -1094,8 +976,8 @@ export default function UpdateUser({props, navigation}) {
             placeholderTextColor="#ffffff"
             style={styles.textInput}
             returnKeyType="next"
-           // keyboardType="numbers-and-punctuation"
-           keyboardType='numeric'
+            // keyboardType="numbers-and-punctuation"
+            keyboardType="numeric"
             onChangeText={num => onChangeHours(num)}
             //value={hours}
             ref={input => {
@@ -1121,7 +1003,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => setNumberofJobs(num)}
             //value={numberofJobs}
             ref={input => {
@@ -1158,7 +1040,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => onChangeMisc(num)}
             // value={misc}
             ref={input => {
@@ -1184,8 +1066,8 @@ export default function UpdateUser({props, navigation}) {
             placeholderTextColor="#ffffff"
             style={styles.textInput}
             returnKeyType="next"
-           // keyboardType="numbers-and-punctuation"
-           keyboardType='numeric'
+            // keyboardType="numbers-and-punctuation"
+            keyboardType="numeric"
             onChangeText={num => onChangeCarWash(num)}
             //value={carwash}
             ref={input => {
@@ -1221,8 +1103,8 @@ export default function UpdateUser({props, navigation}) {
             placeholderTextColor="#ffffff"
             style={styles.textInput}
             returnKeyType="next"
-           // keyboardType="numbers-and-punctuation"
-           keyboardType='numeric'
+            // keyboardType="numbers-and-punctuation"
+            keyboardType="numeric"
             onChangeText={num => setmeter1(num)}
             // value={meter1}
             ref={input => {
@@ -1247,8 +1129,8 @@ export default function UpdateUser({props, navigation}) {
             placeholderTextColor="#ffffff"
             style={styles.textInput}
             returnKeyType="next"
-           // keyboardType="numbers-and-punctuation"
-           keyboardType='numeric'
+            // keyboardType="numbers-and-punctuation"
+            keyboardType="numeric"
             onChangeText={num => setmeter2(num)}
             //value={meter2}
             ref={input => {
@@ -1285,7 +1167,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => setkm1(num)}
             //value={km1}
             ref={input => {
@@ -1311,7 +1193,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => setkm2(num)}
             //value={km2}
             ref={input => {
@@ -1349,7 +1231,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => setpaidkm1(num)}
             //value={paidkm1}
             ref={input => {
@@ -1375,7 +1257,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => setpaidkm2(num)}
             //value={paidkm2}
             ref={input => {
@@ -1423,7 +1305,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={text => setGovSubManual31(text)}
             // value={govSubManual}
             ref={input => {
@@ -1449,7 +1331,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={text => setManualMptp(text)}
             //value={manualMptp}
             ref={input => {
@@ -1474,8 +1356,8 @@ export default function UpdateUser({props, navigation}) {
             placeholderTextColor="#ffffff"
             style={styles.textInput}
             returnKeyType="next"
-           // keyboardType="numbers-and-punctuation"
-           keyboardType='numeric'
+            // keyboardType="numbers-and-punctuation"
+            keyboardType="numeric"
             onChangeText={text => setNumberofManualLifting(text)}
             ref={input => {
               noofmanualmptplifts = input;
@@ -1514,10 +1396,10 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => onChangeEftpos(num)}
             // value={eftpos}
-           // returnKeyType="next"
+            // returnKeyType="next"
             ref={input => {
               eftps = input;
             }}
@@ -1542,7 +1424,7 @@ export default function UpdateUser({props, navigation}) {
             style={styles.textInput}
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => setEftposLifting(num)}
             //value={eftposlifting}
             ref={input => {
@@ -1568,8 +1450,8 @@ export default function UpdateUser({props, navigation}) {
             placeholderTextColor="#ffffff"
             style={styles.textInput}
             returnKeyType="next"
-           // keyboardType="numbers-and-punctuation"
-           keyboardType='numeric'
+            // keyboardType="numbers-and-punctuation"
+            keyboardType="numeric"
             onChangeText={num => onChangeCc(num)}
             ref={input => {
               docket = input;
@@ -1593,7 +1475,7 @@ export default function UpdateUser({props, navigation}) {
             placeholderTextColor="#ffffff"
             returnKeyType="next"
             //keyboardType="numbers-and-punctuation"
-            keyboardType='numeric'
+            keyboardType="numeric"
             onChangeText={num => onChangeChargeAuthority(num)}
             style={styles.textInput}
             ref={input => {
@@ -1780,4 +1662,3 @@ export default function UpdateUser({props, navigation}) {
     </SafeAreaView>
   );
 }
-

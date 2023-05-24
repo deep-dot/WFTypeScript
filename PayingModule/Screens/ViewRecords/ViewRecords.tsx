@@ -137,24 +137,28 @@ const ViewRecords = ({navigation}: Props) => {
     }
   };
 
-  const Delete = (idToDelete: number) => {
+  const Delete = (idToDelete: number | undefined) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
           'DELETE FROM  datatable where user_id = ?',
           [idToDelete],
-          (_tx: Transaction, results: ResultSet) => {
-            var len = results.rows.length;
-            setTotalrecords(len.toString());
-            if (len > 0) {
-              var temp = [];
-              for (let i = 0; i < len; i++) {
-                temp.push(results.rows.item(i));
-              }
-              const newList = temp.filter(item => item.user_id !== idToDelete);
-              console.log('new list in view records===', newList);
-              setFlatListItems(newList);
-            }
+          (tx: Transaction) => {
+            tx.executeSql(
+              'SELECT * FROM datatable',
+              [],
+              (_tx: Transaction, results: ResultSet) => {
+                var len = results.rows.length;
+                setTotalrecords(len.toString());
+                if (len > 0) {
+                  var temp = [];
+                  for (let i = 0; i < len; i++) {
+                    temp.push(results.rows.item(i));
+                  }
+                  setFlatListItems(temp);
+                }
+              },
+            );
             Alert.alert('Record deleted successfully!');
           },
         );
@@ -162,6 +166,26 @@ const ViewRecords = ({navigation}: Props) => {
     } else {
       console.log('db is undefined');
     }
+  };
+
+  const DeleteRecord = (idToDelete: number | undefined) => {
+      Alert.alert(
+        'Please confirm!',
+        'Do you wish to delete the record?',
+        [
+          {
+            text: 'Yes',
+            onPress: () => {
+              Delete((idToDelete));
+            },
+          },
+          {
+            text: 'No',
+            style: 'cancel',
+          },
+        ],
+        {cancelable: true},
+      );
   };
 
   let listViewItemSeparator = () => {
@@ -177,12 +201,18 @@ const ViewRecords = ({navigation}: Props) => {
     }
     return (
       <View
-        key={item.index}
+        key={item?.item?.user_id}
         style={{backgroundColor: '#ffffff', marginTop: 10, padding: 5}}>
+          <View style={styles.textinputview}>
         <MyButton
           title="Delete"
-          customClick={() => Delete(item?.item?.user_id)}
+          customClick={() => DeleteRecord(item?.item?.user_id)}
         />
+        <MyButton
+          title="Update"
+          customClick={() => DeleteRecord(item?.item?.user_id)}
+        />
+        </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Record Id</Text>

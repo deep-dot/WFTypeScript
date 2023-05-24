@@ -69,12 +69,12 @@ export const selectFromUpdateItems = (db: any): Promise<any> => {
               resolve(res);
             } else {
               resolve({
-                GovLFee: 0,
-                CompanyLFee: 0,
-                DriverLFee: 0,
-                Levy: 0,
-                Driver_Comm_Rate: 0,
-                Company_Comm_Rate: 0,
+                GovLFee: '',
+                CompanyLFee: '',
+                DriverLFee: '',
+                Levy: '',
+                Driver_Comm_Rate: '',
+                Company_Comm_Rate: '',
               });
             }
           },
