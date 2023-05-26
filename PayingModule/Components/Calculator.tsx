@@ -15,16 +15,20 @@ import {
 import {ScrollView} from 'react-native-gesture-handler';
 
 interface Props {
-  loading?: boolean;
-  Transparency?: any;
+  // loading?: boolean;
+  // Transparency?: any;
   calculatorVisible: boolean;
-  CAcalcu: (value: any) => void;
-  Docketcalcu: (value: any) => void;
+  CAcalcu: (value: number) => void;
+  Docketcalcu: (value: number) => void;
   Cancelcalcu: () => void;
 }
 
-const Calculator: React.FC<Props> = props => {
-  const {calculatorVisible} = props;
+const Calculator = ({
+  calculatorVisible,
+  CAcalcu,
+  Docketcalcu,
+  Cancelcalcu,
+}: Props) => {
   const [resultText, setresultText] = useState('');
   const [calculationText, setcalculationText] = useState('');
   const operations = ['<', '+', '-', '*', '/'];
@@ -120,15 +124,16 @@ const Calculator: React.FC<Props> = props => {
   };
 
   const Authoritycalculator = () => {
-    props.CAcalcu(calculationText);
+   // console.log('charge auth num in calculater component===', calculationText);
+    CAcalcu(Number(calculationText));
   };
 
   const CCcalculator = () => {
-    props.Docketcalcu(calculationText);
+    Docketcalcu(Number(calculationText));
   };
 
   const Cancelcalculator = () => {
-    props.Cancelcalcu();
+    Cancelcalcu();
   };
 
   return (

@@ -4,7 +4,6 @@ import ThemeProvider from './ThemeProvider';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
 import DrawerContent from './Utilities/DrawerContent';
 import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
-import Database from './PayingModule/Database';
 import {StateProvider} from './PayingModule/Screens/Enter/StateProvider';
 import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
 
@@ -12,7 +11,28 @@ import {
   DrawerContentComponentProps,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
+import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+
+export type StackParamList = {
+  Home: undefined;
+  'Enter Data': undefined;
+  'View Records': undefined;
+};
+const RootStack = createStackNavigator<StackParamList>();
+const HomeScreenStack = () => {
+  return (
+    <RootStack.Navigator
+      initialRouteName="Enter Data"
+      screenOptions={{
+        headerShown: true,
+      }}>
+      <RootStack.Screen name="Home" component={HomeScreen} />
+      <RootStack.Screen name="Enter Data" component={EnterDataWrapper} />
+      <RootStack.Screen name="View Records" component={ViewRecords} />
+    </RootStack.Navigator>
+  );
+};
 
 type DrawerParamList = {
   HomeScreenStack: StackParamList;
@@ -21,27 +41,9 @@ type DrawerParamList = {
   // Other routes...
 };
 const RootDrawer = createDrawerNavigator<DrawerParamList>();
-
-export type StackParamList = {
-  'Home Screen': undefined;
-  'Enter Data': undefined;
-  'View Records': undefined;
-};
-const RootStack = createStackNavigator<StackParamList>();
-
-const HomeScreenStack = () => {
-  return (
-    <RootStack.Navigator>
-      <RootStack.Screen name="Home Screen" component={HomeScreen} />
-      <RootStack.Screen name="Enter Data" component={EnterDataWrapper} />
-      <RootStack.Screen name="View Records" component={ViewRecords} />
-    </RootStack.Navigator>
-  );
-};
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   return <DrawerContent {...props} />;
 };
-
 function EnterDataWrapper() {
   return (
     <StateProvider>
@@ -49,15 +51,14 @@ function EnterDataWrapper() {
     </StateProvider>
   );
 }
-
 export default function App() {
   return (
+    //<NavigationContainer>
     <ThemeProvider>
-      <Database />
       <RootDrawer.Navigator
         initialRouteName="Home Screen Stack"
         screenOptions={{
-          headerShown: true,
+          headerShown: false,
         }}
         drawerContent={CustomDrawerContent}>
         <RootDrawer.Screen
@@ -68,5 +69,6 @@ export default function App() {
         <RootDrawer.Screen name="View Records" component={ViewRecords} />
       </RootDrawer.Navigator>
     </ThemeProvider>
+    //</NavigationContainer>
   );
 }

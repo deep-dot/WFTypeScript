@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useContext, useRef} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -8,10 +8,10 @@ import {
   TextInput,
   ScrollView,
   SafeAreaView,
-  Modal,
 } from 'react-native';
+import {RegoModal} from './components/RegoModal';
 import Model from '../../Components/Model';
-import MyButton from '../../Components/Mybutton';
+// import MyButton from '../../Components/Mybutton';
 import {Picker} from '@react-native-picker/picker';
 import Calculator from '../../Components/Calculator';
 import Calendar from '../../Components/Calendar';
@@ -28,7 +28,6 @@ import {
 } from './dbUtility';
 import {StateContext} from './StateProvider';
 import MyTextInput from './MyTextInput';
-import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {
   initialValues,
   useInputRefs,
@@ -37,15 +36,19 @@ import {
   liftingModalInputs,
   payinDetailInputs,
 } from './EnterDataValues';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {StackParamList} from '../../../App';
+import Database from '../../Database';
+import {useNavigation} from '@react-navigation/core';
 
-interface Props {
-  navigation: NavigationProp<ParamListBase>;
-}
 type FormValues = {
   [key: string]: string | boolean | string[];
+  cabData: string[];
 };
-const EnterData = ({navigation}: Props) => {
-  console.log('props in Enter Data screen===', navigation);
+const EnterData = () => {
+  const navigation =
+    useNavigation<StackNavigationProp<StackParamList, 'Enter Data'>>();
+  // console.log('props in Enter Data screen===', navigation);
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
@@ -60,28 +63,23 @@ const EnterData = ({navigation}: Props) => {
   };
 
   const calculatekm = () => {
-    const resultkm = (Number(formValues.km2) - Number(formValues.km1)).toFixed(
-      2,
-    );
-    setFormValue('resultkm', resultkm);
+    const resultkm = Number(formValues.km2) - Number(formValues.km1);
+    setFormValue('resultkm', resultkm.toFixed(2));
     // paidkmstart.focus();
   };
 
   const calculatemeter = () => {
-    const totalmeter = (
+    const totalmeter =
       Number(formValues.meter2) -
       Number(formValues.totallevy) -
-      Number(formValues.meter1)
-    ).toFixed(2);
-    setFormValue('totalmeter', totalmeter);
+      Number(formValues.meter1);
+    setFormValue('totalmeter', totalmeter.toFixed(2));
     kmstart.current.focus();
   };
 
   const Totallevy = () => {
-    const totalLevy = (
-      Number(formValues.numberofJobs) * Number(formValues.levy)
-    ).toFixed(2);
-    setFormValue('totalLevy', totalLevy);
+    const totalLevy = Number(formValues.numberofJobs) * Number(formValues.levy);
+    setFormValue('totalLevy', totalLevy.toFixed(2));
     // mis.focus();
   };
 
@@ -91,43 +89,36 @@ const EnterData = ({navigation}: Props) => {
     ).toFixed(2);
     setFormValue('resultpaidkm', resultpaidkm);
 
-    const commissiondriver = (
-      Number(formValues.totalmeter) *
-      (Number(formValues.drivercommrate) / 100)
-    ).toFixed(2);
-    setFormValue('commissiondriver', commissiondriver);
+    const commissiondriver =
+      Number(formValues.totalmeter) * (Number(formValues.drivercommrate) / 100);
+    setFormValue('commissiondriver', commissiondriver.toFixed(2));
 
-    const commissiongtn = (
+    const commissiongtn =
       Number(formValues.totalmeter) *
-      (Number(formValues.companycommrate) / 100)
-    ).toFixed(2);
-    setFormValue('commissiongtn', commissiongtn);
+      (Number(formValues.companycommrate) / 100);
+    setFormValue('commissiongtn', commissiongtn.toFixed(2));
 
     let cpk;
     if (Number(formValues.resultkm) > 0) {
-      cpk = (
-        Number(formValues.totalmeter) / Number(formValues.resultkm)
-      ).toFixed(2);
+      cpk = Number(formValues.totalmeter) / Number(formValues.resultkm);
     } else {
-      cpk = Number(formValues.cpk).toFixed(2);
+      cpk = Number(formValues.cpk);
     }
-    setFormValue('cpk', cpk);
+    setFormValue('cpk', cpk.toFixed(2));
     // gsm.focus();
   };
 
   const calculateUnpaidkm = () => {
-    const unpaidkm = (
-      Number(formValues.resultkm) - Number(formValues.resultpaidkm)
-    ).toFixed(2);
-    setFormValue('unpaidkm', unpaidkm);
+    const unpaidkm =
+      Number(formValues.resultkm) - Number(formValues.resultpaidkm);
+    setFormValue('unpaidkm', unpaidkm.toFixed(2));
   };
 
   const calculateManualLifting = () => {
-    const manualLifting = (
-      Number(formValues.numberofmanuallifting) * Number(formValues.liftingtotal)
-    ).toFixed(2);
-    setFormValue('manuallifting', manualLifting);
-
+    const manualLifting =
+      Number(formValues.numberofmanuallifting) *
+      Number(formValues.liftingtotal);
+    setFormValue('manuallifting', manualLifting.toFixed(2));
     calculateUnpaidkm();
     // eftps.focus();
   };
@@ -137,9 +128,8 @@ const EnterData = ({navigation}: Props) => {
       Number(formValues.numberofmanuallifting) *
       Number(formValues.liftingtotal);
     let b = Number(formValues.eftposlifting);
-    const totalLifting = (a + b).toFixed(2);
-    setFormValue('totalLifting', totalLifting);
-
+    const totalLifting = a + b;
+    setFormValue('totalLifting', totalLifting.toFixed(2));
     calculateNumberofChairs();
   };
 
@@ -148,39 +138,38 @@ const EnterData = ({navigation}: Props) => {
     let b = Number(formValues.eftposlifting) / Number(formValues.liftingtotal);
     let numberofChairs;
     if (Number(formValues.liftingtotal) > 0) {
-      numberofChairs = (a + b).toFixed(0);
+      numberofChairs = a + b;
     } else {
-      numberofChairs = '0';
+      numberofChairs = 0;
     }
-    setFormValue('numberofChairs', numberofChairs);
-
+    setFormValue('numberofChairs', numberofChairs.toFixed(0));
     calculateGtnLFee();
   };
 
   const calculateGtnLFee = () => {
     let a = Number(formValues.numberofmanuallifting);
     let b = Number(formValues.eftposlifting) / Number(formValues.liftingtotal);
-    let gtnLFee = ((a + b) * Number(formValues.liftingcompany)).toFixed(2);
-    setFormValue('gtnLFee', gtnLFee);
-
+    let gtnLFee = (a + b) * Number(formValues.liftingcompany);
+    setFormValue('gtnLFee', gtnLFee.toFixed(2));
     calculateDriverLFee();
   };
 
   const calculateDriverLFee = () => {
     let a = Number(formValues.numberofmanuallifting);
     let b = Number(formValues.eftposlifting) / Number(formValues.liftingtotal);
-    let driverLFee = ((a + b) * Number(formValues.liftingdriver)).toFixed(2);
-    setFormValue('driverLFee', driverLFee);
+    let driverLFee = (a + b) * Number(formValues.liftingdriver);
+    setFormValue('driverLFee', driverLFee.toFixed(2));
+    calculateAveFare();
+  };
 
+  const calculateAveFare = () => {
     let fare;
     if (Number(formValues.hours) > 0) {
-      fare = (Number(formValues.totalmeter) / Number(formValues.hours)).toFixed(
-        2,
-      );
+      fare = Number(formValues.totalmeter) / Number(formValues.hours);
     } else {
-      fare = '0.00';
+      fare = 0.0;
     }
-    setFormValue('fare', fare);
+    setFormValue('fare', fare.toFixed(2));
     // docket.focus();
   };
 
@@ -228,20 +217,20 @@ const EnterData = ({navigation}: Props) => {
     let Dnetpayin = kullcommgtn - Ddeductions;
     let driverincome = kulldriverlfee + kullcommdriver;
 
-    let kullcpk = '0.00';
+    let kullcpk = 0.0;
     if (kullkm > 0) {
-      kullcpk = (kullmeter / kullkm).toFixed(2);
+      kullcpk = kullmeter / kullkm;
     }
 
-    let fare = '0.00';
+    let fare = 0.0;
     if (Number(formValues.hours) > 0) {
-      fare = (kullmeter / Number(formValues.hours)).toFixed(2);
+      fare = kullmeter / Number(formValues.hours);
     }
 
     setFormValues({
       ...formValues,
-      cpk: kullcpk,
-      fare,
+      cpk: kullcpk.toFixed(2),
+      fare: fare.toFixed(2),
       commissiondriver: kullcommdriver.toFixed(2),
       commissiongtn: kullcommgtn.toFixed(2),
       totallevy: kulllevy.toFixed(2),
@@ -257,40 +246,35 @@ const EnterData = ({navigation}: Props) => {
       driverIncome: driverincome.toFixed(2),
     });
 
-    const executeSqlQuery = (deduction: number, netPayin: number) => {
-      insertData(
-        formValues,
-        netPayin,
-        deduction,
-        (_tx: Transaction, results: ResultSet) => {
-          console.log('Results', results.rowsAffected);
-          if (results.rowsAffected > 0) {
-            Alert.alert(
-              'Record Submitted Successfully!',
-              'Do you want to add another record?',
-              [
-                {
-                  text: 'Yes',
-                  onPress: () => {
-                    Refresh();
-                  },
+    const executeSqlQuery = () => {
+      insertData(formValues, (_tx: Transaction, results: ResultSet) => {
+        console.log('Results', results.rowsAffected);
+        if (results.rowsAffected > 0) {
+          Alert.alert(
+            'Record Submitted Successfully!',
+            'Do you want to add another record?',
+            [
+              {
+                text: 'Yes',
+                onPress: () => {
+                  Refresh();
                 },
-                {
-                  text: 'No',
-                  onPress: () => {
-                    navigation.navigate('Enter Data');
-                  },
+              },
+              {
+                text: 'No',
+                onPress: () => {
+                  navigation.navigate('Enter Data');
                 },
-                {
-                  text: 'Cancel',
-                  style: 'cancel',
-                },
-              ],
-              {cancelable: true},
-            );
-          }
-        },
-      );
+              },
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+            ],
+            {cancelable: true},
+          );
+        }
+      });
     };
 
     const alertConfirm = (title: string, onPressYes: () => void) => {
@@ -326,11 +310,9 @@ const EnterData = ({navigation}: Props) => {
               setFormValues(prevState => ({
                 ...prevState,
                 deductions: Ddeductions.toFixed(2),
-                netPayin: Dnetpayin.toFixed(2),
+                netpayin: Dnetpayin.toFixed(2),
               }));
-              alertConfirm('Wish to Submit?', () =>
-                executeSqlQuery(Ddeductions, Dnetpayin),
-              );
+              alertConfirm('Wish to Submit?', () => executeSqlQuery());
             },
           },
           {
@@ -339,11 +321,9 @@ const EnterData = ({navigation}: Props) => {
               setFormValues(prevState => ({
                 ...prevState,
                 deductions: Cdeductions.toFixed(2),
-                netPayin: Cnetpayin.toFixed(2),
+                netpayin: Cnetpayin.toFixed(2),
               }));
-              alertConfirm('Wish to Submit?', () =>
-                executeSqlQuery(Cdeductions, Cnetpayin),
-              );
+              alertConfirm('Wish to Submit?', () => executeSqlQuery());
             },
           },
           {
@@ -357,11 +337,9 @@ const EnterData = ({navigation}: Props) => {
       setFormValues(prevState => ({
         ...prevState,
         deductions: Cdeductions.toFixed(2),
-        netPayin: Cnetpayin.toFixed(2),
+        netpayin: Cnetpayin.toFixed(2),
       }));
-      alertConfirm('Wish to Submit?', () =>
-        executeSqlQuery(Cdeductions, Cnetpayin),
-      );
+      alertConfirm('Wish to Submit?', () => executeSqlQuery());
     }
   };
 
@@ -410,18 +388,27 @@ const EnterData = ({navigation}: Props) => {
 
   //calculator...
   let Authoritycalculator = (num: Number) => {
+   // console.log('charge auth num===', num);
+    num = Number(num);
     setFormValues(prevState => ({
       ...prevState,
       chargeAuthority: num.toFixed(2),
+      calculatormodalvisible: !prevState.calculatormodalvisible,
     }));
-    setcalculatormodalvisible(!formValues.calculatormodalvisible);
   };
   let CCcalculator = (num: Number) => {
-    setFormValues(prevState => ({...prevState, cc: num.toFixed(2)}));
-    setcalculatormodalvisible(!formValues.calculatormodalvisible);
+    num = Number(num);
+    setFormValues(prevState => ({
+      ...prevState,
+      cc: num.toFixed(2),
+      calculatormodalvisible: !prevState.calculatormodalvisible,
+    }));
   };
   let Cancelcalculator = () => {
-    setcalculatormodalvisible(!formValues.calculatormodalvisible);
+    setFormValues(prevValue => ({
+      ...prevValue,
+      calculatormodalvisible: !prevValue.calculatormodalvisible,
+    }));
   };
 
   let pushcab = async () => {
@@ -430,9 +417,10 @@ const EnterData = ({navigation}: Props) => {
     } else {
       try {
         if (typeof formValues.rego === 'string') {
+          console.log('formValues.rego==', formValues.rego);
           const res = await insertIntoCab(db, formValues.rego);
           if (res.rowsAffected > 0) {
-            navigation.navigate('HomeScreen');
+            navigation.navigate('Enter Data');
           }
         }
       } catch (error) {
@@ -453,7 +441,7 @@ const EnterData = ({navigation}: Props) => {
             (_tx: Transaction, results: ResultSet) => {
               if (results.rowsAffected > 0) {
                 Alert.alert('Deleted successfully');
-                navigation.navigate('HomeScreen');
+                navigation.navigate('Home');
               }
             },
           );
@@ -468,7 +456,7 @@ const EnterData = ({navigation}: Props) => {
       ...prevValues,
       liftingmodalvisible: !prevValues.liftingmodalvisible,
     }));
-    navigation.navigate('HomeScreen');
+    navigation.navigate('Enter Data');
   };
   const Invisible = () => {
     setFormValues(prevValues => ({
@@ -480,9 +468,11 @@ const EnterData = ({navigation}: Props) => {
   const onChange = (name: string, value: string | boolean) => {
     setFormValues(prevValues => ({...prevValues, [name]: value}));
   };
+
+  // console.log('inputRefs[input.nextInput]==', inputRefs.insurance.current);
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView></ScrollView>
+      <Database />
 
       <AwesomeAlert
         show={formValues.indicator}
@@ -503,6 +493,14 @@ const EnterData = ({navigation}: Props) => {
         onCancel={Invisible}
         onupdate={Onupdate}
       />
+
+      <RegoModal
+        formValues={formValues}
+        setFormValues={setFormValues}
+        pushcab={pushcab}
+        deletecab={deletecab}
+      />
+
       <ScrollView keyboardShouldPersistTaps="handled">
         {liftingModalInputs.map(input => (
           <MyTextInput
@@ -511,11 +509,18 @@ const EnterData = ({navigation}: Props) => {
             value={formValues[input.name]}
             onChangeText={(value: string) => onChange(input.name, value)}
             nextInputRef={inputRefs[input.nextInput]}
+            textColor="#55a8fa"
+            placeholderTextColor="#55a8fa"
           />
         ))}
         <TouchableOpacity
           style={styles.button}
-          onPress={!formValues.liftingmodalvisible}>
+          onPress={() =>
+            setFormValues(prevValue => ({
+              ...prevValue,
+              liftingmodalvisible: !prevValue.liftingmodalvisible,
+            }))
+          }>
           <Text style={styles.buttontext}>Update above Items if needed</Text>
         </TouchableOpacity>
 
@@ -528,24 +533,28 @@ const EnterData = ({navigation}: Props) => {
             borderBottomWidth: 0.5,
             justifyContent: 'space-between',
           }}>
-          <Text style={styles.titleText}>Shift</Text>
+          <Text style={[styles.titleText, {color: '#fff'}]}>Shift</Text>
           <TextInput
             placeholder="............"
             placeholderTextColor="#ffffff"
             editable={false}
             style={styles.textInput}>
-            <Text style={styles.titleText}>{formValues.shift}</Text>
+            <Text style={[styles.titleText, {color: '#fff'}]}>
+              {formValues.shift}
+            </Text>
           </TextInput>
           <Picker
             selectedValue={formValues.shift}
-            style={{marginTop: -30, marginBottom: -30, width: 100}}
+            style={{
+              width: 100,
+            }}
             onValueChange={(itemValue: string) => {
               setFormValues(prevValues => ({...prevValues, shift: itemValue}));
             }}>
-            <Picker.Item label="Select" value="  " />
-            <Picker.Item label="Day" value="Day" />
-            <Picker.Item label="Night" value="Night" />
-            <Picker.Item label="Evening" value="Evening" />
+            <Picker.Item label="Select" value="  " color="#fff" />
+            <Picker.Item label="Day" value="Day" color="#fff" />
+            <Picker.Item label="Night" value="Night" color="#fff" />
+            <Picker.Item label="Evening" value="Evening" color="#fff" />
           </Picker>
         </View>
 
@@ -558,63 +567,39 @@ const EnterData = ({navigation}: Props) => {
             borderBottomWidth: 0.5,
             justifyContent: 'space-between',
           }}>
-          <Text style={styles.titleText}>Rego</Text>
+          <Text style={[styles.titleText, {color: '#fff'}]}>Rego</Text>
           <TextInput
             placeholder="............"
             placeholderTextColor="#ffffff"
             editable={false}
             style={styles.textInput}>
-            <Text style={styles.titleText}>{formValues.Taxi}</Text>
+            <Text style={[styles.titleText, {color: '#fff'}]}>
+              {formValues.Taxi}
+            </Text>
           </TextInput>
           <Picker
             selectedValue={formValues.Taxi}
-            style={{marginBottom: -30, marginTop: -30, width: 100}}
+            style={{width: 100}}
             onValueChange={(itemValue: string) => {
               setFormValues(prevValue => ({...prevValue, Taxi: itemValue}));
             }}>
             <Picker.Item label="Select" key=" " value=" " />
-            {formValues.cabData.map((cab: string, i: number) => (
-              <Picker.Item label={cab} key={i} value={cab} />
+            {formValues.cabData.forEach((cab: string, i: number) => (
+              <Picker.Item label={cab} key={i} value={cab} color="#fff" />
             ))}
           </Picker>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={!formValues.regomodal}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            setFormValues(prevValue => ({
+              ...prevValue,
+              regomodal: !prevValue.regomodal,
+            }))
+          }>
           <Text style={styles.buttontext}>Registration Number</Text>
         </TouchableOpacity>
-
-        <Modal
-          visible={formValues.regomodal}
-          animationType={'fade'}
-          onRequestClose={() => {}}>
-          <View style={styles.model}>
-            <Text style={{color: '#000000'}}>
-              Please add vehcle's registration number.
-            </Text>
-            <TextInput
-              placeholder="Enter Rego"
-              //keyboardType='numeric'
-              keyboardType="numbers-and-punctuation"
-              placeholderTextColor="#000000"
-              style={{
-                marginTop: 30,
-                borderColor: '#000000',
-                borderBottomWidth: 1,
-                textAlign: 'center',
-                color: '#000000',
-              }}
-              setText={(num: string) =>
-                setFormValues(prevValues => ({...prevValues, rego: num}))
-              }>
-              <Text style={styles.titletext}>{formValues.rego}</Text>
-            </TextInput>
-            <View style={{flexDirection: 'row', marginTop: 10}}>
-              <MyButton title="Add" customClick={pushcab} />
-              <MyButton title="Delete" customClick={deletecab} />
-              <MyButton title="Cancel" customClick={formValues.regomodal} />
-            </View>
-          </View>
-        </Modal>
 
         <View style={styles.textinputview}>
           <Calendar
@@ -655,24 +640,32 @@ const EnterData = ({navigation}: Props) => {
             title={input.title}
             value={formValues[input.name]}
             onChangeText={(value: string) => onChange(input.name, value)}
-            nextInputRef={inputRefs[input.nextInput]}
+             nextInputRef={inputRefs[input.nextInput]}
+           // nextInputRef={input.nextInput}
+            textColor="#fff"
+            placeholderTextColor="#fff"
           />
         ))}
 
         <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Total Levy</Text>
+          <Text style={[styles.titleText, {color: '#55a8fa'}]}>Total Levy</Text>
           <TextInput
             placeholder="0.00"
             placeholderTextColor="#55a8fa"
             editable={false}
-            style={styles.Textinput}
+            style={styles.textInput}
             value={formValues.totallevy}
           />
         </View>
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => setcalculatormodalvisible(!calculatormodalvisible)}>
+          onPress={() =>
+            setFormValues(prevValue => ({
+              ...prevValue,
+              calculatormodalvisible: !prevValue.calculatormodalvisible,
+            }))
+          }>
           <Text
             style={{
               color: '#ffffff',
@@ -694,11 +687,13 @@ const EnterData = ({navigation}: Props) => {
         </Text>
         {payinDetailInputs.map(input => (
           <MyTextInput
+            placeholderTextColor="#55a8fa"
             key={input.name}
             title={input.title}
             value={formValues[input.name]}
             onChangeText={(value: string) => onChange(input.name, value)}
             nextInputRef={inputRefs[input.nextInput]}
+            textColor="#55a8fa"
           />
         ))}
       </ScrollView>

@@ -5,6 +5,8 @@ import styles from './EnterDataScreen.style';
 type MyTextInputProps = {
   title: string;
   value: string;
+  textColor: string;
+  placeholderTextColor: string;
   onChangeText: (value: string) => void;
   nextInputRef: React.RefObject<TextInput>;
 };
@@ -14,10 +16,15 @@ const MyTextInput = ({
   value,
   onChangeText,
   nextInputRef,
+  textColor,
+  placeholderTextColor,
 }: MyTextInputProps) => {
-  const inputRef = useRef();
+  const Ref = useRef();
 
   const onSubmitEditing = () => {
+    if (Ref.current) {
+    console.log('ref mytext input===', Ref.current?.focus());
+    }
     if (!isNaN(Number(value))) {
       nextInputRef.current?.focus();
     } else {
@@ -28,16 +35,16 @@ const MyTextInput = ({
 
   return (
     <View style={styles.textinputview}>
-      <Text style={styles.titleText}>{title}</Text>
+      <Text style={[styles.titleText, {color: textColor}]}>{title}</Text>
       <TextInput
         placeholder="0.0"
-        placeholderTextColor="#ffffff"
-        style={styles.textInput}
+        placeholderTextColor={placeholderTextColor}
+        style={[styles.textInput, {color: textColor}]}
         returnKeyType="next"
         keyboardType="numeric"
         onChangeText={onChangeText}
         value={value}
-        ref={inputRef}
+        ref={Ref}
         onSubmitEditing={onSubmitEditing}
       />
     </View>
