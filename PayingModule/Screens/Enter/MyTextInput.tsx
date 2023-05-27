@@ -19,17 +19,13 @@ const MyTextInput = ({
   textColor,
   placeholderTextColor,
 }: MyTextInputProps) => {
-  const Ref = useRef();
-
   const onSubmitEditing = () => {
-    if (Ref.current) {
-    console.log('ref mytext input===', Ref.current?.focus());
-    }
+    console.log(title, value);
     if (!isNaN(Number(value))) {
       nextInputRef.current?.focus();
     } else {
       Alert.alert('Please input a correct number');
-      onChangeText(''); // clear the input
+      onChangeText('');
     }
   };
 
@@ -44,7 +40,7 @@ const MyTextInput = ({
         keyboardType="numeric"
         onChangeText={onChangeText}
         value={value}
-        ref={Ref}
+        ref={nextInputRef}
         onSubmitEditing={onSubmitEditing}
       />
     </View>

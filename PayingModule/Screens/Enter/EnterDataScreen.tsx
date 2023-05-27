@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useRef, useState, useEffect, useContext, RefObject} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -56,62 +56,8 @@ const EnterData = () => {
   const {dispatch} = stateContext;
   //console.log('state in EnterDataScreen==', state);
   const [formValues, setFormValues] = useState<FormValues>(initialValues);
-  const inputRefs: {[key: string]: React.RefObject<TextInput>} = useInputRefs();
-
   const setFormValue = (key: string, value: string | boolean) => {
     setFormValues(prevValues => ({...prevValues, [key]: value}));
-  };
-
-  const calculatekm = () => {
-    const resultkm = Number(formValues.km2) - Number(formValues.km1);
-    setFormValue('resultkm', resultkm.toFixed(2));
-    // paidkmstart.focus();
-  };
-
-  const calculatemeter = () => {
-    const totalmeter =
-      Number(formValues.meter2) -
-      Number(formValues.totallevy) -
-      Number(formValues.meter1);
-    setFormValue('totalmeter', totalmeter.toFixed(2));
-    kmstart.current.focus();
-  };
-
-  const Totallevy = () => {
-    const totalLevy = Number(formValues.numberofJobs) * Number(formValues.levy);
-    setFormValue('totalLevy', totalLevy.toFixed(2));
-    // mis.focus();
-  };
-
-  const calculatepaidkm = () => {
-    const resultpaidkm = (
-      Number(formValues.paidkm2) - Number(formValues.paidkm1)
-    ).toFixed(2);
-    setFormValue('resultpaidkm', resultpaidkm);
-
-    const commissiondriver =
-      Number(formValues.totalmeter) * (Number(formValues.drivercommrate) / 100);
-    setFormValue('commissiondriver', commissiondriver.toFixed(2));
-
-    const commissiongtn =
-      Number(formValues.totalmeter) *
-      (Number(formValues.companycommrate) / 100);
-    setFormValue('commissiongtn', commissiongtn.toFixed(2));
-
-    let cpk;
-    if (Number(formValues.resultkm) > 0) {
-      cpk = Number(formValues.totalmeter) / Number(formValues.resultkm);
-    } else {
-      cpk = Number(formValues.cpk);
-    }
-    setFormValue('cpk', cpk.toFixed(2));
-    // gsm.focus();
-  };
-
-  const calculateUnpaidkm = () => {
-    const unpaidkm =
-      Number(formValues.resultkm) - Number(formValues.resultpaidkm);
-    setFormValue('unpaidkm', unpaidkm.toFixed(2));
   };
 
   const calculateManualLifting = () => {
@@ -388,7 +334,7 @@ const EnterData = () => {
 
   //calculator...
   let Authoritycalculator = (num: Number) => {
-   // console.log('charge auth num===', num);
+    // console.log('charge auth num===', num);
     num = Number(num);
     setFormValues(prevState => ({
       ...prevState,
@@ -469,7 +415,88 @@ const EnterData = () => {
     setFormValues(prevValues => ({...prevValues, [name]: value}));
   };
 
-  // console.log('inputRefs[input.nextInput]==', inputRefs.insurance.current);
+  const inputRefs: {[key: string]: React.RefObject<TextInput>} = {
+    hours: useRef(null),
+    insurancefee: useRef(null),
+    numberofJobs: useRef(null),
+    totallevy: useRef(null),
+    meter1: useRef(null),
+    meter2: useRef(null),
+    totalmeter: useRef(null),
+    km1: useRef(null),
+    km2: useRef(null),
+    resultkm: useRef(null),
+    paidkm1: useRef(null),
+    paidkm2: useRef(null),
+    resultpaidkm: useRef(null),
+    unpaidkm: useRef(null),
+    cpk: useRef(null),
+    eftpos: useRef(null),
+    eftposlifting: useRef(null),
+    cc: useRef(null),
+    manualMptp: useRef(null),
+    govSubManual31: useRef(null),
+    numberofmanuallifting: useRef(null),
+    chargeAuthority: useRef(null),
+    misc: useRef(null),
+    carwash: useRef(null),
+    accountFuel: useRef(null),
+  };
+
+  const SubmitEditing = (
+    name: string,
+    value: string,
+    nextInputRef: React.RefObject<TextInput>,
+  ) => {
+    if (!isNaN(Number(value))) {
+      let updatedValues = {...formValues, [name]: value};
+      console.log(`name ${name} and value ${value}`);
+      if (name === 'numberofJobs') {
+        const val1 = Number(updatedValues.numberofJobs || 0);
+        const val2 = Number(updatedValues.levy || 0);
+        updatedValues.totallevy = (val1 * val2).toFixed(2);
+      }
+      if (name === 'meter2') {
+        const val1 = Number(updatedValues.meter1 || 0);
+        const val2 = Number(updatedValues.meter2 || 0);
+        const val3 = Number(updatedValues.totallevy || 0);
+        const val4 = Number(updatedValues.drivercommrate || 0);
+        const val5 = Number(updatedValues.companycommrate || 0);
+        updatedValues.totalmeter = (val2 - val1 - val3).toFixed(2);
+        updatedValues.commissiondriver = (
+          Number(updatedValues.totalmeter) *
+          (val4 / 100)
+        ).toFixed(2);
+        updatedValues.commissiongtn = (
+          Number(updatedValues.totalmeter) *
+          (val5 / 100)
+        ).toFixed(2);
+      }
+      if (name === 'km2') {
+        const val1 = Number(updatedValues.km1 || 0);
+        const val2 = Number(updatedValues.km2 || 0);
+        updatedValues.resultkm = (val2 - val1).toFixed(2);
+        updatedValues.cpk = (
+          Number(updatedValues.totalmeter) / Number(updatedValues.resultkm)
+        ).toFixed(2);
+      }
+      if (name === 'paidkm2') {
+        const val1 = Number(updatedValues.paidkm1 || 0);
+        const val2 = Number(updatedValues.paidkm2 || 0);
+        updatedValues.resultpaidkm = (val2 - val1).toFixed(2);
+        updatedValues.unpaidkm = (
+          Number(updatedValues.resultkm) - Number(updatedValues.resultpaidkm)
+        ).toFixed(2);
+      }
+      setFormValues(updatedValues);
+      nextInputRef.current?.focus();
+    } else {
+      Alert.alert('Please input a correct number');
+      let updatedValues = {...formValues, [name]: ''};
+      setFormValues(updatedValues);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Database />
@@ -502,17 +529,17 @@ const EnterData = () => {
       />
 
       <ScrollView keyboardShouldPersistTaps="handled">
-        {liftingModalInputs.map(input => (
+        {/* {liftingModalInputs.map((input, index) => (
           <MyTextInput
             key={input.name}
             title={input.title}
             value={formValues[input.name]}
             onChangeText={(value: string) => onChange(input.name, value)}
-            nextInputRef={inputRefs[input.nextInput]}
+           // nextInputRef={inputRefs[liftingModalInputs[index + 1]?.nextInput]}
             textColor="#55a8fa"
             placeholderTextColor="#55a8fa"
           />
-        ))}
+        ))} */}
         <TouchableOpacity
           style={styles.button}
           onPress={() =>
@@ -634,18 +661,101 @@ const EnterData = () => {
           </TextInput>
         </View>
 
-        {inputs.map(input => (
-          <MyTextInput
-            key={input.name}
-            title={input.title}
-            value={formValues[input.name]}
-            onChangeText={(value: string) => onChange(input.name, value)}
-             nextInputRef={inputRefs[input.nextInput]}
-           // nextInputRef={input.nextInput}
-            textColor="#fff"
-            placeholderTextColor="#fff"
-          />
+        {inputs.map((input, index) => (
+          <View key={input.name} style={styles.textinputview}>
+            <Text style={[styles.titleText, {color: '#fff'}]}>
+              {input.title}
+            </Text>
+            <TextInput
+              placeholder="0.0"
+              placeholderTextColor="#fff"
+              style={[styles.textInput, {color: '#fff'}]}
+              returnKeyType="next"
+              keyboardType="numeric"
+              onChangeText={(value: string) => onChange(input.name, value)}
+              value={formValues[input.name]}
+              ref={(ref: RefObject<TextInput>) => {
+                if (ref) {
+                  inputRefs[input.name] = ref;
+                }
+              }}
+              onSubmitEditing={
+                input.name
+                  ? () =>
+                      SubmitEditing(
+                        input.name,
+                        formValues[input.name].toString(),
+                        inputRefs[inputs[index + 1]?.name],
+                      )
+                  : () => {}
+              }
+            />
+          </View>
         ))}
+
+        {/* <View style={styles.textinputview}>
+          <Text style={[styles.titleText, {color: '#fff'}]}>Start Meter</Text>
+          <TextInput
+            placeholder="0.0"
+            placeholderTextColor="#fff"
+            style={[styles.textInput, {color: '#fff'}]}
+            returnKeyType="next"
+            keyboardType="numeric"
+            OnChange={(meter1: string) =>
+              setFormValues(prevValues => ({...prevValues, meter1}))
+            }
+            ref={inputRefs.meter1}
+            // onSubmitEditing={
+            //   input.name === 'meter2'
+            //     ? () => SubmitEditing('meter2', formValues.meter2.toString())
+            //     : undefined
+            // }
+            onSubmitEditing={() =>
+              onSubmitEditing(formValues.meter1.toString(), inputRefs.meter2)
+            }
+          />
+        </View>
+        <View style={styles.textinputview}>
+          <Text style={[styles.titleText, {color: '#fff'}]}>Finish Meter</Text>
+          <TextInput
+            placeholder="0.0"
+            placeholderTextColor="#fff"
+            style={[styles.textInput, {color: '#fff'}]}
+            returnKeyType="next"
+            keyboardType="numeric"
+            OnChange={(meter2: string) =>
+              setFormValues(prevValues => ({...prevValues, meter2}))
+            }
+            // value={formValues.meter2}
+            ref={inputRefs.meter2}
+            onSubmitEditing={() =>
+              onSubmitEditing(
+                formValues.meter2.toString(),
+                inputRefs.totalmeter,
+              )
+            }
+          />
+        </View>
+        <View style={styles.textinputview}>
+          <Text style={[styles.titleText, {color: '#fff'}]}>Total Meter</Text>
+          <TextInput
+            placeholder="0.0"
+            placeholderTextColor="#fff"
+            style={[styles.textInput, {color: '#fff'}]}
+            returnKeyType="next"
+            keyboardType="numeric"
+            OnChange={(totalmeter: string) =>
+              setFormValues(prevValues => ({...prevValues, totalmeter}))
+            }
+            ref={inputRefs.totalmeter}
+            onSubmitEditing={() =>
+              onSubmitEditing(
+                formValues.totalmeter.toString(),
+                inputRefs.insurancefee,
+              )
+            }
+          />
+        </View> */}
 
         <View style={styles.textinputview}>
           <Text style={[styles.titleText, {color: '#55a8fa'}]}>Total Levy</Text>
@@ -685,14 +795,14 @@ const EnterData = () => {
           }}>
           Payin Details
         </Text>
-        {payinDetailInputs.map(input => (
+        {payinDetailInputs.map((input, index) => (
           <MyTextInput
             placeholderTextColor="#55a8fa"
             key={input.name}
             title={input.title}
             value={formValues[input.name]}
             onChangeText={(value: string) => onChange(input.name, value)}
-            nextInputRef={inputRefs[input.nextInput]}
+            nextInputRef={inputRefs[payinDetailInputs[index + 1]?.nextInput]}
             textColor="#55a8fa"
           />
         ))}
