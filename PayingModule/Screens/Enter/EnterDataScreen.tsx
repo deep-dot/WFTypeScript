@@ -48,103 +48,14 @@ type FormValues = {
 const EnterData = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackParamList, 'Enter Data'>>();
-  // console.log('props in Enter Data screen===', navigation);
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
   const {dispatch} = stateContext;
-  //console.log('state in EnterDataScreen==', state);
   const [formValues, setFormValues] = useState<FormValues>(initialValues);
-  const setFormValue = (key: string, value: string | boolean) => {
-    setFormValues(prevValues => ({...prevValues, [key]: value}));
-  };
-
-  const calculateManualLifting = () => {
-    const manualLifting =
-      Number(formValues.numberofmanuallifting) *
-      Number(formValues.liftingtotal);
-    setFormValue('manuallifting', manualLifting.toFixed(2));
-    calculateUnpaidkm();
-    // eftps.focus();
-  };
-
-  const calculateTotalLifting = () => {
-    let a =
-      Number(formValues.numberofmanuallifting) *
-      Number(formValues.liftingtotal);
-    let b = Number(formValues.eftposlifting);
-    const totalLifting = a + b;
-    setFormValue('totalLifting', totalLifting.toFixed(2));
-    calculateNumberofChairs();
-  };
-
-  const calculateNumberofChairs = () => {
-    let a = Number(formValues.numberofmanuallifting);
-    let b = Number(formValues.eftposlifting) / Number(formValues.liftingtotal);
-    let numberofChairs;
-    if (Number(formValues.liftingtotal) > 0) {
-      numberofChairs = a + b;
-    } else {
-      numberofChairs = 0;
-    }
-    setFormValue('numberofChairs', numberofChairs.toFixed(0));
-    calculateGtnLFee();
-  };
-
-  const calculateGtnLFee = () => {
-    let a = Number(formValues.numberofmanuallifting);
-    let b = Number(formValues.eftposlifting) / Number(formValues.liftingtotal);
-    let gtnLFee = (a + b) * Number(formValues.liftingcompany);
-    setFormValue('gtnLFee', gtnLFee.toFixed(2));
-    calculateDriverLFee();
-  };
-
-  const calculateDriverLFee = () => {
-    let a = Number(formValues.numberofmanuallifting);
-    let b = Number(formValues.eftposlifting) / Number(formValues.liftingtotal);
-    let driverLFee = (a + b) * Number(formValues.liftingdriver);
-    setFormValue('driverLFee', driverLFee.toFixed(2));
-    calculateAveFare();
-  };
-
-  const calculateAveFare = () => {
-    let fare;
-    if (Number(formValues.hours) > 0) {
-      fare = Number(formValues.totalmeter) / Number(formValues.hours);
-    } else {
-      fare = 0.0;
-    }
-    setFormValue('fare', fare.toFixed(2));
-    // docket.focus();
-  };
 
   let submitalltogather = () => {
-    let a;
-    if (Number(formValues.liftingtotal) > 0) {
-      a = Number(formValues.eftposlifting) / Number(formValues.liftingtotal);
-    } else {
-      a = 0;
-    }
-
-    let kullnumberofchairs = Number(formValues.numberofmanuallifting) + a;
-    let kulldriverlfee =
-      Number(kullnumberofchairs) * Number(formValues.liftingdriver);
-    let kulllevy = Number(formValues.numberofJobs) * Number(formValues.levy);
-    let kullmeter =
-      Number(formValues.meter2) - Number(formValues.meter1) - kulllevy;
-    let kullkm = Number(formValues.km2) - Number(formValues.km1);
-    let kullpaidkm = Number(formValues.paidkm2) - Number(formValues.paidkm1);
-    let kullunpaidkm = kullkm - kullpaidkm;
-    let kullmanuallifting =
-      Number(formValues.numberofmanuallifting) *
-      Number(formValues.liftingtotal);
-    let kulltotallifting = kullmanuallifting + Number(formValues.eftposlifting);
-    let kullgtnlfee =
-      Number(kullnumberofchairs) * Number(formValues.liftingcompany);
-    let kullcommdriver = kullmeter * (Number(formValues.drivercommrate) / 100);
-    let kullcommgtn = kullmeter * (Number(formValues.companycommrate) / 100);
-
     let Cdeductions =
       Number(formValues.eftpos) -
       Number(formValues.eftposlifting) +
@@ -152,94 +63,18 @@ const EnterData = () => {
       Number(formValues.manualMptp) +
       Number(formValues.cc) +
       Number(formValues.chargeAuthority) +
-      kulldriverlfee;
+      Number(formValues.driverLFee);
     let Ddeductions =
       Cdeductions +
       Number(formValues.carwash) +
       Number(formValues.accountFuel) +
       Number(formValues.misc);
 
-    let Cnetpayin = kullcommgtn - Cdeductions;
-    let Dnetpayin = kullcommgtn - Ddeductions;
-    let driverincome = kulldriverlfee + kullcommdriver;
-
-    let kullcpk = 0.0;
-    if (kullkm > 0) {
-      kullcpk = kullmeter / kullkm;
-    }
-
-    let fare = 0.0;
-    if (Number(formValues.hours) > 0) {
-      fare = kullmeter / Number(formValues.hours);
-    }
-
-    setFormValues({
-      ...formValues,
-      cpk: kullcpk.toFixed(2),
-      fare: fare.toFixed(2),
-      commissiondriver: kullcommdriver.toFixed(2),
-      commissiongtn: kullcommgtn.toFixed(2),
-      totallevy: kulllevy.toFixed(2),
-      totalmeter: kullmeter.toFixed(2),
-      resultkm: kullkm.toFixed(2),
-      resultpaidkm: kullpaidkm.toFixed(2),
-      unpaidkm: kullunpaidkm.toFixed(2),
-      manuallifting: kullmanuallifting.toFixed(2),
-      totallifting: kulltotallifting.toFixed(2),
-      numberofChairs: kullnumberofchairs.toFixed(0),
-      gtnLFee: kullgtnlfee.toFixed(2),
-      driverLFee: kulldriverlfee.toFixed(2),
-      driverIncome: driverincome.toFixed(2),
-    });
-
-    const executeSqlQuery = () => {
-      insertData(formValues, (_tx: Transaction, results: ResultSet) => {
-        console.log('Results', results.rowsAffected);
-        if (results.rowsAffected > 0) {
-          Alert.alert(
-            'Record Submitted Successfully!',
-            'Do you want to add another record?',
-            [
-              {
-                text: 'Yes',
-                onPress: () => {
-                  Refresh();
-                },
-              },
-              {
-                text: 'No',
-                onPress: () => {
-                  navigation.navigate('Enter Data');
-                },
-              },
-              {
-                text: 'Cancel',
-                style: 'cancel',
-              },
-            ],
-            {cancelable: true},
-          );
-        }
-      });
-    };
-
-    const alertConfirm = (title: string, onPressYes: () => void) => {
-      Alert.alert(
-        'Please confirm!',
-        title,
-        [
-          {
-            text: 'Yes',
-            onPress: onPressYes,
-          },
-          {
-            text: 'No',
-            style: 'cancel',
-          },
-        ],
-        {cancelable: true},
-      );
-    };
+    let Cnetpayin = Number(formValues.commissiongtn) - Cdeductions;
+    let Dnetpayin = Number(formValues.commissiongtn) - Ddeductions;
+    formValues.driverIncome = (
+      Number(formValues.driverLFee) + Number(formValues.commissiondriver)
+    ).toFixed(2);
 
     if (
       Number(formValues.accountFuel) > 0 ||
@@ -287,6 +122,55 @@ const EnterData = () => {
       }));
       alertConfirm('Wish to Submit?', () => executeSqlQuery());
     }
+  };
+
+  const alertConfirm = (title: string, onPressYes: () => void) => {
+    Alert.alert(
+      'Please confirm!',
+      title,
+      [
+        {
+          text: 'Yes',
+          onPress: onPressYes,
+        },
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+      ],
+      {cancelable: true},
+    );
+  };
+
+  const executeSqlQuery = () => {
+    insertData(formValues, (_tx: Transaction, results: ResultSet) => {
+      console.log('Results', results.rowsAffected);
+      if (results.rowsAffected > 0) {
+        Alert.alert(
+          'Record Submitted Successfully!',
+          'Do you want to add another record?',
+          [
+            {
+              text: 'Yes',
+              onPress: () => {
+                Refresh();
+              },
+            },
+            {
+              text: 'No',
+              onPress: () => {
+                navigation.navigate('Enter Data');
+              },
+            },
+            {
+              text: 'Cancel',
+              style: 'cancel',
+            },
+          ],
+          {cancelable: true},
+        );
+      }
+    });
   };
 
   const Refresh = () => {
@@ -462,6 +346,7 @@ const EnterData = () => {
         const val3 = Number(updatedValues.totallevy || 0);
         const val4 = Number(updatedValues.drivercommrate || 0);
         const val5 = Number(updatedValues.companycommrate || 0);
+        const val6 = Number(updatedValues.hours || 0);
         updatedValues.totalmeter = (val2 - val1 - val3).toFixed(2);
         updatedValues.commissiondriver = (
           Number(updatedValues.totalmeter) *
@@ -471,6 +356,9 @@ const EnterData = () => {
           Number(updatedValues.totalmeter) *
           (val5 / 100)
         ).toFixed(2);
+        updatedValues.fare = (Number(updatedValues.totalmeter) / val6).toFixed(
+          2,
+        );
       }
       if (name === 'km2') {
         const val1 = Number(updatedValues.km1 || 0);
@@ -486,6 +374,26 @@ const EnterData = () => {
         updatedValues.resultpaidkm = (val2 - val1).toFixed(2);
         updatedValues.unpaidkm = (
           Number(updatedValues.resultkm) - Number(updatedValues.resultpaidkm)
+        ).toFixed(2);
+      }
+      if (name === 'numberofmanuallifting') {
+        const val1 = Number(updatedValues.numberofmanuallifting || 0);
+        const val2 = Number(updatedValues.liftingtotal || 0);
+        updatedValues.manualLifting = (val2 * val1).toFixed(2);
+      }
+      if (name === 'eftposlifting') {
+        const val1 = Number(updatedValues.numberofmanuallifting || 0);
+        const val2 = Number(updatedValues.liftingtotal || 0);
+        const val3 = Number(updatedValues.eftposlifting || 0);
+        const val4 = Number(updatedValues.liftingcompany || 0);
+        const val5 = Number(updatedValues.liftingdriver || 0);
+        updatedValues.totalLifting = (val2 * val1 + val3).toFixed(2);
+        updatedValues.numberofChairs = (val1 + val3 / val2).toFixed(2);
+        updatedValues.gtnLFee = (
+          Number(updatedValues.numberofChairs) * val4
+        ).toFixed(2);
+        updatedValues.driverLFee = (
+          Number(updatedValues.numberofChairs) * val5
         ).toFixed(2);
       }
       setFormValues(updatedValues);
