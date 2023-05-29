@@ -1,7 +1,16 @@
 import {useRef} from 'react';
-import {TextInput} from 'react-native';
 import {Transaction, ResultSet} from '../../databaseTypes';
 import db from '../../databaseService';
+
+export const useLiftingRefs = () => {
+  const refs = {
+    liftingtotal: useRef(null),
+    liftingdriver: useRef(null),
+    levy: useRef(null),
+    drivercommrate: useRef(null),
+  };
+  return refs;
+};
 
 export const useInputRefs = () => {
   const refs = {
@@ -30,6 +39,22 @@ export const useInputRefs = () => {
     misc: useRef(null),
     carwash: useRef(null),
     accountFuel: useRef(null),
+  };
+  return refs;
+};
+
+export const usePayinRefs = () => {
+  const refs = {
+    totallifting: useRef(null),
+    numberofChairs: useRef(null),
+    gtnLFee: useRef(null),
+    driverLFee: useRef(null),
+    commissiongtn: useRef(null),
+    commissiondriver: useRef(null),
+    deductions: useRef(null),
+    fare: useRef(null),
+    netpayin: useRef(null),
+    driverIncome: useRef(null),
   };
   return refs;
 };
@@ -63,7 +88,7 @@ export const initialValues = {
   cc: '',
   manualMptp: '',
   govSubManual31: '',
-  cabData: [''],
+  cabData: [],
   Taxi: '',
   numberofmanuallifting: '',
   manuallifting: '',
@@ -90,6 +115,23 @@ export const initialValues = {
   indicator: false,
 };
 
+export const CdeductionsProperties = [
+  'eftpos',
+  'eftposlifting',
+  'govSubManual31',
+  'manualMptp',
+  'cc',
+  'chargeAuthority',
+  'driverLFee',
+];
+
+export const DdeductionsAdditionalProperties = [
+  'carwash',
+  'accountFuel',
+  'misc',
+];
+
+export const properties = ['accountFuel', 'carwash', 'misc'];
 // dbActions.js
 type FormValues = {
   [key: string]: string | boolean | string[];
@@ -154,25 +196,19 @@ export const insertData = (
   }
 };
 
-export const liftingModalInputs = [
+export const liftingInputs = [
   {
     title: 'Lifting Total',
     name: 'liftingtotal',
     nextInput: 'hoursworked',
   },
   {title: 'Lifting Driver', name: 'liftingdriver'},
-  // {title: 'Lifting Company', name: 'liftingcompany'},
   {title: 'Levy', name: 'levy'},
   {
-    title: 'Driver Commission Rate',
+    title: 'Driver Commission Rate %',
     name: 'drivercommrate',
     nextInput: 'hoursworked',
   },
-  // {
-  //   title: 'Company Commission Rate',
-  //   name: 'companycommrate',
-  //   nextInput: 'job',
-  // },
 ];
 
 export const inputs = [
@@ -232,7 +268,7 @@ export const inputs = [
   // {title: 'Indicator', name: 'indicator'},
 ];
 
-export const payinDetailInputs = [
+export const payinInputs = [
   {title: 'Total Lifting', name: 'totallifting'},
   {title: 'Number of Chairs', name: 'numberofChairs'},
   {title: 'GTN Lifting Fee', name: 'gtnLFee'},

@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useRef, useState, useEffect, useContext, RefObject} from 'react';
+import React, {useState, useEffect, useContext, RefObject} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -9,7 +9,7 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import {RegoModal} from './components/RegoModal';
+import {RegoModal} from './component/RegoModal';
 import Model from '../../Components/Model';
 // import MyButton from '../../Components/Mybutton';
 import {Picker} from '@react-native-picker/picker';
@@ -27,24 +27,32 @@ import {
   selectCountFromDataTable,
 } from './dbUtility';
 import {StateContext} from './StateProvider';
-import MyTextInput from './MyTextInput';
 import {
   initialValues,
+  CdeductionsProperties,
+  DdeductionsAdditionalProperties,
+  properties,
   useInputRefs,
+  useLiftingRefs,
+  usePayinRefs,
   insertData,
   inputs,
-  liftingModalInputs,
-  payinDetailInputs,
+  liftingInputs,
+  payinInputs,
 } from './EnterDataValues';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
 import Database from '../../Database';
 import {useNavigation} from '@react-navigation/core';
 
+interface Cab {
+  Cab: string;
+}
 type FormValues = {
-  [key: string]: string | boolean | string[];
-  cabData: string[];
+  [key: string]: string | boolean | Cab[];
+  cabData: Cab[];
 };
+
 const EnterData = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackParamList, 'Enter Data'>>();
@@ -54,33 +62,25 @@ const EnterData = () => {
   }
   const {dispatch} = stateContext;
   const [formValues, setFormValues] = useState<FormValues>(initialValues);
+  const inputRefs: {[key: string]: React.RefObject<TextInput>} = useInputRefs();
+  const liftingRefs: {[key: string]: React.RefObject<TextInput>} =
+    useLiftingRefs();
+  const payinRefs: {[key: string]: React.RefObject<TextInput>} = usePayinRefs();
 
   let submitalltogather = () => {
-    let Cdeductions =
-      Number(formValues.eftpos) -
-      Number(formValues.eftposlifting) +
-      Number(formValues.govSubManual31) +
-      Number(formValues.manualMptp) +
-      Number(formValues.cc) +
-      Number(formValues.chargeAuthority) +
-      Number(formValues.driverLFee);
-    let Ddeductions =
-      Cdeductions +
-      Number(formValues.carwash) +
-      Number(formValues.accountFuel) +
-      Number(formValues.misc);
+    let Cdeductions = CdeductionsProperties.reduce(
+      (acc, curr) => acc + Number(formValues[curr]),
+      0,
+    );
+    let Ddeductions = [
+      ...CdeductionsProperties,
+      ...DdeductionsAdditionalProperties,
+    ].reduce((acc, curr) => acc + Number(formValues[curr]), 0);
 
     let Cnetpayin = Number(formValues.commissiongtn) - Cdeductions;
     let Dnetpayin = Number(formValues.commissiongtn) - Ddeductions;
-    formValues.driverIncome = (
-      Number(formValues.driverLFee) + Number(formValues.commissiondriver)
-    ).toFixed(2);
 
-    if (
-      Number(formValues.accountFuel) > 0 ||
-      Number(formValues.carwash) > 0 ||
-      Number(formValues.misc) > 0
-    ) {
+    if (properties.some(property => Number(formValues[property]) > 0)) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
         '',
@@ -182,14 +182,14 @@ const EnterData = () => {
     const fetchUpdateItemsData = async () => {
       try {
         const res = await selectFromUpdateItems(db);
+        // console.log(' selectFromUpdateItems==', formValues.liftingtotal);
         setFormValues(prevState => ({
           ...prevState,
-          liftingtotal: res.GovLFee,
-          liftingcompany: res.CompanyLFee,
-          liftingdriver: res.DriverLFee,
-          levy: res.Levy,
-          drivercommrate: res.Driver_Comm_Rate,
-          companycommrate: res.Company_Comm_Rate,
+          liftingtotal: res.GovLFee.toFixed(2),
+          liftingdriver: res.DriverLFee.toFixed(2),
+          levy: res.Levy.toFixed(2),
+          drivercommrate: res.Driver_Comm_Rate.toFixed(0),
+          // companycommrate: res.Company_Comm_Rate.toFixed(2),
         }));
       } catch (error) {
         console.log(error);
@@ -214,8 +214,16 @@ const EnterData = () => {
     fetchUpdateItemsData();
     fetchCabData();
     fetchNumberOfEntries();
-  }, [setFormValues]);
+  }, [formValues.liftingtotal, setFormValues]);
 
+  // React to state changes
+  useEffect(() => {
+    if (Array.isArray(formValues.cabData)) {
+      formValues.cabData.forEach((cab: Cab, i: number) => {
+        console.log('cab', cab.Cab, i);
+      });
+    }
+  }, [formValues.cabData]);
   //calculator...
   let Authoritycalculator = (num: Number) => {
     // console.log('charge auth num===', num);
@@ -242,17 +250,12 @@ const EnterData = () => {
   };
 
   let pushcab = async () => {
-    if (!formValues.rego) {
+    if (formValues.rego) {
       Alert.alert('Please put rego in.');
     } else {
       try {
-        if (typeof formValues.rego === 'string') {
-          console.log('formValues.rego==', formValues.rego);
-          const res = await insertIntoCab(db, formValues.rego);
-          if (res.rowsAffected > 0) {
-            navigation.navigate('Enter Data');
-          }
-        }
+        await insertIntoCab(db, formValues.rego);
+        navigation.navigate('Enter Data');
       } catch (error) {
         console.log(error);
       }
@@ -299,34 +302,6 @@ const EnterData = () => {
     setFormValues(prevValues => ({...prevValues, [name]: value}));
   };
 
-  const inputRefs: {[key: string]: React.RefObject<TextInput>} = {
-    hours: useRef(null),
-    insurancefee: useRef(null),
-    numberofJobs: useRef(null),
-    totallevy: useRef(null),
-    meter1: useRef(null),
-    meter2: useRef(null),
-    totalmeter: useRef(null),
-    km1: useRef(null),
-    km2: useRef(null),
-    resultkm: useRef(null),
-    paidkm1: useRef(null),
-    paidkm2: useRef(null),
-    resultpaidkm: useRef(null),
-    unpaidkm: useRef(null),
-    cpk: useRef(null),
-    eftpos: useRef(null),
-    eftposlifting: useRef(null),
-    cc: useRef(null),
-    manualMptp: useRef(null),
-    govSubManual31: useRef(null),
-    numberofmanuallifting: useRef(null),
-    chargeAuthority: useRef(null),
-    misc: useRef(null),
-    carwash: useRef(null),
-    accountFuel: useRef(null),
-  };
-
   const SubmitEditing = (
     name: string,
     value: string,
@@ -347,6 +322,7 @@ const EnterData = () => {
         const val4 = Number(updatedValues.drivercommrate || 0);
         const val5 = Number(updatedValues.companycommrate || 0);
         const val6 = Number(updatedValues.hours || 0);
+        const val7 = Number(updatedValues.driverLFee || 0);
         updatedValues.totalmeter = (val2 - val1 - val3).toFixed(2);
         updatedValues.commissiondriver = (
           Number(updatedValues.totalmeter) *
@@ -359,6 +335,9 @@ const EnterData = () => {
         updatedValues.fare = (Number(updatedValues.totalmeter) / val6).toFixed(
           2,
         );
+        updatedValues.driverIncome = (
+          val7 + Number(updatedValues.commissiondriver)
+        ).toFixed(2);
       }
       if (name === 'km2') {
         const val1 = Number(updatedValues.km1 || 0);
@@ -437,17 +416,37 @@ const EnterData = () => {
       />
 
       <ScrollView keyboardShouldPersistTaps="handled">
-        {/* {liftingModalInputs.map((input, index) => (
-          <MyTextInput
-            key={input.name}
-            title={input.title}
-            value={formValues[input.name]}
-            onChangeText={(value: string) => onChange(input.name, value)}
-           // nextInputRef={inputRefs[liftingModalInputs[index + 1]?.nextInput]}
-            textColor="#55a8fa"
-            placeholderTextColor="#55a8fa"
-          />
-        ))} */}
+        {liftingInputs.map((input, index) => (
+          <View key={input.name} style={styles.textinputview}>
+            <Text style={[styles.titleText, {color: '#55a8fa'}]}>
+              {input.title}
+            </Text>
+            <TextInput
+              placeholder="0.00"
+              placeholderTextColor="#55a8fa"
+              style={[styles.textInput, {color: '#55a8fa'}]}
+              returnKeyType="next"
+              keyboardType="numeric"
+              // onChangeText={(value: string) => onChange(input.name, value)}
+              value={formValues[input.name]}
+              ref={(ref: RefObject<TextInput>) => {
+                if (ref) {
+                  liftingRefs[input.name] = ref;
+                }
+              }}
+              onSubmitEditing={
+                input.name
+                  ? () =>
+                      SubmitEditing(
+                        input.name,
+                        formValues[input.name].toString(),
+                        liftingRefs[inputs[index + 1]?.name],
+                      )
+                  : () => {}
+              }
+            />
+          </View>
+        ))}
         <TouchableOpacity
           style={styles.button}
           onPress={() =>
@@ -519,8 +518,13 @@ const EnterData = () => {
               setFormValues(prevValue => ({...prevValue, Taxi: itemValue}));
             }}>
             <Picker.Item label="Select" key=" " value=" " />
-            {formValues.cabData.forEach((cab: string, i: number) => (
-              <Picker.Item label={cab} key={i} value={cab} color="#fff" />
+            {formValues.cabData.map((cab: Cab, i: number) => (
+              <Picker.Item
+                label={cab.Cab}
+                key={i}
+                value={cab.Cab}
+                color="#fff"
+              />
             ))}
           </Picker>
         </View>
@@ -665,17 +669,6 @@ const EnterData = () => {
           />
         </View> */}
 
-        <View style={styles.textinputview}>
-          <Text style={[styles.titleText, {color: '#55a8fa'}]}>Total Levy</Text>
-          <TextInput
-            placeholder="0.00"
-            placeholderTextColor="#55a8fa"
-            editable={false}
-            style={styles.textInput}
-            value={formValues.totallevy}
-          />
-        </View>
-
         <TouchableOpacity
           style={styles.button}
           onPress={() =>
@@ -703,16 +696,36 @@ const EnterData = () => {
           }}>
           Payin Details
         </Text>
-        {payinDetailInputs.map((input, index) => (
-          <MyTextInput
-            placeholderTextColor="#55a8fa"
-            key={input.name}
-            title={input.title}
-            value={formValues[input.name]}
-            onChangeText={(value: string) => onChange(input.name, value)}
-            nextInputRef={inputRefs[payinDetailInputs[index + 1]?.nextInput]}
-            textColor="#55a8fa"
-          />
+        {payinInputs.map((input, index) => (
+          <View key={input.name} style={styles.textinputview}>
+            <Text style={[styles.titleText, {color: '#55a8fa'}]}>
+              {input.title}
+            </Text>
+            <TextInput
+              placeholder="0.0"
+              placeholderTextColor="#55a8fa"
+              style={[styles.textInput, {color: '#55a8fa'}]}
+              returnKeyType="next"
+              keyboardType="numeric"
+              // onChangeText={(value: string) => onChange(input.name, value)}
+              value={formValues[input.name]}
+              ref={(ref: RefObject<TextInput>) => {
+                if (ref) {
+                  inputRefs[input.name] = ref;
+                }
+              }}
+              onSubmitEditing={
+                input.name
+                  ? () =>
+                      SubmitEditing(
+                        input.name,
+                        formValues[input.name].toString(),
+                        payinRefs[inputs[index + 1]?.name],
+                      )
+                  : () => {}
+              }
+            />
+          </View>
         ))}
       </ScrollView>
 

@@ -11,7 +11,6 @@ import {
   DrawerContentComponentProps,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 export type StackParamList = {
@@ -53,12 +52,11 @@ function EnterDataWrapper() {
 }
 export default function App() {
   return (
-    //<NavigationContainer>
     <ThemeProvider>
       <RootDrawer.Navigator
         initialRouteName="Home Screen Stack"
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
         }}
         drawerContent={CustomDrawerContent}>
         <RootDrawer.Screen
@@ -69,6 +67,5 @@ export default function App() {
         <RootDrawer.Screen name="View Records" component={ViewRecords} />
       </RootDrawer.Navigator>
     </ThemeProvider>
-    //</NavigationContainer>
   );
 }

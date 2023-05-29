@@ -1,6 +1,10 @@
 import {Transaction, ResultSet} from '../../databaseTypes';
 
-export function insertIntoCab(db: any, rego: string): Promise<ResultSet> {
+export function insertIntoCab(
+  db: any,
+  rego: string | string[] | boolean,
+): Promise<ResultSet> {
+  //console.log('formValues.rego==', rego);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
