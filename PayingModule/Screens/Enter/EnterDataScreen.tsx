@@ -18,13 +18,15 @@ import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
 //import envs from '../../config/env';
-import db from '../../databaseService';
+//import db from '../../databaseService';
 import {Transaction, ResultSet} from '../../databaseTypes';
 import {
   insertIntoCab,
+  deleteIntoCab,
   selectFromCab,
   selectFromUpdateItems,
   selectCountFromDataTable,
+  insertData,
 } from './dbUtility';
 import {StateContext} from './StateProvider';
 import {
@@ -35,7 +37,6 @@ import {
   useInputRefs,
   useLiftingRefs,
   usePayinRefs,
-  insertData,
   inputs,
   liftingInputs,
   payinInputs,
@@ -49,7 +50,7 @@ interface Cab {
   Cab: string;
 }
 type FormValues = {
-  [key: string]: string | boolean | Cab[];
+  [key: string]: string | boolean | string[] | Cab[];
   cabData: Cab[];
 };
 
@@ -79,7 +80,6 @@ const EnterData = () => {
 
     let Cnetpayin = Number(formValues.commissiongtn) - Cdeductions;
     let Dnetpayin = Number(formValues.commissiongtn) - Ddeductions;
-
     if (properties.some(property => Number(formValues[property]) > 0)) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
@@ -88,23 +88,13 @@ const EnterData = () => {
           {
             text: "Driver's ?",
             onPress: () => {
-              setFormValues(prevState => ({
-                ...prevState,
-                deductions: Ddeductions.toFixed(2),
-                netpayin: Dnetpayin.toFixed(2),
-              }));
-              alertConfirm('Wish to Submit?', () => executeSqlQuery());
+              handleDeduction(Ddeductions, Dnetpayin);
             },
           },
           {
             text: "Company's ?",
             onPress: () => {
-              setFormValues(prevState => ({
-                ...prevState,
-                deductions: Cdeductions.toFixed(2),
-                netpayin: Cnetpayin.toFixed(2),
-              }));
-              alertConfirm('Wish to Submit?', () => executeSqlQuery());
+              handleDeduction(Cdeductions, Cnetpayin);
             },
           },
           {
@@ -115,13 +105,17 @@ const EnterData = () => {
         {cancelable: true},
       );
     } else {
-      setFormValues(prevState => ({
-        ...prevState,
-        deductions: Cdeductions.toFixed(2),
-        netpayin: Cnetpayin.toFixed(2),
-      }));
-      alertConfirm('Wish to Submit?', () => executeSqlQuery());
+      handleDeduction(Cdeductions, Cnetpayin);
     }
+  };
+
+  const handleDeduction = (deductions: number, netpayin: number) => {
+    setFormValues(prevState => ({
+      ...prevState,
+      deductions: deductions.toFixed(2),
+      netpayin: netpayin.toFixed(2),
+    }));
+    alertConfirm('Wish to Submit?', () => executeSqlQuery());
   };
 
   const alertConfirm = (title: string, onPressYes: () => void) => {
@@ -181,7 +175,13 @@ const EnterData = () => {
   useEffect(() => {
     const fetchUpdateItemsData = async () => {
       try {
-        const res = await selectFromUpdateItems(db);
+        interface UpdateItemsResponse {
+          GovLFee: number;
+          DriverLFee: number;
+          Levy: number;
+          Driver_Comm_Rate: number;
+        }
+        const res = (await selectFromUpdateItems()) as UpdateItemsResponse;
         // console.log(' selectFromUpdateItems==', formValues.liftingtotal);
         setFormValues(prevState => ({
           ...prevState,
@@ -197,7 +197,7 @@ const EnterData = () => {
     };
     const fetchCabData = async () => {
       try {
-        const res = await selectFromCab(db);
+        const res = (await selectFromCab()) as Cab[];
         setFormValues(prevState => ({...prevState, cabData: res}));
       } catch (error) {
         console.log(error);
@@ -205,8 +205,11 @@ const EnterData = () => {
     };
     const fetchNumberOfEntries = async () => {
       try {
-        const numberOfEntries = await selectCountFromDataTable(db);
-        setFormValues(prevState => ({...prevState, numberOfEntries}));
+        const numberOfEntries = (await selectCountFromDataTable()) as number;
+        setFormValues(prevState => ({
+          ...prevState,
+          numberOfEntries: numberOfEntries.toString(),
+        }));
       } catch (error) {
         console.log(error);
       }
@@ -249,49 +252,34 @@ const EnterData = () => {
     }));
   };
 
-  let pushcab = async () => {
-    if (formValues.rego) {
+  const handleCabChange = async (action: Function) => {
+    if (!formValues.rego) {
       Alert.alert('Please put rego in.');
-    } else {
-      try {
-        await insertIntoCab(db, formValues.rego);
-        navigation.navigate('Enter Data');
-      } catch (error) {
-        console.log(error);
-      }
+      return;
+    }
+    try {
+      await action(formValues.rego.toString());
+      const res = (await selectFromCab()) as Cab[];
+      console.log('handleCabChange ==', res);
+      setFormValues(prevValue => ({
+        ...prevValue,
+        regomodal: !prevValue.regomodal,
+        cabData: res,
+      }));
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const deletecab = () => {
-    if (!formValues.rego) {
-      Alert.alert('Please put rego in.');
-    } else {
-      if (db) {
-        db.transaction((txn: Transaction) => {
-          txn.executeSql(
-            'DELETE FROM cab where Cab = ?',
-            [formValues.rego],
-            (_tx: Transaction, results: ResultSet) => {
-              if (results.rowsAffected > 0) {
-                Alert.alert('Deleted successfully');
-                navigation.navigate('Home');
-              }
-            },
-          );
-        });
-      } else {
-        console.log('db is undefined');
-      }
-    }
+  let pushcab = async () => {
+    handleCabChange(insertIntoCab);
   };
-  const Onupdate = () => {
-    setFormValues(prevValues => ({
-      ...prevValues,
-      liftingmodalvisible: !prevValues.liftingmodalvisible,
-    }));
-    navigation.navigate('Enter Data');
+
+  const deletecab = async () => {
+    handleCabChange(deleteIntoCab);
   };
-  const Invisible = () => {
+
+  const hideModal = () => {
     setFormValues(prevValues => ({
       ...prevValues,
       liftingmodalvisible: !prevValues.liftingmodalvisible,
@@ -404,8 +392,8 @@ const EnterData = () => {
 
       <Model
         modvisible={formValues.liftingmodalvisible}
-        onCancel={Invisible}
-        onupdate={Onupdate}
+        onCancel={hideModal}
+        onupdate={hideModal}
       />
 
       <RegoModal
@@ -513,7 +501,7 @@ const EnterData = () => {
           </TextInput>
           <Picker
             selectedValue={formValues.Taxi}
-            style={{width: 100}}
+            style={{width: 120}}
             onValueChange={(itemValue: string) => {
               setFormValues(prevValue => ({...prevValue, Taxi: itemValue}));
             }}>

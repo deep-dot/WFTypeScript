@@ -12,6 +12,9 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
+import {
+  updateData,
+} from '../Enter/dbUtility';
 import Mytextinput from '../../Components/Mytextinput';
 import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
@@ -210,7 +213,7 @@ const ViewRecords = ({navigation}: Props) => {
         />
         <MyButton
           title="Update"
-          customClick={() => DeleteRecord(item?.item?.user_id)}
+          customClick={() => updateData(item?.item?.Date)}
         />
         </View>
 

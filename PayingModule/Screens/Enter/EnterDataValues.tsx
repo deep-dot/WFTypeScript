@@ -1,6 +1,4 @@
 import {useRef} from 'react';
-import {Transaction, ResultSet} from '../../databaseTypes';
-import db from '../../databaseService';
 
 export const useLiftingRefs = () => {
   const refs = {
@@ -132,69 +130,6 @@ export const DdeductionsAdditionalProperties = [
 ];
 
 export const properties = ['accountFuel', 'carwash', 'misc'];
-// dbActions.js
-type FormValues = {
-  [key: string]: string | boolean | string[];
-};
-
-export const insertData = (
-  formValues: FormValues,
-  callback: (tx: Transaction, results: ResultSet) => void = () => {},
-) => {
-  if (db) {
-    db.transaction((txn: Transaction) => {
-      txn.executeSql(
-        'INSERT INTO datatable (Date, Day, Shift, Taxi, Jobs, Ins, Hours_Worked, Total_Levy, Car_Wash, Meter_Start, Meter_Finish, Shift_Total, Com_GTN, Com_Driver, Km_Start, Km_Finish, Kms, Paidkm_Start, Paidkm_Finish, Paid_Kms, Unpaid_kms, Eftpos_Total, Eftpos_LFee, Dockets, Charge_Authority, Manual_MPTP_Total, No_of_Manual_Lifts, Total_Lifting_Fee_Value, Misc, Acc_Fuel, Net_Payin, manual_lifting_fee_value, no_wheelchair_lifts, company_portion_lifting_fee, driver_portion_lifting_fee, Deductions, Gov_Sub_Manual31, CPK, Gov_Sub_Manual, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-        [
-          formValues.date,
-          formValues.day,
-          formValues.shift,
-          formValues.Taxi,
-          formValues.numberofJobs,
-          formValues.insurancefee,
-          formValues.hours,
-          formValues.totallevy,
-          formValues.carwash,
-          formValues.meter1,
-          formValues.meter2,
-          formValues.totalmeter,
-          formValues.commissiongtn,
-          formValues.commissiondriver,
-          formValues.km1,
-          formValues.km2,
-          formValues.resultkm,
-          formValues.paidkm1,
-          formValues.paidkm2,
-          formValues.resultpaidkm,
-          formValues.unpaidkm,
-          formValues.eftpos,
-          formValues.eftposlifting,
-          formValues.cc,
-          formValues.chargeAuthority,
-          formValues.manualMptp,
-          formValues.numberofmanuallifting,
-          formValues.totallifting,
-          formValues.misc,
-          formValues.accountFuel,
-          formValues.netpayin,
-          formValues.manuallifting,
-          formValues.numberofChairs,
-          formValues.gtnLFee,
-          formValues.driverLFee,
-          formValues.deductions,
-          formValues.govSubManual31,
-          formValues.cpk,
-          formValues.manualMptp,
-          formValues.drivercommrate,
-          formValues.companycommrate,
-        ],
-        callback,
-      );
-    });
-  } else {
-    console.log('db is undefined');
-  }
-};
 
 export const liftingInputs = [
   {
