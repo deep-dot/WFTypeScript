@@ -50,6 +50,13 @@ function EnterDataWrapper() {
     </StateProvider>
   );
 }
+function ViewRecordsWrapper() {
+  return (
+    <StateProvider>
+      <ViewRecords />
+    </StateProvider>
+  );
+}
 export default function App() {
   return (
     <ThemeProvider>
@@ -64,7 +71,7 @@ export default function App() {
           component={HomeScreenStack}
         />
         <RootDrawer.Screen name="Enter Data" component={EnterDataWrapper} />
-        <RootDrawer.Screen name="View Records" component={ViewRecords} />
+        <RootDrawer.Screen name="View Records" component={ViewRecordsWrapper} />
       </RootDrawer.Navigator>
     </ThemeProvider>
   );

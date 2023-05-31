@@ -67,7 +67,7 @@ export const initialValues = {
   liftingmodalvisible: false,
   shift: '',
   hours: '',
-  numberofJobs: '',
+  Jobs: '',
   totallevy: '',
   insurancefee: '',
   meter1: '',

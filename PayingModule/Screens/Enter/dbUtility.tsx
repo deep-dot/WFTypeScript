@@ -1,6 +1,7 @@
 import {Transaction, ResultSet} from '../../databaseTypes';
 import {Alert} from 'react-native';
 import db from '../../databaseService';
+import {Action} from './StateProvider';
 
 export function insertIntoCab(
   //db: any,
@@ -217,8 +218,9 @@ export const insertData = (
   }
 };
 
-export const updateData = (
+export const UpdateData = (
   searchByDate: string | number | null | undefined,
+  dispatch: React.Dispatch<Action>,
 ) => {
   //console.log('res in updateData in dbUtility', searchByDate);
   return new Promise((resolve, reject) => {
@@ -232,6 +234,7 @@ export const updateData = (
               let res = results.rows.item(0);
               // console.log('res in updateData in dbUtility', res);
               resolve(res);
+              dispatch({type: 'UPDATE', payload: res});
               Alert.alert('Search successfully');
             } else {
               reject(new Error('Search operation failed'));

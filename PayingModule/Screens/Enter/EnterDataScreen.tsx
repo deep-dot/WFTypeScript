@@ -61,8 +61,9 @@ const EnterData = () => {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {dispatch} = stateContext;
+  const {state, dispatch} = stateContext;
   const [formValues, setFormValues] = useState<FormValues>(initialValues);
+  //const [formValues, setFormValues] = useState<State>(initialState);
   const inputRefs: {[key: string]: React.RefObject<TextInput>} = useInputRefs();
   const liftingRefs: {[key: string]: React.RefObject<TextInput>} =
     useLiftingRefs();
@@ -167,8 +168,14 @@ const EnterData = () => {
     });
   };
 
+  useEffect(() => {
+    //setFormValues(state);
+    console.log('state in Enter data==', state);
+  }, [state]);
+
   const Refresh = () => {
-    dispatch({type: 'REFRESH'});
+    dispatch({type: 'REFRESH', payload: null});
+    console.log('pressed');
   };
 
   //number of Entries
@@ -197,8 +204,11 @@ const EnterData = () => {
     };
     const fetchCabData = async () => {
       try {
-        const res = (await selectFromCab()) as Cab[];
-        setFormValues(prevState => ({...prevState, cabData: res}));
+        const res = (await selectFromCab()) as FormValues['cabData'];
+        setFormValues(prevState => ({
+          ...prevState,
+          cabData: res,
+        }));
       } catch (error) {
         console.log(error);
       }
@@ -219,14 +229,6 @@ const EnterData = () => {
     fetchNumberOfEntries();
   }, [formValues.liftingtotal, setFormValues]);
 
-  // React to state changes
-  useEffect(() => {
-    if (Array.isArray(formValues.cabData)) {
-      formValues.cabData.forEach((cab: Cab, i: number) => {
-        console.log('cab', cab.Cab, i);
-      });
-    }
-  }, [formValues.cabData]);
   //calculator...
   let Authoritycalculator = (num: Number) => {
     // console.log('charge auth num===', num);
@@ -287,7 +289,13 @@ const EnterData = () => {
   };
 
   const onChange = (name: string, value: string | boolean) => {
+    console.log('onchange in enter data ==', name, 'and', value);
     setFormValues(prevValues => ({...prevValues, [name]: value}));
+  };
+
+  const updateStateContext = () => {
+    dispatch({type: 'UPDATE', payload: formValues});
+    navigation.navigate('Enter Data');
   };
 
   const SubmitEditing = (
@@ -567,11 +575,11 @@ const EnterData = () => {
               {input.title}
             </Text>
             <TextInput
-              placeholder="0.0"
+              placeholder="0.00"
               placeholderTextColor="#fff"
               style={[styles.textInput, {color: '#fff'}]}
               returnKeyType="next"
-              keyboardType="numeric"
+              // keyboardType="numeric"
               onChangeText={(value: string) => onChange(input.name, value)}
               value={formValues[input.name]}
               ref={(ref: RefObject<TextInput>) => {
@@ -723,9 +731,7 @@ const EnterData = () => {
           justifyContent: 'space-between',
           padding: 5,
         }}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('DisplayReport')}>
+        <TouchableOpacity style={styles.button} onPress={updateStateContext}>
           <Text style={styles.buttontext}>Report</Text>
         </TouchableOpacity>
 

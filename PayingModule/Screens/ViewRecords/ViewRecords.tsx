@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   TouchableOpacity,
   ScrollView,
@@ -12,15 +12,16 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
-import {
-  updateData,
-} from '../Enter/dbUtility';
+import {UpdateData} from '../Enter/dbUtility';
 import Mytextinput from '../../Components/Mytextinput';
 import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 //import Icon from 'react-native-vector-icons/Ionicons';
 import db from '../../databaseService';
 import {Transaction, ResultSet} from '../../databaseTypes';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {StackParamList} from '../../../App';
+import {useNavigation} from '@react-navigation/core';
 interface ListItem {
   item: {
     Acc_Fuel?: number;
@@ -74,13 +75,16 @@ interface ListItem {
 }
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import MyButton from '../../Components/Mybutton';
-// import ListItem from 'react-native-paper/lib/typescript/src/components/List/ListItem';
+import {StateContext} from '../Enter/StateProvider';
 
 interface Props {
   navigation: NavigationProp<ParamListBase>;
 }
 
-const ViewRecords = ({navigation}: Props) => {
+const ViewRecords = () => {
+  const navigation =
+    useNavigation<StackNavigationProp<StackParamList, 'View Records'>>();
+
   let [flatListItems, setFlatListItems] = useState<ListItem[]>([]);
   let [totalrecords, setTotalrecords] = useState<string>('');
 
@@ -172,29 +176,45 @@ const ViewRecords = ({navigation}: Props) => {
   };
 
   const DeleteRecord = (idToDelete: number | undefined) => {
-      Alert.alert(
-        'Please confirm!',
-        'Do you wish to delete the record?',
-        [
-          {
-            text: 'Yes',
-            onPress: () => {
-              Delete((idToDelete));
-            },
+    Alert.alert(
+      'Please confirm!',
+      'Do you wish to delete the record?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            Delete(idToDelete);
           },
-          {
-            text: 'No',
-            style: 'cancel',
-          },
-        ],
-        {cancelable: true},
-      );
+        },
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+      ],
+      {cancelable: true},
+    );
   };
 
   let listViewItemSeparator = () => {
     return (
       <View style={{height: 10, width: '100%', backgroundColor: '#000'}} />
     );
+  };
+
+  const stateContext = useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {dispatch} = stateContext;
+  const handleRefresh = async (searchDate: string | undefined) => {
+    try {
+      const searchedData = await UpdateData(searchDate, dispatch);
+      dispatch({type: 'UPDATE', payload: searchedData});
+      navigation.navigate('Enter Data');
+    } catch (error) {
+      // handle error
+      console.error(error);
+    }
   };
 
   let listItemView = (item: ListItem) => {
@@ -206,15 +226,16 @@ const ViewRecords = ({navigation}: Props) => {
       <View
         key={item?.item?.user_id}
         style={{backgroundColor: '#ffffff', marginTop: 10, padding: 5}}>
-          <View style={styles.textinputview}>
-        <MyButton
-          title="Delete"
-          customClick={() => DeleteRecord(item?.item?.user_id)}
-        />
-        <MyButton
-          title="Update"
-          customClick={() => updateData(item?.item?.Date)}
-        />
+        <View style={styles.textinputview}>
+          <MyButton
+            title="Delete"
+            customClick={() => DeleteRecord(item?.item?.user_id)}
+          />
+          <MyButton
+            title="Update"
+            // customClick={() => updateData(item?.item?.Date)}
+            customClick={() => handleRefresh(item?.item?.Date)}
+          />
         </View>
 
         <View style={styles.textinputview}>
@@ -491,7 +512,7 @@ const ViewRecords = ({navigation}: Props) => {
           borderTopWidth: 2,
         }}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Home Screen')}
+          onPress={() => navigation.navigate('Home')}
           style={{
             justifyContent: 'center',
             alignItems: 'center',
