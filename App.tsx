@@ -27,7 +27,7 @@ const HomeScreenStack = () => {
         headerShown: true,
       }}>
       <RootStack.Screen name="Home" component={HomeScreen} />
-      <RootStack.Screen name="Enter Data" component={EnterDataWrapper} />
+      <RootStack.Screen name="Enter Data" component={EnterData} />
       <RootStack.Screen name="View Records" component={ViewRecords} />
     </RootStack.Navigator>
   );
@@ -43,36 +43,38 @@ const RootDrawer = createDrawerNavigator<DrawerParamList>();
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   return <DrawerContent {...props} />;
 };
-function EnterDataWrapper() {
-  return (
-    <StateProvider>
-      <EnterData />
-    </StateProvider>
-  );
-}
-function ViewRecordsWrapper() {
-  return (
-    <StateProvider>
-      <ViewRecords />
-    </StateProvider>
-  );
-}
+// function EnterDataWrapper() {
+//   return (
+//     <StateProvider>
+//       <EnterData />
+//     </StateProvider>
+//   );
+// }
+// function ViewRecordsWrapper() {
+//   return (
+//     <StateProvider>
+//       <ViewRecords />
+//     </StateProvider>
+//   );
+// }
 export default function App() {
   return (
     <ThemeProvider>
-      <RootDrawer.Navigator
-        initialRouteName="Home Screen Stack"
-        screenOptions={{
-          headerShown: true,
-        }}
-        drawerContent={CustomDrawerContent}>
-        <RootDrawer.Screen
-          name="Home Screen Stack"
-          component={HomeScreenStack}
-        />
-        <RootDrawer.Screen name="Enter Data" component={EnterDataWrapper} />
-        <RootDrawer.Screen name="View Records" component={ViewRecordsWrapper} />
-      </RootDrawer.Navigator>
+      <StateProvider>
+        <RootDrawer.Navigator
+          initialRouteName="Home Screen Stack"
+          screenOptions={{
+            headerShown: true,
+          }}
+          drawerContent={CustomDrawerContent}>
+          <RootDrawer.Screen
+            name="Home Screen Stack"
+            component={HomeScreenStack}
+          />
+          <RootDrawer.Screen name="Enter Data" component={EnterData} />
+          <RootDrawer.Screen name="View Records" component={ViewRecords} />
+        </RootDrawer.Navigator>
+      </StateProvider>
     </ThemeProvider>
   );
 }

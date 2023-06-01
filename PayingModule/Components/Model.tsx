@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-lone-blocks */
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Alert,
   TextInput,
@@ -22,12 +22,10 @@ interface Props {
 }
 
 const Model: React.FC<Props> = props => {
-  const [liftingtotal, setLiftingtotal] = useState<number | string>(0);
-  const [liftingdriver, setliftingdriver] = useState<number | string>(0);
-  const [liftingcompany, setliftingcompany] = useState<number | string>(0);
-  const [levy, setLevy] = useState<number | string>(0);
-  const [drivercommrate, setDrivercommrate] = useState<number | string>(0);
-  const [_companycommrate, setCompanycommrate] = useState<number | string>(0);
+  const [liftingtotal, setLiftingtotal] = useState<string>('');
+  const [liftingdriver, setliftingdriver] = useState<string>('');
+  const [levy, setLevy] = useState<string>('');
+  const [drivercommrate, setDrivercommrate] = useState<string>('');
 
   useEffect(() => {
     if (db) {
@@ -57,10 +55,9 @@ const Model: React.FC<Props> = props => {
       db.transaction((txn: Transaction) => {
         txn.executeSql('Delete from UpdateItems', []);
         txn.executeSql(
-          'INSERT INTO UpdateItems ( GovLFee, CompanyLFee, DriverLFee, Levy, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?,?)',
+          'INSERT INTO UpdateItems ( GovLFee, DriverLFee, Levy, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?)',
           [
             liftingtotal,
-            liftingcompany,
             liftingdriver,
             levy,
             drivercommrate,
@@ -82,7 +79,7 @@ const Model: React.FC<Props> = props => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'SELECT GovLFee, CompanyLFee, DriverLFee, Levy, Driver_Comm_Rate, Company_Comm_Rate FROM UpdateItems',
+          'SELECT GovLFee, DriverLFee, Levy, Driver_Comm_Rate FROM UpdateItems',
           [],
           (_tx: Transaction, results: ResultSet) => {
             var len = results.rows.length;
@@ -90,14 +87,12 @@ const Model: React.FC<Props> = props => {
               let res = results.rows.item(0);
               updateallstates(
                 res.GovLFee,
-                res.CompanyLFee,
                 res.DriverLFee,
                 res.Levy,
                 res.Driver_Comm_Rate,
-                res.Company_Comm_Rate,
               );
             } else {
-              updateallstates('', '', '', '', '', '');
+              updateallstates('', '', '', '');
             }
           },
         );
@@ -106,28 +101,17 @@ const Model: React.FC<Props> = props => {
       console.log('db is undefined');
     }
   }, []);
-  let updateallstates = (
-    a: number | string,
-    b: number | string,
-    c: number | string,
-    d: number | string,
-    e: number | string,
-    f: number | string,
-  ): void => {
+  let updateallstates = (a: string, b: string, c: string, d: string): void => {
     setLiftingtotal(a);
-    setliftingcompany(b);
-    setliftingdriver(c);
-    setLevy(d);
-    setDrivercommrate(e);
-    setCompanycommrate(f);
+    setliftingdriver(b);
+    setLevy(c);
+    setDrivercommrate(d);
   };
 
-  let refs = {
-    liftdriver: useRef(null),
-    liftcompany: useRef(null),
-    driverrate: useRef(null),
-    companyrate: useRef(null),
-  };
+  // let refs = {
+  //   liftdriver: useRef(null),
+  //   driverrate: useRef(null),
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -146,14 +130,14 @@ const Model: React.FC<Props> = props => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                onChangeText={num => setLiftingtotal(Number(num))}
+                onChangeText={(text: string) => setLiftingtotal(text)}
                 // value={liftingtotal}
                 onSubmitEditing={() => {
                   {
                     if (!liftingtotal) {
                       Alert.alert('Please input a correct number');
                     } else {
-                      refs.liftdriver.current?.focus();
+                      //refs.liftdriver.current?.focus();
                     }
                   }
                 }}>
@@ -169,17 +153,17 @@ const Model: React.FC<Props> = props => {
                 //alignItems="center"
                 style={styles.textInput}
                 keyboardType="numeric"
-                onChangeText={num => setliftingdriver(num)}
+                onChangeText={(text: string) => setliftingdriver(text)}
                 //value={liftingdriver}
-                ref={input => {
-                  liftdriver = input;
-                }}
+                // ref={input => {
+                //   liftdriver = input;
+                // }}
                 onSubmitEditing={() => {
                   {
                     if (!liftingdriver) {
                       Alert.alert('Please input a correct number');
                     } else {
-                      refs.liftcompany.current?.focus();
+                      //refs.liftcompany.current?.focus();
                     }
                   }
                 }}>
@@ -218,16 +202,16 @@ const Model: React.FC<Props> = props => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                onChangeText={num => setLevy(num)}
+                onChangeText={(text: string) => setLevy(text)}
                 //value={levy}
-                ref={input => {
-                  lev = input;
-                }}
+                // ref={input => {
+                //   lev = input;
+                // }}
                 onSubmitEditing={() => {
                   if (!levy) {
                     Alert.alert('Please input a correct number');
                   } else {
-                    refs.driverrate.current?.focus();
+                    // refs.driverrate.current?.focus();
                   }
                 }}>
                 <Text style={styles.titletext}>{levy}</Text>
@@ -243,14 +227,12 @@ const Model: React.FC<Props> = props => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                onChangeText={num => setDrivercommrate(num)}
+                onChangeText={(text: string) => setDrivercommrate(text)}
                 //value={drivercommrate}
-                ref={input => {
-                  refs.driverrate = input;
-                }}
-                onSubmitEditing={() => {
-                  refs.companyrate.current?.focus();
-                }}>
+                // ref={input => {
+                //   refs.driverrate = input;
+                // }}
+              >
                 <Text style={styles.titletext}>{drivercommrate}</Text>
               </TextInput>
             </View>

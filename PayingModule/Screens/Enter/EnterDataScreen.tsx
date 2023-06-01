@@ -31,9 +31,8 @@ import {
 import {StateContext} from './StateProvider';
 import {
   initialValues,
-  CdeductionsProperties,
+  DdeductionsProperties,
   DdeductionsAdditionalProperties,
-  properties,
   useInputRefs,
   useLiftingRefs,
   usePayinRefs,
@@ -51,7 +50,7 @@ interface Cab {
 }
 type FormValues = {
   [key: string]: string | boolean | string[] | Cab[];
-  cabData: Cab[];
+  //cabData: Cab[];
 };
 
 const EnterData = () => {
@@ -70,18 +69,22 @@ const EnterData = () => {
   const payinRefs: {[key: string]: React.RefObject<TextInput>} = usePayinRefs();
 
   let submitalltogather = () => {
-    let Cdeductions = CdeductionsProperties.reduce(
+    let Cdeductions = DdeductionsProperties.reduce(
       (acc, curr) => acc + Number(formValues[curr]),
       0,
     );
     let Ddeductions = [
-      ...CdeductionsProperties,
+      ...DdeductionsProperties,
       ...DdeductionsAdditionalProperties,
     ].reduce((acc, curr) => acc + Number(formValues[curr]), 0);
 
     let Cnetpayin = Number(formValues.commissiongtn) - Cdeductions;
     let Dnetpayin = Number(formValues.commissiongtn) - Ddeductions;
-    if (properties.some(property => Number(formValues[property]) > 0)) {
+    if (
+      DdeductionsAdditionalProperties.some(
+        property => Number(formValues[property]) > 0,
+      )
+    ) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
         '',
@@ -184,19 +187,18 @@ const EnterData = () => {
       try {
         interface UpdateItemsResponse {
           GovLFee: number;
-          DriverLFee: number;
+          Driver_Lifting_Value: number;
           Levy: number;
           Driver_Comm_Rate: number;
         }
         const res = (await selectFromUpdateItems()) as UpdateItemsResponse;
-        // console.log(' selectFromUpdateItems==', formValues.liftingtotal);
+        // console.log(' selectFromUpdateItems==', formValues.Total_Lifting_Value);
         setFormValues(prevState => ({
           ...prevState,
-          liftingtotal: res.GovLFee.toFixed(2),
-          liftingdriver: res.DriverLFee.toFixed(2),
-          levy: res.Levy.toFixed(2),
-          drivercommrate: res.Driver_Comm_Rate.toFixed(0),
-          // companycommrate: res.Company_Comm_Rate.toFixed(2),
+          Gov_Lifting_Fee: res.GovLFee.toFixed(2),
+          //Driver_Share_In_LiftingFee: res.DriverLFee.t,
+          Gov_Levy: res.Levy.toFixed(2),
+          Driver_Comm_Rate: res.Driver_Comm_Rate.toFixed(0),
         }));
       } catch (error) {
         console.log(error);
@@ -207,7 +209,7 @@ const EnterData = () => {
         const res = (await selectFromCab()) as FormValues['cabData'];
         setFormValues(prevState => ({
           ...prevState,
-          cabData: res,
+          Cab_Data: res,
         }));
       } catch (error) {
         console.log(error);
@@ -218,7 +220,7 @@ const EnterData = () => {
         const numberOfEntries = (await selectCountFromDataTable()) as number;
         setFormValues(prevState => ({
           ...prevState,
-          numberOfEntries: numberOfEntries.toString(),
+          Number_Of_Entries: numberOfEntries.toString(),
         }));
       } catch (error) {
         console.log(error);
@@ -227,7 +229,7 @@ const EnterData = () => {
     fetchUpdateItemsData();
     fetchCabData();
     fetchNumberOfEntries();
-  }, [formValues.liftingtotal, setFormValues]);
+  }, [setFormValues]);
 
   //calculator...
   let Authoritycalculator = (num: Number) => {
@@ -235,38 +237,38 @@ const EnterData = () => {
     num = Number(num);
     setFormValues(prevState => ({
       ...prevState,
-      chargeAuthority: num.toFixed(2),
-      calculatormodalvisible: !prevState.calculatormodalvisible,
+      Electronic_Account_Payments: num.toFixed(2),
+      Calculator_Modal_Visible: !prevState.Calculator_Modal_Visible,
     }));
   };
   let CCcalculator = (num: Number) => {
     num = Number(num);
     setFormValues(prevState => ({
       ...prevState,
-      cc: num.toFixed(2),
-      calculatormodalvisible: !prevState.calculatormodalvisible,
+      M3_Dockets: num.toFixed(2),
+      Calculator_Modal_Visible: !prevState.Calculator_Modal_Visible,
     }));
   };
   let Cancelcalculator = () => {
     setFormValues(prevValue => ({
       ...prevValue,
-      calculatormodalvisible: !prevValue.calculatormodalvisible,
+      Calculator_Modal_Visible: !prevValue.Calculator_Modal_Visible,
     }));
   };
 
   const handleCabChange = async (action: Function) => {
-    if (!formValues.rego) {
+    if (!formValues.Rego) {
       Alert.alert('Please put rego in.');
       return;
     }
     try {
-      await action(formValues.rego.toString());
+      await action(formValues.Rego.toString());
       const res = (await selectFromCab()) as Cab[];
       console.log('handleCabChange ==', res);
       setFormValues(prevValue => ({
         ...prevValue,
-        regomodal: !prevValue.regomodal,
-        cabData: res,
+        Rego_Modal: !prevValue.Rego_Modal,
+        Cab_Data: res,
       }));
     } catch (error) {
       console.log(error);
@@ -284,7 +286,7 @@ const EnterData = () => {
   const hideModal = () => {
     setFormValues(prevValues => ({
       ...prevValues,
-      liftingmodalvisible: !prevValues.liftingmodalvisible,
+      Lifting_Modal_Visible: !prevValues.Lifting_Modal_Visible,
     }));
   };
 
@@ -306,69 +308,62 @@ const EnterData = () => {
     if (!isNaN(Number(value))) {
       let updatedValues = {...formValues, [name]: value};
       console.log(`name ${name} and value ${value}`);
-      if (name === 'numberofJobs') {
-        const val1 = Number(updatedValues.numberofJobs || 0);
-        const val2 = Number(updatedValues.levy || 0);
-        updatedValues.totallevy = (val1 * val2).toFixed(2);
+      if (name === 'Jobs_Done') {
+        const val1 = Number(updatedValues.Jobs_Done || 0);
+        const val2 = Number(updatedValues.Gov_Levy || 0);
+        updatedValues.Levy = (val1 * val2).toFixed(2);
       }
-      if (name === 'meter2') {
-        const val1 = Number(updatedValues.meter1 || 0);
-        const val2 = Number(updatedValues.meter2 || 0);
-        const val3 = Number(updatedValues.totallevy || 0);
-        const val4 = Number(updatedValues.drivercommrate || 0);
-        const val5 = Number(updatedValues.companycommrate || 0);
-        const val6 = Number(updatedValues.hours || 0);
-        const val7 = Number(updatedValues.driverLFee || 0);
-        updatedValues.totalmeter = (val2 - val1 - val3).toFixed(2);
-        updatedValues.commissiondriver = (
-          Number(updatedValues.totalmeter) *
+      if (name === 'Meter_Finish') {
+        const val1 = Number(updatedValues.Meter_Start || 0);
+        const val2 = Number(updatedValues.Meter_Finish || 0);
+        const val3 = Number(updatedValues.Levy || 0);
+        const val4 = Number(updatedValues.Driver_Comm_Rate || 0);
+        const val6 = Number(updatedValues.Hours_Worked || 0);
+        const val7 = Number(updatedValues.Driver_Lifting_Value || 0);
+        updatedValues.Shift_Total = (val2 - val1 - val3).toFixed(2);
+        updatedValues.Commission_Driver = (
+          Number(updatedValues.Shift_Total) *
           (val4 / 100)
         ).toFixed(2);
-        updatedValues.commissiongtn = (
-          Number(updatedValues.totalmeter) *
-          (val5 / 100)
+        updatedValues.Average_Fare = (
+          Number(updatedValues.Shift_Total) / val6
         ).toFixed(2);
-        updatedValues.fare = (Number(updatedValues.totalmeter) / val6).toFixed(
-          2,
-        );
-        updatedValues.driverIncome = (
-          val7 + Number(updatedValues.commissiondriver)
+        updatedValues.Net_Driver_Income = (
+          val7 + Number(updatedValues.Commission_Driver)
         ).toFixed(2);
       }
-      if (name === 'km2') {
-        const val1 = Number(updatedValues.km1 || 0);
-        const val2 = Number(updatedValues.km2 || 0);
-        updatedValues.resultkm = (val2 - val1).toFixed(2);
-        updatedValues.cpk = (
-          Number(updatedValues.totalmeter) / Number(updatedValues.resultkm)
+      if (name === 'Km_Finish') {
+        const val1 = Number(updatedValues.Km_Start || 0);
+        const val2 = Number(updatedValues.Km_Finish || 0);
+        updatedValues.Kms = (val2 - val1).toFixed(2);
+        updatedValues.CPK = (
+          Number(updatedValues.Shift_Total) / Number(updatedValues.Kms)
         ).toFixed(2);
       }
-      if (name === 'paidkm2') {
-        const val1 = Number(updatedValues.paidkm1 || 0);
-        const val2 = Number(updatedValues.paidkm2 || 0);
-        updatedValues.resultpaidkm = (val2 - val1).toFixed(2);
-        updatedValues.unpaidkm = (
-          Number(updatedValues.resultkm) - Number(updatedValues.resultpaidkm)
+      if (name === 'Paidkm_Finish') {
+        const val1 = Number(updatedValues.Paidkm_Start || 0);
+        const val2 = Number(updatedValues.Paidkm_Finish || 0);
+        updatedValues.Paid_Kms = (val2 - val1).toFixed(2);
+        updatedValues.Unpaid_Kms = (
+          Number(updatedValues.Kms) - Number(updatedValues.Paid_Kms)
         ).toFixed(2);
       }
-      if (name === 'numberofmanuallifting') {
-        const val1 = Number(updatedValues.numberofmanuallifting || 0);
-        const val2 = Number(updatedValues.liftingtotal || 0);
+      if (name === 'Number_Of_Manual_Liftings') {
+        const val1 = Number(updatedValues.Number_Of_Manual_Liftings || 0);
+        const val2 = Number(updatedValues.Total_Lifting_Value || 0);
         updatedValues.manualLifting = (val2 * val1).toFixed(2);
       }
-      if (name === 'eftposlifting') {
-        const val1 = Number(updatedValues.numberofmanuallifting || 0);
-        const val2 = Number(updatedValues.liftingtotal || 0);
-        const val3 = Number(updatedValues.eftposlifting || 0);
-        const val4 = Number(updatedValues.liftingcompany || 0);
-        const val5 = Number(updatedValues.liftingdriver || 0);
-        updatedValues.totalLifting = (val2 * val1 + val3).toFixed(2);
-        updatedValues.numberofChairs = (val1 + val3 / val2).toFixed(2);
-        updatedValues.gtnLFee = (
-          Number(updatedValues.numberofChairs) * val4
-        ).toFixed(2);
-        updatedValues.driverLFee = (
-          Number(updatedValues.numberofChairs) * val5
+      if (name === 'Eftpos_Lifting_Value') {
+        const val1 = Number(updatedValues.Number_Of_Manual_Liftings || 0);
+        const val2 = Number(updatedValues.Total_Lifting_Value || 0);
+        const val3 = Number(updatedValues.Eftpos_Lifting_Value || 0);
+        const val5 = Number(updatedValues.Driver_Lifting_Value || 0);
+        updatedValues.Total_Lifting_Value = (val2 * val1 + val3).toFixed(2);
+        updatedValues.Number_Of_Manual_Liftings = (val1 + val3 / val2).toFixed(
+          2,
+        );
+        updatedValues.Driver_Lifting_Value = (
+          Number(updatedValues.Number_Of_Manual_Liftings) * val5
         ).toFixed(2);
       }
       setFormValues(updatedValues);
@@ -392,14 +387,14 @@ const EnterData = () => {
       />
 
       <Calculator
-        calculatorVisible={formValues.calculatormodalvisible}
+        calculatorVisible={formValues.Calculator_Modal_Visible}
         Cancelcalcu={Cancelcalculator}
         Docketcalcu={CCcalculator}
         CAcalcu={Authoritycalculator}
       />
 
       <Model
-        modvisible={formValues.liftingmodalvisible}
+        modvisible={formValues.Lifting_Modal_Visible}
         onCancel={hideModal}
         onupdate={hideModal}
       />
@@ -448,7 +443,7 @@ const EnterData = () => {
           onPress={() =>
             setFormValues(prevValue => ({
               ...prevValue,
-              liftingmodalvisible: !prevValue.liftingmodalvisible,
+              Lifting_Modal_Visible: !prevValue.Lifting_Modal_Visible,
             }))
           }>
           <Text style={styles.buttontext}>Update above Items if needed</Text>
@@ -470,16 +465,16 @@ const EnterData = () => {
             editable={false}
             style={styles.textInput}>
             <Text style={[styles.titleText, {color: '#fff'}]}>
-              {formValues.shift}
+              {formValues.Shift}
             </Text>
           </TextInput>
           <Picker
-            selectedValue={formValues.shift}
+            selectedValue={formValues.Shift}
             style={{
               width: 100,
             }}
             onValueChange={(itemValue: string) => {
-              setFormValues(prevValues => ({...prevValues, shift: itemValue}));
+              setFormValues(prevValues => ({...prevValues, Shift: itemValue}));
             }}>
             <Picker.Item label="Select" value="  " color="#fff" />
             <Picker.Item label="Day" value="Day" color="#fff" />
@@ -514,7 +509,7 @@ const EnterData = () => {
               setFormValues(prevValue => ({...prevValue, Taxi: itemValue}));
             }}>
             <Picker.Item label="Select" key=" " value=" " />
-            {formValues.cabData.map((cab: Cab, i: number) => (
+            {formValues.Cab_Data.map((cab: Cab, i: number) => (
               <Picker.Item
                 label={cab.Cab}
                 key={i}
@@ -530,7 +525,7 @@ const EnterData = () => {
           onPress={() =>
             setFormValues(prevValue => ({
               ...prevValue,
-              regomodal: !prevValue.regomodal,
+              Rego_Modal: !prevValue.Rego_Modal,
             }))
           }>
           <Text style={styles.buttontext}>Registration Number</Text>
@@ -639,7 +634,7 @@ const EnterData = () => {
             onSubmitEditing={() =>
               onSubmitEditing(
                 formValues.meter2.toString(),
-                inputRefs.totalmeter,
+                inputRefs.Shift_Total,
               )
             }
           />
@@ -652,13 +647,13 @@ const EnterData = () => {
             style={[styles.textInput, {color: '#fff'}]}
             returnKeyType="next"
             keyboardType="numeric"
-            OnChange={(totalmeter: string) =>
-              setFormValues(prevValues => ({...prevValues, totalmeter}))
+            OnChange={(Shift_Total: string) =>
+              setFormValues(prevValues => ({...prevValues, Shift_Total}))
             }
-            ref={inputRefs.totalmeter}
+            ref={inputRefs.Shift_Total}
             onSubmitEditing={() =>
               onSubmitEditing(
-                formValues.totalmeter.toString(),
+                formValues.Shift_Total.toString(),
                 inputRefs.insurancefee,
               )
             }
@@ -670,7 +665,7 @@ const EnterData = () => {
           onPress={() =>
             setFormValues(prevValue => ({
               ...prevValue,
-              calculatormodalvisible: !prevValue.calculatormodalvisible,
+              Calculator_Modal_Visible: !prevValue.Calculator_Modal_Visible,
             }))
           }>
           <Text

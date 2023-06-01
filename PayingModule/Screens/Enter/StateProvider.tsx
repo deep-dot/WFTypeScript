@@ -92,6 +92,7 @@ interface Cab {
 type FormValues = {
   [key: string]: string | boolean | string[] | Cab[];
   cabData: Cab[];
+  //Jobs: string;
 };
 
 export type Action =
@@ -112,13 +113,17 @@ interface ContextValue {
 export const StateContext = createContext<ContextValue | undefined>(undefined);
 
 const reducer = (state: FormValues, action: Action): FormValues => {
-  console.log('action.type==', action.type);
+  // console.log('action.type==', action.type, state);
   switch (action.type) {
     case 'REFRESH':
       return {...initialValues};
     case 'UPDATE':
       console.log('action.type UPDATE==', action.payload.Jobs);
-      return {...state, Jobs: action.payload.Jobs};
+      console.log('action.type==', {
+        ...state,
+        numberofJobs: action.payload.Jobs,
+      });
+      return {...state, ...action.payload};
     case 'ERROR':
       // Here you could return an error state
       // For simplicity, let's just log the error and return the existing state
@@ -134,7 +139,6 @@ interface Props {
 }
 export const StateProvider = ({children}: Props) => {
   const [count, setCount] = useState(0);
-
   const incrementCount = () => {
     setCount(count + 1);
   };
