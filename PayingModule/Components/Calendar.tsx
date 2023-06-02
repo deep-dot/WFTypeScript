@@ -11,11 +11,10 @@ const calendarIcon = require('./calender.png');
 
 interface CalendarProps {
   value: string;
-  onChange: (date: string) => void;
-  OnChange: (day: string) => void;
+  onChange: (date: string, day: string) => void;
 }
 
-const Calendar: FC<CalendarProps> = ({onChange, OnChange, value}) => {
+const Calendar: FC<CalendarProps> = ({onChange, value}) => {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
 
@@ -38,8 +37,10 @@ const Calendar: FC<CalendarProps> = ({onChange, OnChange, value}) => {
   };
 
   const handleConfirm = (date: Date) => {
-    onChange(moment(date).format('YYYY/MM/DD'));
-    OnChange(daysOfWeek[date.getDay()]);
+    const formattedDate = moment(date).format('YYYY/MM/DD');
+    const dayOfWeek = daysOfWeek[date.getDay()];
+
+    onChange(formattedDate, dayOfWeek);
     setShow(false);
   };
 

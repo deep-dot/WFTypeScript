@@ -112,7 +112,7 @@ const ViewRecords = () => {
     }
   }, []);
 
-  let searchUser = () => {
+  let SearchRecord = () => {
     if (!start_date || !finish_date) {
       setShow2Alert(true);
     } else {
@@ -122,6 +122,7 @@ const ViewRecords = () => {
             'SELECT * from datatable where Date between ? and ? order by Date',
             [start_date, finish_date],
             (_tx: Transaction, results: ResultSet) => {
+              console.log('results in View records==', results);
               var len = results.rows.length;
               setTotalrecords(len.toString());
               if (len > 0) {
@@ -148,7 +149,7 @@ const ViewRecords = () => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'DELETE FROM  datatable where user_id = ?',
+          'DELETE FROM  datatable where Record_id = ?',
           [idToDelete],
           (tx: Transaction) => {
             tx.executeSql(
@@ -175,7 +176,7 @@ const ViewRecords = () => {
     }
   };
 
-  const DeleteRecord = (idToDelete: number | undefined) => {
+  const DeleteRecord = (idToDelete: any) => {
     Alert.alert(
       'Please confirm!',
       'Do you wish to delete the record?',
@@ -224,12 +225,12 @@ const ViewRecords = () => {
     }
     return (
       <View
-        key={item?.item?.user_id}
+        key={item?.item?.Record_id}
         style={{backgroundColor: '#ffffff', marginTop: 10, padding: 5}}>
         <View style={styles.textinputview}>
           <MyButton
             title="Delete"
-            customClick={() => DeleteRecord(item?.item?.user_id)}
+            customClick={() => DeleteRecord(item?.item?.Record_id)}
           />
           <MyButton
             title="Update"
@@ -240,7 +241,7 @@ const ViewRecords = () => {
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Record Id</Text>
-          <Text style={styles.titletext}>{item?.item?.user_id}</Text>
+          <Text style={styles.titletext}>{item?.item?.Record_id}</Text>
         </View>
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Day</Text>
@@ -264,12 +265,12 @@ const ViewRecords = () => {
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Number Of Jobs</Text>
-          <Text style={styles.titletext}>{item?.item?.Jobs}</Text>
+          <Text style={styles.titletext}>{item?.item?.Jobs_Done}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Insurancefee</Text>
-          <Text style={styles.titletext}>{item?.item?.Ins}</Text>
+          <Text style={styles.titletext}>{item?.item?.Insurance}</Text>
         </View>
 
         <View style={styles.textinputview}>
@@ -277,10 +278,10 @@ const ViewRecords = () => {
           <Text style={styles.titletext}>{item?.item?.Shift_Total}</Text>
         </View>
 
-        <View style={styles.textinputview}>
+        {/* <View style={styles.textinputview}>
           <Text style={styles.titletext}>Commission Company</Text>
           <Text style={styles.titletext}>{item?.item?.Com_GTN}</Text>
-        </View>
+        </View> */}
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Total Km</Text>
@@ -294,43 +295,44 @@ const ViewRecords = () => {
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Eftpos</Text>
-          <Text style={styles.titletext}>{item?.item?.Eftpos_Total}</Text>
+          <Text style={styles.titletext}>{item?.item?.Eftpos}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Eftpos Lifting</Text>
-          <Text style={styles.titletext}>{item?.item?.Eftpos_LFee}</Text>
+          <Text style={styles.titletext}>
+            {item?.item?.Eftpos_Lifting_Value}
+          </Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Dockets</Text>
-          <Text style={styles.titletext}>{item?.item?.Dockets}</Text>
+          <Text style={styles.titletext}>{item?.item?.M3_Dockets}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Charge Authority</Text>
-          <Text style={styles.titletext}>{item?.item?.Charge_Authority}</Text>
+          <Text style={styles.titletext}>
+            {item?.item?.Electronic_Account_Payments}
+          </Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Gov Sub Manual</Text>
-          <Text style={styles.titletext}>{item?.item?.Manual_MPTP_Total}</Text>
+          <Text style={styles.titletext}>
+            {item?.item?.Total_Manual_MPTP31_And_MPTP_Values}
+          </Text>
         </View>
 
-        <View style={styles.textinputview}>
+        {/* <View style={styles.textinputview}>
           <Text style={styles.titletext}>Gov Sub Manual-31</Text>
           <Text style={styles.titletext}>{item?.item?.Gov_Sub_Manual31}</Text>
-        </View>
+        </View> */}
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Number Of Manual Lifts</Text>
-          <Text style={styles.titletext}>{item?.item?.No_of_Manual_Lifts}</Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Total Lifting Fee Value</Text>
           <Text style={styles.titletext}>
-            {item?.item?.Total_Lifting_Fee_Value}
+            {item?.item?.Number_Of_Manual_Liftings}
           </Text>
         </View>
 
@@ -341,56 +343,12 @@ const ViewRecords = () => {
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Fuel</Text>
-          <Text style={styles.titletext}>{item?.item?.Acc_Fuel}</Text>
+          <Text style={styles.titletext}>{item?.item?.Fuel}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>CPK</Text>
           <Text style={styles.titletext}>{item?.item?.CPK}</Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Text style={styles.titletext}>
-            Manual docket value {'\n'} (For M31 or M30){' '}
-          </Text>
-          <Text style={styles.titletext}>
-            {item?.item?.manual_lifting_fee_value}
-          </Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Number of chairs</Text>
-          <Text style={styles.titletext}>
-            {item?.item?.no_wheelchair_lifts}
-          </Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Company lifting fee</Text>
-          <Text style={styles.titletext}>
-            {item?.item?.company_portion_lifting_fee}
-          </Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Driver lifting fee</Text>
-          <Text style={styles.titletext}>
-            {item?.item?.driver_portion_lifting_fee}
-          </Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Deductions</Text>
-          <Text style={styles.titletext}>{item?.item?.Deductions}</Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Text style={{fontSize: 18, color: '#000000', fontWeight: 'bold'}}>
-            Net Cash
-          </Text>
-          <Text style={{fontSize: 18, color: '#000000', fontWeight: 'bold'}}>
-            {item?.item?.Net_Payin}
-          </Text>
         </View>
       </View>
     );
@@ -477,7 +435,7 @@ const ViewRecords = () => {
             width: '50%',
             alignSelf: 'center',
           }}
-          onPress={searchUser}>
+          onPress={SearchRecord}>
           <Text
             style={{
               color: '#ffffff',

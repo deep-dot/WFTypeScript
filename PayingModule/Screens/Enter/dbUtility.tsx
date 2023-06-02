@@ -155,7 +155,7 @@ interface Cab {
 }
 type FormValues = {
   [key: string]: string | boolean | string[] | Cab[];
-  cabData: Cab[];
+  Cab_Data: Cab[];
 };
 export const insertData = (
   formValues: FormValues,
@@ -198,7 +198,7 @@ export const insertData = (
 };
 
 export const UpdateData = (
-  searchByDate: string | number | null | undefined,
+  Search_Date: string | number | null | undefined,
   dispatch: React.Dispatch<Action>,
 ) => {
   //console.log('res in updateData in dbUtility', searchByDate);
@@ -207,13 +207,13 @@ export const UpdateData = (
       db.transaction((txn: Transaction) => {
         txn.executeSql(
           'SELECT * FROM datatable where Date = ?',
-          [searchByDate],
+          [Search_Date],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rows.length > 0) {
               let res = results.rows.item(0);
               // console.log('res in updateData in dbUtility', res);
               resolve(res);
-              dispatch({type: 'UPDATE', payload: res});
+              dispatch({type: 'UPDATE', payload: {...res, Search_Date}});
               Alert.alert('Search successfully');
             } else {
               reject(new Error('Search operation failed'));
@@ -229,3 +229,60 @@ export const UpdateData = (
     }
   });
 };
+
+export function updateDataInTable(formValues: FormValues): Promise<ResultSet> {
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          `UPDATE datatable 
+           SET Date = ?, Day = ?, Shift = ?, Taxi = ?, Jobs_Done = ?, Hours_Worked = ?, 
+               Meter_Start = ?, Meter_Finish = ?, Km_Start = ?, Km_Finish = ?, Paidkm_Start = ?, 
+               Paidkm_Finish = ?, Eftpos = ?, M3_Dockets = ?, Electronic_Account_Payments = ?, 
+               Total_Manual_MPTP31_And_MPTP_Values = ?, Number_Of_Manual_Liftings = ?, 
+               Eftpos_Lifting_Value = ?, Car_Wash = ?, Misc = ?, Fuel = ?, Insurance = ? 
+           WHERE Date = ?`,
+          [
+            formValues.Date,
+            formValues.Day,
+            formValues.Shift,
+            formValues.Taxi,
+            formValues.Jobs_Done,
+            formValues.Hours_Worked,
+            formValues.Meter_Start,
+            formValues.Meter_Finish,
+            formValues.Km_Start,
+            formValues.Km_Finish,
+            formValues.Paidkm_Start,
+            formValues.Paidkm_Finish,
+            formValues.Eftpos,
+            formValues.M3_Dockets,
+            formValues.Electronic_Account_Payments,
+            formValues.Total_Manual_MPTP31_And_MPTP_Values,
+            formValues.Number_Of_Manual_Liftings,
+            formValues.Eftpos_Lifting_Value,
+            formValues.Car_Wash,
+            formValues.Misc,
+            formValues.Fuel,
+            formValues.Insurance,
+            formValues.Search_Date,
+          ],
+          (_tx: Transaction, results: ResultSet) => {
+            if (results.rowsAffected > 0) {
+              resolve(results);
+              Alert.alert('Update operation successful');
+              
+            } else {
+              reject(new Error('Update operation failed'));
+            }
+          },
+          (error: any) => {
+            reject(error);
+          },
+        );
+      });
+    } else {
+      reject(new Error('db is undefined'));
+    }
+  });
+}

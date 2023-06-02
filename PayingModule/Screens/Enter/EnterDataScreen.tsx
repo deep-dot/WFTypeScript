@@ -27,6 +27,7 @@ import {
   selectFromUpdateItems,
   selectCountFromDataTable,
   insertData,
+  updateDataInTable,
 } from './dbUtility';
 import {StateContext} from './StateProvider';
 import {
@@ -50,7 +51,7 @@ interface Cab {
 }
 type FormValues = {
   [key: string]: string | boolean | string[] | Cab[];
-  //cabData: Cab[];
+  Cab_Data: Cab[];
 };
 
 const EnterData = () => {
@@ -78,8 +79,8 @@ const EnterData = () => {
       ...DdeductionsAdditionalProperties,
     ].reduce((acc, curr) => acc + Number(formValues[curr]), 0);
 
-    let Cnetpayin = Number(formValues.commissiongtn) - Cdeductions;
-    let Dnetpayin = Number(formValues.commissiongtn) - Ddeductions;
+    let Cnetpayin = Number(formValues.Commission_Driver) - Cdeductions;
+    let Dnetpayin = Number(formValues.Commission_Driver) - Ddeductions;
     if (
       DdeductionsAdditionalProperties.some(
         property => Number(formValues[property]) > 0,
@@ -116,10 +117,10 @@ const EnterData = () => {
   const handleDeduction = (deductions: number, netpayin: number) => {
     setFormValues(prevState => ({
       ...prevState,
-      deductions: deductions.toFixed(2),
-      netpayin: netpayin.toFixed(2),
+      Deductions: deductions.toFixed(2),
+      Net_Payin: netpayin.toFixed(2),
     }));
-    alertConfirm('Wish to Submit?', () => executeSqlQuery());
+    alertConfirm('Wish to Save?', () => executeSqlQuery());
   };
 
   const alertConfirm = (title: string, onPressYes: () => void) => {
@@ -140,41 +141,58 @@ const EnterData = () => {
     );
   };
 
-  const executeSqlQuery = () => {
-    insertData(formValues, (_tx: Transaction, results: ResultSet) => {
-      console.log('Results', results.rowsAffected);
-      if (results.rowsAffected > 0) {
-        Alert.alert(
-          'Record Submitted Successfully!',
-          'Do you want to add another record?',
-          [
-            {
-              text: 'Yes',
-              onPress: () => {
-                Refresh();
-              },
-            },
-            {
-              text: 'No',
-              onPress: () => {
-                navigation.navigate('Enter Data');
-              },
-            },
-            {
-              text: 'Cancel',
-              style: 'cancel',
-            },
-          ],
-          {cancelable: true},
-        );
-      }
-    });
+  const alertForSaveRecord = () => {
+    Alert.alert(
+      'Record Saved Successfully!',
+      'Do you want to add another record?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            Refresh();
+          },
+        },
+        {
+          text: 'No',
+          onPress: () => {
+            navigation.navigate('Enter Data');
+          },
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      {cancelable: true},
+    );
+  };
+
+  const executeSqlQuery = async () => {
+    console.log('formValues.Search_Date:', formValues.Search_Date);
+    if (formValues.Search_Date !== undefined && formValues.Search_Date !== '') {
+      await updateDataInTable(formValues);
+    } else {
+      insertData(formValues);
+      alertForSaveRecord();
+    }
   };
 
   useEffect(() => {
-    //setFormValues(state);
-    console.log('state in Enter data==', state);
+    setFormValues(prevState => ({
+      ...prevState,
+      ...state,
+      // Jobs_Done: state.Jobs_Done,
+      // Date: state.Date,
+      // Day: state.Day,
+    }));
+    // console.log('state in Enter data==', state.Jobs_Done);
   }, [state]);
+  useEffect(() => {
+    console.log(
+      'formValue Search date in Enter data==',
+      formValues.Search_Date,
+    );
+  }, [formValues.Search_Date]);
 
   const Refresh = () => {
     dispatch({type: 'REFRESH', payload: null});
@@ -187,16 +205,16 @@ const EnterData = () => {
       try {
         interface UpdateItemsResponse {
           GovLFee: number;
-          Driver_Lifting_Value: number;
+          DriverLFee: number;
           Levy: number;
           Driver_Comm_Rate: number;
         }
         const res = (await selectFromUpdateItems()) as UpdateItemsResponse;
-        // console.log(' selectFromUpdateItems==', formValues.Total_Lifting_Value);
+        //console.log(' selectFromUpdateItems==', res);
         setFormValues(prevState => ({
           ...prevState,
           Gov_Lifting_Fee: res.GovLFee.toFixed(2),
-          //Driver_Share_In_LiftingFee: res.DriverLFee.t,
+          Driver_Share_In_LiftingFee: res.DriverLFee.toFixed(2),
           Gov_Levy: res.Levy.toFixed(2),
           Driver_Comm_Rate: res.Driver_Comm_Rate.toFixed(0),
         }));
@@ -206,7 +224,7 @@ const EnterData = () => {
     };
     const fetchCabData = async () => {
       try {
-        const res = (await selectFromCab()) as FormValues['cabData'];
+        const res = (await selectFromCab()) as FormValues['Cab_Data'];
         setFormValues(prevState => ({
           ...prevState,
           Cab_Data: res,
@@ -291,7 +309,7 @@ const EnterData = () => {
   };
 
   const onChange = (name: string, value: string | boolean) => {
-    console.log('onchange in enter data ==', name, 'and', value);
+    //console.log('onchange in enter data ==', name, 'and', value);
     setFormValues(prevValues => ({...prevValues, [name]: value}));
   };
 
@@ -533,35 +551,21 @@ const EnterData = () => {
 
         <View style={styles.textinputview}>
           <Calendar
-            value={formValues.date}
-            onChange={(tareek: string) =>
-              setFormValues(prevValues => ({...prevValues, date: tareek}))
-            }
-            OnChange={(din: string) =>
-              setFormValues(prevValues => ({...prevValues, day: din}))
-            }
+            value={formValues.Date}
+            onChange={(date: string, day: string) => {
+              setFormValues(prevValues => ({
+                ...prevValues,
+                Date: date,
+                Day: day,
+              }));
+            }}
           />
-          <TextInput
-            placeholder="Day"
-            placeholderTextColor="#ffffff"
-            editable={false}>
-            <Text style={styles.titleText}>{formValues.day}</Text>
-          </TextInput>
 
-          <TextInput
-            placeholder="Date"
-            placeholderTextColor="#ffffff"
-            style={styles.Textinput}
-            editable={false}
-            onSubmitEditing={() => {
-              if (!formValues.date) {
-                Alert.alert('Please input Date');
-              } else {
-                inputRefs.insurance.current?.focus();
-              }
-            }}>
-            <Text style={styles.titleText}>{formValues.date}</Text>
-          </TextInput>
+          <Text style={styles.Textinput}>
+            {formValues.Date
+              ? formValues.Day + ' ' + formValues.Date
+              : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
+          </Text>
         </View>
 
         {inputs.map((input, index) => (
@@ -576,7 +580,7 @@ const EnterData = () => {
               returnKeyType="next"
               // keyboardType="numeric"
               onChangeText={(value: string) => onChange(input.name, value)}
-              value={formValues[input.name]}
+              value={String(formValues[input.name])}
               ref={(ref: RefObject<TextInput>) => {
                 if (ref) {
                   inputRefs[input.name] = ref;
@@ -596,29 +600,7 @@ const EnterData = () => {
           </View>
         ))}
 
-        {/* <View style={styles.textinputview}>
-          <Text style={[styles.titleText, {color: '#fff'}]}>Start Meter</Text>
-          <TextInput
-            placeholder="0.0"
-            placeholderTextColor="#fff"
-            style={[styles.textInput, {color: '#fff'}]}
-            returnKeyType="next"
-            keyboardType="numeric"
-            OnChange={(meter1: string) =>
-              setFormValues(prevValues => ({...prevValues, meter1}))
-            }
-            ref={inputRefs.meter1}
-            // onSubmitEditing={
-            //   input.name === 'meter2'
-            //     ? () => SubmitEditing('meter2', formValues.meter2.toString())
-            //     : undefined
-            // }
-            onSubmitEditing={() =>
-              onSubmitEditing(formValues.meter1.toString(), inputRefs.meter2)
-            }
-          />
-        </View>
-        <View style={styles.textinputview}>
+        {/*<View style={styles.textinputview}>
           <Text style={[styles.titleText, {color: '#fff'}]}>Finish Meter</Text>
           <TextInput
             placeholder="0.0"
@@ -733,13 +715,16 @@ const EnterData = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            if (formValues.date) {
+            if (
+              formValues.Date ||
+              new Date().toLocaleDateString(undefined, {weekday: 'long'})
+            ) {
               submitalltogather();
             } else {
               Alert.alert('Please select Date.');
             }
           }}>
-          <Text style={styles.buttontext}>Submit</Text>
+          <Text style={styles.buttontext}>Save</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={Refresh}>
           <Text style={styles.buttontext}>Refresh</Text>

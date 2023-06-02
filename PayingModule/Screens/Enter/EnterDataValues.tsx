@@ -95,7 +95,7 @@ export const initialValues = {
   Car_Wash: '',
   Fuel: '',
   Total_Lifting_Value: '',
-  Number_Of_Chairs: '',  
+  Number_Of_Chairs: '',
   Driver_Lifting_Value: '',
   Commission_Driver: '',
   Deductions: '',
@@ -104,6 +104,7 @@ export const initialValues = {
   Net_Driver_Income: '',
   Calculator_Modal_Visible: false,
   Indicator: false,
+  Search_Date: '',
 };
 
 export const DdeductionsProperties = [
@@ -163,7 +164,7 @@ export const inputs = [
   {title: 'M3 Dockets', name: 'M3_Dockets'},
   {title: 'EFTPOS', name: 'Eftpos'},
   {title: 'EFTPOS Lifting', name: 'Eftpos_Lifting_Value'},
-  
+
   // {title: 'Cab Data', name: 'cabData'},
   // {title: 'Taxi', name: 'Taxi'},
   //  {title: 'Total MPTP31 Value', name: 'manuallifting'},

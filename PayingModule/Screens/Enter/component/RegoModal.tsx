@@ -6,8 +6,8 @@ import styles from '../EnterDataScreen.style';
 
 interface RegoModalProps {
   formValues: {
-    regomodal: boolean;
-    rego: string;
+    Rego_Modal: boolean;
+    Rego: string;
   };
   setFormValues: React.Dispatch<React.SetStateAction<any>>;
   pushcab: () => void;
@@ -22,7 +22,7 @@ export const RegoModal = ({
 }: RegoModalProps) => {
   return (
     <Modal
-      visible={formValues.regomodal}
+      visible={formValues.Rego_Modal}
       animationType={'fade'}
       onRequestClose={() => {}}>
       <View style={styles.model}>
@@ -42,12 +42,12 @@ export const RegoModal = ({
             color: '#000000',
           }}
           onChangeText={(num: string) =>
-            setFormValues((prevValues: {rego: string}) => ({
+            setFormValues((prevValues: {Rego: string}) => ({
               ...prevValues,
-              rego: num,
+              Rego: num,
             }))
           }>
-          <Text style={styles.titleText}>{formValues.rego}</Text>
+          <Text style={styles.titleText}>{formValues.Rego}</Text>
         </TextInput>
         <View style={{flexDirection: 'row', marginTop: 10}}>
           <MyButton title="Add" customClick={pushcab} />
@@ -55,9 +55,9 @@ export const RegoModal = ({
           <MyButton
             title="Cancel"
             customClick={() =>
-              setFormValues((prevValues: {regomodal: boolean}) => ({
+              setFormValues((prevValues: {Rego_Modal: boolean}) => ({
                 ...prevValues,
-                regomodal: false,
+                Rego_Modal: false,
               }))
             }
           />
