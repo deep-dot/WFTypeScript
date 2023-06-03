@@ -24,16 +24,8 @@ const NavigationButtons = ({changeweekendingdate}: Props) => {
         customClick={() => navigation.navigate('Enter Data')}
       />
       <MyButton
-        title="Update"
-        customClick={() => navigation.navigate('UpdateRecord')}
-      />
-      <MyButton
         title="View"
         customClick={() => navigation.navigate('View Records')}
-      />
-      <MyButton
-        title="Delete"
-        customClick={() => navigation.navigate('Delete Record')}
       />
       <MyButton
         title="Create Report"

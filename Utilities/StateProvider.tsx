@@ -1,36 +1,13 @@
 /* eslint-disable react/react-in-jsx-scope */
 import * as React from 'react';
-import {useReducer, createContext, ReactNode} from 'react';
+import {useReducer, ReactNode} from 'react';
 import {initialValues} from '../PayingModule/Screens/Enter/component/EnterDataValues';
 import {UpdateData} from '../PayingModule/Components/dbUtility';
 import {reducer} from './Reducer';
+import {StateContext} from './Context';
 import {NavigationContainer} from '@react-navigation/native';
 import {Provider as PaperProvider} from 'react-native-paper';
-
 import {ThemeContext} from './ThemeProvider';
-
-interface Cab {
-  Cab: string;
-}
-type FormValues = {
-  [key: string]: string | boolean | string[] | Cab[];
-  Cab_Data: Cab[];
-};
-
-export type Action =
-  | {type: 'REFRESH'; payload: any}
-  | {type: 'UPDATE'; payload: any}
-  | {type: 'ERROR'; error: Error};
-
-interface ContextValue {
-  state: FormValues;
-  dispatch: React.Dispatch<Action>;
-  UpdateData: (searchByDate: string | undefined) => Promise<any>;
-  updateDataInTable: (updateByDate: string | undefined) => Promise<any>;
-  toggleTheme: () => void;
-}
-
-export const StateContext = createContext<ContextValue | undefined>(undefined);
 
 interface Props {
   children: ReactNode;

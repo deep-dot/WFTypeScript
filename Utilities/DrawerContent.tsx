@@ -17,7 +17,7 @@ import {
   DrawerItem,
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
-import {StateContext} from './StateProvider';
+import {StateContext} from './Context';
 //import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const DrawerContent = (props: DrawerContentComponentProps) => {
@@ -52,7 +52,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
             <DrawerItem
               label="Home"
               onPress={() => {
-                props.navigation.navigate('Home Screen');
+                props.navigation.navigate('Home');
               }}
             />
             <DrawerItem

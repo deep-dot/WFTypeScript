@@ -21,7 +21,7 @@ interface Props {
   modvisible: boolean;
 }
 
-const Model: React.FC<Props> = props => {
+const Model = ({onupdate, onCancel, modvisible}: Props) => {
   const [liftingtotal, setLiftingtotal] = useState<string>('');
   const [liftingdriver, setliftingdriver] = useState<string>('');
   const [levy, setLevy] = useState<string>('');
@@ -65,7 +65,7 @@ const Model: React.FC<Props> = props => {
           ],
           (_tx: Transaction, res: ResultSet) => {
             if (res.rowsAffected > 0) {
-              props.onupdate();
+              onupdate();
             }
           },
         );
@@ -118,7 +118,7 @@ const Model: React.FC<Props> = props => {
       <Modal
         //  transparent={true}
         //presentationStyle={'pageSheet'}
-        visible={props.modvisible}
+        visible={modvisible}
         animationType={'fade'}
         onRequestClose={() => {}}>
         <ScrollView>
@@ -240,7 +240,7 @@ const Model: React.FC<Props> = props => {
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Mybutton title="Submit" customClick={UpdateItems} />
-              <Mybutton title="Cancel" customClick={props.onCancel} />
+              <Mybutton title="Cancel" customClick={onCancel} />
             </View>
           </View>
         </ScrollView>

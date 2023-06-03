@@ -1,12 +1,10 @@
 import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
 import db from '../Database/databaseService';
-import {Action} from '../../Utilities/StateProvider';
+import {Action} from '../../Utilities/Actions';
+import {FormValues} from '../Screens/Enter/component/EnterDataValues';
 
-export function insertIntoCab(
-  //db: any,
-  rego: string | string[] | boolean,
-): Promise<ResultSet> {
+export function insertIntoCab(rego: string): Promise<ResultSet> {
   //console.log('formValues.rego==', rego);
   return new Promise((resolve, reject) => {
     if (db) {
@@ -33,10 +31,7 @@ export function insertIntoCab(
   });
 }
 
-export function deleteIntoCab(
-  // db: any,
-  rego: string | string[] | boolean,
-): Promise<ResultSet> {
+export function deleteIntoCab(rego: string): Promise<ResultSet> {
   //console.log('formValues.rego==', rego);
   return new Promise((resolve, reject) => {
     if (db) {
@@ -150,13 +145,6 @@ export const selectCountFromDataTable = () => {
   });
 };
 
-interface Cab {
-  Cab: string;
-}
-type FormValues = {
-  [key: string]: string | boolean | string[] | Cab[];
-  Cab_Data: Cab[];
-};
 export const insertData = (
   formValues: FormValues,
   callback: (tx: Transaction, results: ResultSet) => void = () => {},
@@ -198,7 +186,7 @@ export const insertData = (
 };
 
 export const UpdateData = (
-  Search_Date: string | number | null | undefined,
+  Search_Date: string,
   dispatch: React.Dispatch<Action>,
 ) => {
   //console.log('res in updateData in dbUtility', searchByDate);

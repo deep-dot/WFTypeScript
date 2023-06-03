@@ -54,7 +54,66 @@ export const usePayinRefs = () => {
   return refs;
 };
 
+interface Cab {
+  Cab: string;
+}
+export type FormValues = {
+  Record_id: number;
+  Cab_Data: Cab[];
+  Number_Of_Entries: string;
+  User_Name: string;
+  Gov_Lifting_Fee: string;
+  Driver_Share_In_LiftingFee: string;
+  Gov_Levy: string;
+  Driver_Comm_Rate: string;
+  Lifting_Modal_Visible: boolean;
+  Shift: string;
+  Taxi: string;
+  Rego: string;
+  Rego_Modal: boolean;
+  Current_Date: string;
+  Date: string;
+  Day: string;
+  Hours_Worked: string;
+  Insurance: string;
+  Jobs_Done: string;
+  Levy: string;
+  Meter_Start: string;
+  Meter_Finish: string;
+  Shift_Total: string;
+  Km_Start: string;
+  Km_Finish: string;
+  Kms: string;
+  Paidkm_Start: string;
+  Paidkm_Finish: string;
+  Paid_Kms: string;
+  Unpaid_Kms: string;
+  CPK: string;
+  Number_Of_Manual_Liftings: string;
+  Manual_Lifting_Value: string;
+  Total_Manual_MPTP31_And_MPTP_Values: string;
+  M3_Dockets: string;
+  Eftpos: string;
+  Eftpos_Lifting_Value: string;
+  Electronic_Account_Payments: string;
+  Misc: string;
+  Car_Wash: string;
+  Fuel: string;
+  Total_Lifting_Value: string;
+  Number_Of_Chairs: string;
+  Driver_Lifting_Value: string;
+  Commission_Driver: string;
+  Deductions: string;
+  Average_Fare: string;
+  Net_Payin: string;
+  Net_Driver_Income: string;
+  Calculator_Modal_Visible: boolean;
+  Indicator: boolean;
+  Search_Date: string;
+};
+
 export const initialValues = {
+  Record_id: 0,
   Number_Of_Entries: '',
   User_Name: '',
   Gov_Lifting_Fee: '',
@@ -86,6 +145,7 @@ export const initialValues = {
   Unpaid_Kms: '',
   CPK: '',
   Number_Of_Manual_Liftings: '',
+  Manual_Lifting_Value: '',
   Total_Manual_MPTP31_And_MPTP_Values: '',
   M3_Dockets: '',
   Eftpos: '',
@@ -107,7 +167,54 @@ export const initialValues = {
   Search_Date: '',
 };
 
-export const DdeductionsProperties = [
+export type Property =
+  | 'Eftpos'
+  | 'Eftpos_Lifting_Value'
+  | 'Total_Manual_MPTP31_And_MPTP_Values'
+  | 'M3_Dockets'
+  | 'Electronic_Account_Payments'
+  | 'Driver_Lifting_Value'
+  | 'Car_Wash'
+  | 'Fuel'
+  | 'Misc'
+  | 'Gov_Lifting_Fee'
+  | 'Driver_Share_In_LiftingFee'
+  | 'Gov_Levy'
+  | 'Driver_Comm_Rate'
+  | 'Hours_Worked'
+  | 'Insurance'
+  | 'Jobs_Done'
+  | 'Levy'
+  | 'Meter_Start'
+  | 'Meter_Finish'
+  | 'Shift_Total'
+  | 'Km_Start'
+  | 'Km_Finish'
+  | 'Kms'
+  | 'Paidkm_Start'
+  | 'Paidkm_Finish'
+  | 'Paid_Kms'
+  | 'Unpaid_Kms'
+  | 'CPK'
+  | 'Number_Of_Manual_Liftings'
+  | 'Total_Manual_MPTP31_And_MPTP_Values'
+  | 'M3_Dockets'
+  | 'Eftpos'
+  | 'Eftpos_Lifting_Value'
+  | 'Electronic_Account_Payments'
+  | 'Misc'
+  | 'Car_Wash'
+  | 'Fuel'
+  | 'Total_Lifting_Value'
+  | 'Number_Of_Chairs'
+  | 'Driver_Lifting_Value'
+  | 'Commission_Driver'
+  | 'Deductions'
+  | 'Average_Fare'
+  | 'Net_Payin'
+  | 'Net_Driver_Income';
+
+export const DdeductionsProperties: Property[] = [
   'Eftpos',
   'Eftpos_Lifting_Value',
   'Total_Manual_MPTP31_And_MPTP_Values',
@@ -116,9 +223,17 @@ export const DdeductionsProperties = [
   'Driver_Lifting_Value',
 ];
 
-export const DdeductionsAdditionalProperties = ['Car_Wash', 'Fuel', 'Misc'];
+export const DdeductionsAdditionalProperties: Property[] = [
+  'Car_Wash',
+  'Fuel',
+  'Misc',
+];
 
-export const liftingInputs = [
+type InputItem = {
+  title: string;
+  name: Property;
+};
+export const liftingInputs: InputItem[] = [
   {
     title: 'Lifting Total',
     name: 'Gov_Lifting_Fee',
@@ -131,13 +246,7 @@ export const liftingInputs = [
   },
 ];
 
-export const inputs = [
-  // {
-  //   title: 'Lifting Modal Visible',
-  //   name: 'Lifting_Modal_Visible',
-  //   nextInput: 'job',
-  // },
-  // {title: 'Shift', name: 'Shift'},
+export const inputs: InputItem[] = [
   {title: 'Working Hours', name: 'Hours_Worked'},
   {title: 'Insurance', name: 'Insurance'},
   {title: 'Jobs Done', name: 'Jobs_Done'},
@@ -164,28 +273,13 @@ export const inputs = [
   {title: 'M3 Dockets', name: 'M3_Dockets'},
   {title: 'EFTPOS', name: 'Eftpos'},
   {title: 'EFTPOS Lifting', name: 'Eftpos_Lifting_Value'},
-
-  // {title: 'Cab Data', name: 'cabData'},
-  // {title: 'Taxi', name: 'Taxi'},
-  //  {title: 'Total MPTP31 Value', name: 'manuallifting'},
   {title: 'Electronic Payments', name: 'Electronic_Account_Payments'},
   {title: 'Misc', name: 'Misc'},
   {title: 'Car Wash', name: 'Car_Wash'},
   {title: 'Fuel', name: 'Fuel'},
-  // {title: 'Date', name: 'date'},
-  // {title: 'Day', name: 'day'},
-  // {title: 'Rego Modal', name: 'regomodal'},
-  // {title: 'Rego', name: 'rego'},
-  // {
-  //   title: 'Calculator Modal Visible',
-  //   name: 'calculatormodalvisible',
-  //   nextInput: 'docket',
-  // },
-  // {title: 'Number of Entries', name: 'numberofEntries'},
-  // {title: 'Indicator', name: 'indicator'},
 ];
 
-export const payinInputs = [
+export const payinInputs: InputItem[] = [
   {title: 'Total Lifting', name: 'Total_Lifting_Value'},
   {title: 'Number of Chairs', name: 'Number_Of_Chairs'},
   {title: 'Driver Lifting Fee', name: 'Driver_Lifting_Value'},

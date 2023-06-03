@@ -1,11 +1,11 @@
-import React, {FC} from 'react';
+import React from 'react';
 import {Text, StyleSheet} from 'react-native';
 
 interface MyTextProps {
   text: string;
 }
 
-const MyText: FC<MyTextProps> = ({text}) => {
+const MyText = ({text}: MyTextProps) => {
   return <Text style={styles.text}>{text}</Text>;
 };
 

@@ -22,72 +22,16 @@ import {Transaction, ResultSet} from '../../Database/databaseTypes';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
 import {useNavigation} from '@react-navigation/core';
-interface ListItem {
-  item: {
-    Acc_Fuel?: number;
-    CPK?: number;
-    Car_Wash?: string;
-    Charge_Authority?: number;
-    Com_Driver?: number;
-    Com_GTN?: number;
-    Company_Comm_Rate?: number;
-    Current_Date?: string | null;
-    Date?: string;
-    Day?: string;
-    Deductions?: number;
-    Dockets?: string;
-    Driver_Comm_Rate?: number;
-    Eftpos_LFee?: number;
-    Eftpos_Total?: number;
-    Gov_Sub_Manual?: string;
-    Gov_Sub_Manual31?: string;
-    Hours_Worked?: number;
-    Ins?: number;
-    Jobs?: number;
-    Km_Finish?: number;
-    Km_Start?: number;
-    Kms?: number;
-    Manual_MPTP_Total?: string;
-    Meter_Finish?: number;
-    Meter_Start?: number;
-    Misc?: string;
-    Name?: string | null;
-    Net_Payin?: number;
-    No_of_Manual_Lifts?: number;
-    Paid_Kms?: number;
-    Paidkm_Finish?: number;
-    Paidkm_Start?: number;
-    Shift?: string;
-    Shift_Total?: number;
-    Taxi?: string;
-    Total_Levy?: number;
-    Total_Lifting_Fee_Value?: number;
-    Unpaid_kms?: string;
-    Week_Ending_Date?: string | null;
-    company_portion_lifting_fee?: number;
-    driver_portion_lifting_fee?: string | typeof NaN;
-    manual_lifting_fee_value?: string;
-    no_wheelchair_lifts?: number;
-    user_id?: number;
-    [key: string]: number | string | null | undefined;
-  };
-  index: number;
-}
-import {NavigationProp, ParamListBase} from '@react-navigation/native';
+import {FormValues} from '../Enter/component/EnterDataValues';
 import MyButton from '../../Components/Mybutton';
-import {StateContext} from '../../../Utilities/StateProvider';
-
-interface Props {
-  navigation: NavigationProp<ParamListBase>;
-}
+import {StateContext} from '../../../Utilities/Context';
 
 const ViewRecords = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackParamList, 'View Records'>>();
 
-  let [flatListItems, setFlatListItems] = useState<ListItem[]>([]);
+  let [flatListItems, setFlatListItems] = useState<FormValues[]>([]);
   let [totalrecords, setTotalrecords] = useState<string>('');
-
   let [start_date, setstart_date] = useState<string>('');
   let [_start_day, setstart_day] = useState<string>('');
   let [finish_date, setfinish_date] = useState<string>('');
@@ -176,7 +120,7 @@ const ViewRecords = () => {
     }
   };
 
-  const DeleteRecord = (idToDelete: any) => {
+  const DeleteRecord = (idToDelete: number) => {
     Alert.alert(
       'Please confirm!',
       'Do you wish to delete the record?',
@@ -207,7 +151,7 @@ const ViewRecords = () => {
     throw new Error('Component must be used within a StateProvider');
   }
   const {dispatch} = stateContext;
-  const handleRefresh = async (searchDate: string | undefined) => {
+  const handleRefresh = async (searchDate: string) => {
     try {
       const searchedData = await UpdateData(searchDate, dispatch);
       dispatch({type: 'UPDATE', payload: searchedData});
@@ -218,137 +162,135 @@ const ViewRecords = () => {
     }
   };
 
-  let listItemView = (item: ListItem) => {
-    console.log(item?.item?.Day);
+  let listItemView = (item: FormValues) => {
+    console.log(item?.Day);
     if (item == null || item === undefined) {
       return null;
     }
     return (
       <View
-        key={item?.item?.Record_id}
+        key={item?.Record_id}
         style={{backgroundColor: '#ffffff', marginTop: 10, padding: 5}}>
         <View style={styles.textinputview}>
           <MyButton
             title="Delete"
-            customClick={() => DeleteRecord(item?.item?.Record_id)}
+            customClick={() => DeleteRecord(item?.Record_id)}
           />
           <MyButton
             title="Update"
-            // customClick={() => updateData(item?.item?.Date)}
-            customClick={() => handleRefresh(item?.item?.Date)}
+            // customClick={() => updateData(item?.Date)}
+            customClick={() => handleRefresh(item?.Date)}
           />
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Record Id</Text>
-          <Text style={styles.titletext}>{item?.item?.Record_id}</Text>
+          <Text style={styles.titletext}>{item?.Record_id}</Text>
         </View>
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Day</Text>
-          <Text style={styles.titletext}>{item?.item?.Day}</Text>
+          <Text style={styles.titletext}>{item?.Day}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Date</Text>
-          <Text style={styles.titletext}>{item?.item?.Date}</Text>
+          <Text style={styles.titletext}>{item?.Date}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Shift Worked</Text>
-          <Text style={styles.titletext}>{item?.item?.Shift}</Text>
+          <Text style={styles.titletext}>{item?.Shift}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Taxi Number</Text>
-          <Text style={styles.titletext}>{item?.item?.Taxi}</Text>
+          <Text style={styles.titletext}>{item?.Taxi}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Number Of Jobs</Text>
-          <Text style={styles.titletext}>{item?.item?.Jobs_Done}</Text>
+          <Text style={styles.titletext}>{item?.Jobs_Done}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Insurancefee</Text>
-          <Text style={styles.titletext}>{item?.item?.Insurance}</Text>
+          <Text style={styles.titletext}>{item?.Insurance}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Total fare</Text>
-          <Text style={styles.titletext}>{item?.item?.Shift_Total}</Text>
+          <Text style={styles.titletext}>{item?.Shift_Total}</Text>
         </View>
 
         {/* <View style={styles.textinputview}>
           <Text style={styles.titletext}>Commission Company</Text>
-          <Text style={styles.titletext}>{item?.item?.Com_GTN}</Text>
+          <Text style={styles.titletext}>{item?.Com_GTN}</Text>
         </View> */}
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Total Km</Text>
-          <Text style={styles.titletext}>{item?.item?.Kms}</Text>
+          <Text style={styles.titletext}>{item?.Kms}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Total Paid Km</Text>
-          <Text style={styles.titletext}>{item?.item?.Paid_Kms}</Text>
+          <Text style={styles.titletext}>{item?.Paid_Kms}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Eftpos</Text>
-          <Text style={styles.titletext}>{item?.item?.Eftpos}</Text>
+          <Text style={styles.titletext}>{item?.Eftpos}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Eftpos Lifting</Text>
-          <Text style={styles.titletext}>
-            {item?.item?.Eftpos_Lifting_Value}
-          </Text>
+          <Text style={styles.titletext}>{item?.Eftpos_Lifting_Value}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Dockets</Text>
-          <Text style={styles.titletext}>{item?.item?.M3_Dockets}</Text>
+          <Text style={styles.titletext}>{item?.M3_Dockets}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Charge Authority</Text>
           <Text style={styles.titletext}>
-            {item?.item?.Electronic_Account_Payments}
+            {item?.Electronic_Account_Payments}
           </Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Gov Sub Manual</Text>
           <Text style={styles.titletext}>
-            {item?.item?.Total_Manual_MPTP31_And_MPTP_Values}
+            {item?.Total_Manual_MPTP31_And_MPTP_Values}
           </Text>
         </View>
 
         {/* <View style={styles.textinputview}>
           <Text style={styles.titletext}>Gov Sub Manual-31</Text>
-          <Text style={styles.titletext}>{item?.item?.Gov_Sub_Manual31}</Text>
+          <Text style={styles.titletext}>{item?.Gov_Sub_Manual31}</Text>
         </View> */}
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Number Of Manual Lifts</Text>
           <Text style={styles.titletext}>
-            {item?.item?.Number_Of_Manual_Liftings}
+            {item?.Number_Of_Manual_Liftings}
           </Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Misc</Text>
-          <Text style={styles.titletext}>{item?.item?.Misc}</Text>
+          <Text style={styles.titletext}>{item?.Misc}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Fuel</Text>
-          <Text style={styles.titletext}>{item?.item?.Fuel}</Text>
+          <Text style={styles.titletext}>{item?.Fuel}</Text>
         </View>
 
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>CPK</Text>
-          <Text style={styles.titletext}>{item?.item?.CPK}</Text>
+          <Text style={styles.titletext}>{item?.CPK}</Text>
         </View>
       </View>
     );
@@ -457,7 +399,7 @@ const ViewRecords = () => {
         data={flatListItems}
         ItemSeparatorComponent={listViewItemSeparator}
         keyExtractor={(index: number) => index.toString()}
-        renderItem={(item: ListItem) => listItemView(item)}
+        renderItem={(item: FormValues) => listItemView(item)}
       />
 
       <View

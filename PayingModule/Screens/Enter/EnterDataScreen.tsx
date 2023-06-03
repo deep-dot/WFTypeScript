@@ -19,7 +19,6 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
 //import envs from '../../config/env';
 //import db from '../../databaseService';
-import {Transaction, ResultSet} from '../../Database/databaseTypes';
 import {
   insertIntoCab,
   deleteIntoCab,
@@ -29,8 +28,9 @@ import {
   insertData,
   updateDataInTable,
 } from '../../Components/dbUtility';
-import {StateContext} from '../../../Utilities/StateProvider';
+import {StateContext} from '../../../Utilities/Context';
 import {
+  FormValues,
   initialValues,
   DdeductionsProperties,
   DdeductionsAdditionalProperties,
@@ -45,15 +45,9 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
 import Database from '../../Database/Database';
 import {useNavigation} from '@react-navigation/core';
-
 interface Cab {
   Cab: string;
 }
-type FormValues = {
-  [key: string]: string | boolean | string[] | Cab[];
-  Cab_Data: Cab[];
-};
-
 const EnterData = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackParamList, 'Enter Data'>>();
@@ -372,7 +366,7 @@ const EnterData = () => {
       if (name === 'Number_Of_Manual_Liftings') {
         const val1 = Number(updatedValues.Number_Of_Manual_Liftings || 0);
         const val2 = Number(updatedValues.Total_Lifting_Value || 0);
-        updatedValues.manualLifting = (val2 * val1).toFixed(2);
+        updatedValues.Manual_Lifting_Value = (val2 * val1).toFixed(2);
       }
       if (name === 'Eftpos_Lifting_Value') {
         const val1 = Number(updatedValues.Number_Of_Manual_Liftings || 0);
@@ -401,7 +395,7 @@ const EnterData = () => {
       <Database />
 
       <AwesomeAlert
-        show={formValues.indicator}
+        show={formValues.Indicator}
         showProgress={true}
         title="Please wait"
         closeOnTouchOutside={false}

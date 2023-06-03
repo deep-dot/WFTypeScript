@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {FC} from 'react';
+import React from 'react';
 import {
   View,
   TextInput,
@@ -22,7 +22,17 @@ interface MyTextInputProps extends TextInputProps {
   color?: string;
 }
 
-const MyTextInput: FC<MyTextInputProps> = props => {
+const MyTextInput = ({
+  placeholder,
+  keyboardType,
+  returnKeyType,
+  numberOfLines,
+  multiline,
+  onSubmitEditing,
+  style,
+  value,
+  color,
+}: MyTextInputProps) => {
   return (
     <View
       style={{
@@ -32,17 +42,17 @@ const MyTextInput: FC<MyTextInputProps> = props => {
       }}>
       <TextInput
         underlineColorAndroid="transparent"
-        placeholder={props.placeholder}
+        placeholder={placeholder}
         placeholderTextColor="#007FFF"
-        keyboardType={props.keyboardType}
-        onChangeText={props.onChangeText}
-        returnKeyType={props.returnKeyType}
-        numberOfLines={props.numberOfLines}
-        multiline={props.multiline}
-        onSubmitEditing={props.onSubmitEditing}
-        style={{...props.style, color: props.color}}
+        keyboardType={keyboardType}
+        // onChangeText={onChangeText}
+        returnKeyType={returnKeyType}
+        numberOfLines={numberOfLines}
+        multiline={multiline}
+        onSubmitEditing={onSubmitEditing}
+        style={{style, color: color}}
         blurOnSubmit={false}
-        value={props.value}
+        value={value}
       />
     </View>
   );

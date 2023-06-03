@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {FC} from 'react';
+import React from 'react';
 import {StyleSheet, View, Text, Modal, Platform, StatusBar} from 'react-native';
 import {
   BallIndicator,
@@ -28,7 +28,7 @@ interface LoaderProps {
   Transparency?: any;
 }
 
-const Loader: FC<LoaderProps> = ({loading}) => {
+const Loader = ({loading}: LoaderProps) => {
   return (
     <Modal
       // transparent={true}

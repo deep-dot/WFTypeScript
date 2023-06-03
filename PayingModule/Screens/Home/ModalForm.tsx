@@ -16,8 +16,7 @@ type ModalFormProps = {
   setDate: (value: string) => void;
   setDay: (value: string) => void;
 };
-
-const ModalForm: React.FC<ModalFormProps> = ({
+const ModalForm = ({
   modalvisible,
   load,
   cancel,
@@ -26,10 +25,8 @@ const ModalForm: React.FC<ModalFormProps> = ({
   setName,
   setDate,
   setDay,
-}) => (
+}: ModalFormProps) => (
   <Modal
-    //transparent={true}
-    // presentationStyle={'pageSheet'}
     visible={modalvisible}
     animationType={'fade'}
     onRequestClose={() => {}}>
@@ -41,9 +38,9 @@ const ModalForm: React.FC<ModalFormProps> = ({
           placeholder="Enter Your Name"
           placeholderTextColor="#ffffff"
           style={styles.textInput}
-          onChangeText={setName}>
-          <Text style={styles.titletext}>{name}</Text>
-        </TextInput>
+          onChangeText={setName}
+          value={name}
+        />
 
         <View style={{marginTop: 40, alignItems: 'center', marginBottom: 20}}>
           <Calendar onChange={setDate} OnChange={setDay} value={''} />
@@ -59,9 +56,8 @@ const ModalForm: React.FC<ModalFormProps> = ({
               color: '#ffffff',
               fontSize: 18,
             }}
-            onChangeText={setDate}>
-            <Text style={styles.titletext}>{date}</Text>
-          </TextInput>
+            value={date}
+          />
 
           <Text>YYYY/MM/DD</Text>
         </View>

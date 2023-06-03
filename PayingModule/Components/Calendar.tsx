@@ -14,7 +14,7 @@ interface CalendarProps {
   onChange: (date: string, day: string) => void;
 }
 
-const Calendar: FC<CalendarProps> = ({onChange, value}) => {
+const Calendar = ({onChange, value}: CalendarProps) => {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
 
