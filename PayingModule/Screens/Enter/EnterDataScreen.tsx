@@ -10,16 +10,16 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {RegoModal} from './component/RegoModal';
-import Model from '../../Components/Model';
+import Model from './component/Model';
 // import MyButton from '../../Components/Mybutton';
 import {Picker} from '@react-native-picker/picker';
-import Calculator from '../../Components/Calculator';
+import Calculator from './component/Calculator';
 import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
 //import envs from '../../config/env';
 //import db from '../../databaseService';
-import {Transaction, ResultSet} from '../../databaseTypes';
+import {Transaction, ResultSet} from '../../Database/databaseTypes';
 import {
   insertIntoCab,
   deleteIntoCab,
@@ -28,8 +28,8 @@ import {
   selectCountFromDataTable,
   insertData,
   updateDataInTable,
-} from './dbUtility';
-import {StateContext} from './StateProvider';
+} from '../../Components/dbUtility';
+import {StateContext} from '../../../Utilities/StateProvider';
 import {
   initialValues,
   DdeductionsProperties,
@@ -40,10 +40,10 @@ import {
   inputs,
   liftingInputs,
   payinInputs,
-} from './EnterDataValues';
+} from './component/EnterDataValues';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
-import Database from '../../Database';
+import Database from '../../Database/Database';
 import {useNavigation} from '@react-navigation/core';
 
 interface Cab {
@@ -170,7 +170,10 @@ const EnterData = () => {
   const executeSqlQuery = async () => {
     console.log('formValues.Search_Date:', formValues.Search_Date);
     if (formValues.Search_Date !== undefined && formValues.Search_Date !== '') {
-      await updateDataInTable(formValues);
+      const res = await updateDataInTable(formValues);
+      if (res) {
+        setFormValues(prevState => ({...prevState, Search_Date: ''}));
+      }
     } else {
       insertData(formValues);
       alertForSaveRecord();

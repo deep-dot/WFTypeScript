@@ -12,8 +12,8 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './HomeScreen.style';
 //import envs from '../../config/env';
 //const {DATABASE_NAME} = envs;
-import {Transaction, ResultSet} from '../../databaseTypes';
-import db from '../../databaseService';
+import {Transaction, ResultSet} from '../../Database/databaseTypes';
+import db from '../../Database/databaseService';
 import NavigationButtons from './NavigationButtons';
 import ModalForm from './ModalForm';
 

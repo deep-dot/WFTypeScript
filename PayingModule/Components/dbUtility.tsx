@@ -1,7 +1,7 @@
-import {Transaction, ResultSet} from '../../databaseTypes';
+import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
-import db from '../../databaseService';
-import {Action} from './StateProvider';
+import db from '../Database/databaseService';
+import {Action} from '../../Utilities/StateProvider';
 
 export function insertIntoCab(
   //db: any,
@@ -271,7 +271,6 @@ export function updateDataInTable(formValues: FormValues): Promise<ResultSet> {
             if (results.rowsAffected > 0) {
               resolve(results);
               Alert.alert('Update operation successful');
-              
             } else {
               reject(new Error('Update operation failed'));
             }

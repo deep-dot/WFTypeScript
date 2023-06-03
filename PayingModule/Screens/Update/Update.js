@@ -23,9 +23,9 @@ var db = openDatabase(
   },
 );
 import Mybutton from '../../components/Mybutton';
-import Calculator from '../../components/Calculator';
+import Calculator from '../Enter/component/Calculator';
 import Calendar from '../../components/Calendar';
-import Model from '../../components/Model';
+import Model from '../Enter/component/Model';
 import Loader from '../../components/Loader';
 import {StateContext} from './StateProvider';
 

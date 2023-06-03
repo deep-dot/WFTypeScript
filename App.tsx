@@ -1,10 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import * as React from 'react';
-import ThemeProvider from './ThemeProvider';
+import ThemeProvider from './Utilities/ThemeProvider';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
 import DrawerContent from './Utilities/DrawerContent';
 import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
-import {StateProvider} from './PayingModule/Screens/Enter/StateProvider';
+import {StateProvider} from './Utilities/StateProvider';
 import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
 
 import {
@@ -43,20 +43,7 @@ const RootDrawer = createDrawerNavigator<DrawerParamList>();
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   return <DrawerContent {...props} />;
 };
-// function EnterDataWrapper() {
-//   return (
-//     <StateProvider>
-//       <EnterData />
-//     </StateProvider>
-//   );
-// }
-// function ViewRecordsWrapper() {
-//   return (
-//     <StateProvider>
-//       <ViewRecords />
-//     </StateProvider>
-//   );
-// }
+
 export default function App() {
   return (
     <ThemeProvider>

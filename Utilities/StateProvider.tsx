@@ -1,7 +1,13 @@
 /* eslint-disable react/react-in-jsx-scope */
+import * as React from 'react';
 import {useReducer, createContext, ReactNode} from 'react';
-import {initialValues} from './EnterDataValues';
-import {UpdateData, updateDataInTable} from './dbUtility';
+import {initialValues} from '../PayingModule/Screens/Enter/component/EnterDataValues';
+import {UpdateData} from '../PayingModule/Components/dbUtility';
+import {reducer} from './Reducer';
+import {NavigationContainer} from '@react-navigation/native';
+import {Provider as PaperProvider} from 'react-native-paper';
+
+import {ThemeContext} from './ThemeProvider';
 
 interface Cab {
   Cab: string;
@@ -9,7 +15,6 @@ interface Cab {
 type FormValues = {
   [key: string]: string | boolean | string[] | Cab[];
   Cab_Data: Cab[];
-  //Jobs: string;
 };
 
 export type Action =
@@ -22,37 +27,29 @@ interface ContextValue {
   dispatch: React.Dispatch<Action>;
   UpdateData: (searchByDate: string | undefined) => Promise<any>;
   updateDataInTable: (updateByDate: string | undefined) => Promise<any>;
+  toggleTheme: () => void;
 }
 
 export const StateContext = createContext<ContextValue | undefined>(undefined);
-
-const reducer = (state: FormValues, action: Action): FormValues => {
-  // console.log('action.type==', action.type, state);
-  switch (action.type) {
-    case 'REFRESH':
-      return {...initialValues};
-    case 'UPDATE':
-      console.log('action.type UPDATE==', action.payload.Search_Date);
-      return {...state, ...action.payload};
-    case 'ERROR':
-      // Here you could return an error state
-      // For simplicity, let's just log the error and return the existing state
-      console.error(action.error);
-      return state;
-    default:
-      return state;
-  }
-};
 
 interface Props {
   children: ReactNode;
 }
 export const StateProvider = ({children}: Props) => {
   const [state, dispatch] = useReducer(reducer, initialValues);
-  // console.log('refresh in stateprovider==', state);
+
+  const themeContext = React.useContext(ThemeContext);
+  if (!themeContext) {
+    throw new Error('StateProvider must be used within a ThemeProvider');
+  }
+
+  const {theme} = themeContext;
+
   return (
     <StateContext.Provider value={{state, dispatch, UpdateData}}>
-      {children}
+      <PaperProvider theme={theme}>
+        <NavigationContainer theme={theme}>{children}</NavigationContainer>
+      </PaperProvider>
     </StateContext.Provider>
   );
 };

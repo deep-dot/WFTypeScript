@@ -1,10 +1,9 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {
   useTheme,
-  Avatar,
   Title,
   Caption,
   Paragraph,
@@ -12,21 +11,22 @@ import {
   Text,
   TouchableRipple,
   Switch,
-  Alert,
 } from 'react-native-paper';
 import {
   DrawerContentScrollView,
   DrawerItem,
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
-import {AuthContext} from './UseContext';
+import {StateContext} from './StateProvider';
 //import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const DrawerContent = (props: DrawerContentComponentProps) => {
   const paperTheme = useTheme();
-  // const {toggleTheme} = React.useContext(AuthContext);
-  const context = React.useContext(AuthContext);
-  const toggleTheme = context?.toggleTheme;
+  const stateContext = useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {toggleTheme} = stateContext;
 
   return (
     <View style={{flex: 1}}>

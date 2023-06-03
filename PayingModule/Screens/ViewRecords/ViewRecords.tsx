@@ -12,13 +12,13 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
-import {UpdateData} from '../Enter/dbUtility';
+import {UpdateData} from '../../Components/dbUtility';
 import Mytextinput from '../../Components/Mytextinput';
 import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 //import Icon from 'react-native-vector-icons/Ionicons';
-import db from '../../databaseService';
-import {Transaction, ResultSet} from '../../databaseTypes';
+import db from '../../Database/databaseService';
+import {Transaction, ResultSet} from '../../Database/databaseTypes';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
 import {useNavigation} from '@react-navigation/core';
@@ -75,7 +75,7 @@ interface ListItem {
 }
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import MyButton from '../../Components/Mybutton';
-import {StateContext} from '../Enter/StateProvider';
+import {StateContext} from '../../../Utilities/StateProvider';
 
 interface Props {
   navigation: NavigationProp<ParamListBase>;

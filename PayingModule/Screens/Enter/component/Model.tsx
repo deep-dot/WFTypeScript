@@ -11,9 +11,9 @@ import {
   Text,
   Modal,
 } from 'react-native';
-import Mybutton from './Mybutton';
-import db from '../databaseService';
-import {Transaction, ResultSet} from '../databaseTypes';
+import Mybutton from '../../../Components/Mybutton';
+import db from '../../../Database/databaseService';
+import {Transaction, ResultSet} from '../../../Database/databaseTypes';
 
 interface Props {
   onupdate: () => void;
