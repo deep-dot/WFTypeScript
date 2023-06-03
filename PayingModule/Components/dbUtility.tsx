@@ -2,7 +2,7 @@ import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
 import db from '../Database/databaseService';
 import {Action} from '../../Utilities/Actions';
-import {FormValues} from '../Screens/Enter/component/EnterDataValues';
+import {FormValues} from './EnterDataValues';
 
 export function insertIntoCab(rego: string): Promise<ResultSet> {
   //console.log('formValues.rego==', rego);
@@ -120,7 +120,10 @@ export const selectFromUpdateItems = () => {
   });
 };
 
-export const selectCountFromDataTable = () => {
+export const selectCountFromDataTable = (): Promise<{
+  len: number;
+  temp: Array<any>;
+}> => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -128,13 +131,21 @@ export const selectCountFromDataTable = () => {
           'SELECT * from datatable',
           [],
           (_tx: Transaction, results: ResultSet) => {
-            const len = results.rows.length;
-            resolve(len);
+            var len = results.rows.length;
+            if (len > 0) {
+              const temp = [];
+              for (let j = 0; j < len; j++) {
+                temp.push(results.rows.item(j));
+              }
+              resolve({len, temp});
+            } else {
+              resolve({len: 0, temp: []});
+            }
           },
           (_t, error) => {
             console.log(error);
             reject(error);
-            return true; // rollback transaction in case of error
+            return true;
           },
         );
       });
@@ -273,3 +284,29 @@ export function updateDataInTable(formValues: FormValues): Promise<ResultSet> {
     }
   });
 }
+
+export const deleteDataInTable = (date: string) => {
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'DELETE FROM datatable WHERE Date = ?',
+          [date],
+          (_tx: Transaction, results: ResultSet) => {
+            if (results.rowsAffected > 0) {
+              resolve('Deleted successfully');
+              Alert.alert('Deleted successfully');
+            } else {
+              reject(new Error('No data found for the provided date'));
+            }
+          },
+          (error: any) => {
+            reject(error);
+          },
+        );
+      });
+    } else {
+      reject(new Error('db is undefined'));
+    }
+  });
+};

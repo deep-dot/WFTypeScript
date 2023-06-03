@@ -110,6 +110,15 @@ export type FormValues = {
   Calculator_Modal_Visible: boolean;
   Indicator: boolean;
   Search_Date: string;
+  //View Records
+  flatListItems: Array<any>;
+  totalrecords: string;
+  start_date: string;
+  start_day: string;
+  finish_day: string;
+  finish_date: string;
+  sorryAlert: boolean;
+  show2Alert: boolean;
 };
 
 export const initialValues = {
@@ -165,6 +174,15 @@ export const initialValues = {
   Calculator_Modal_Visible: false,
   Indicator: false,
   Search_Date: '',
+  //View Records
+  flatListItems: '',
+  totalrecords: '',
+  start_date: '',
+  start_day: '',
+  finish_day: '',
+  finish_date: '',
+  sorryAlert: false,
+  show2Alert: false,
 };
 
 export type Property =

@@ -40,7 +40,7 @@ import {
   inputs,
   liftingInputs,
   payinInputs,
-} from './component/EnterDataValues';
+} from '../../Components/EnterDataValues';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
 import Database from '../../Database/Database';
@@ -162,7 +162,6 @@ const EnterData = () => {
   };
 
   const executeSqlQuery = async () => {
-    console.log('formValues.Search_Date:', formValues.Search_Date);
     if (formValues.Search_Date !== undefined && formValues.Search_Date !== '') {
       const res = await updateDataInTable(formValues);
       if (res) {
@@ -178,22 +177,11 @@ const EnterData = () => {
     setFormValues(prevState => ({
       ...prevState,
       ...state,
-      // Jobs_Done: state.Jobs_Done,
-      // Date: state.Date,
-      // Day: state.Day,
     }));
-    // console.log('state in Enter data==', state.Jobs_Done);
   }, [state]);
-  useEffect(() => {
-    console.log(
-      'formValue Search date in Enter data==',
-      formValues.Search_Date,
-    );
-  }, [formValues.Search_Date]);
 
   const Refresh = () => {
     dispatch({type: 'REFRESH', payload: null});
-    console.log('pressed');
   };
 
   //number of Entries
@@ -232,11 +220,17 @@ const EnterData = () => {
     };
     const fetchNumberOfEntries = async () => {
       try {
-        const numberOfEntries = (await selectCountFromDataTable()) as number;
-        setFormValues(prevState => ({
-          ...prevState,
-          Number_Of_Entries: numberOfEntries.toString(),
-        }));
+        selectCountFromDataTable()
+          .then(({len}) => {
+            setFormValues(prevState => ({
+              ...prevState,
+              totalrecords: len.toString(),
+              Number_Of_Entries: len.toString(),
+            }));
+          })
+          .catch(error => {
+            console.error(error);
+          });
       } catch (error) {
         console.log(error);
       }
@@ -557,7 +551,6 @@ const EnterData = () => {
               }));
             }}
           />
-
           <Text style={styles.Textinput}>
             {formValues.Date
               ? formValues.Day + ' ' + formValues.Date

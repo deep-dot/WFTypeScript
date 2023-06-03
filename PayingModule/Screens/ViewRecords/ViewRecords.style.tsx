@@ -26,4 +26,9 @@ export default StyleSheet.create({
     padding: 0,
     color: '#ffffff',
   },
+  Textinput: {
+    height: 35,
+    padding: 5,
+    color: '#55a8fa',
+  },
 });

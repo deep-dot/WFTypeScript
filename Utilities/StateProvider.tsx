@@ -1,7 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 import * as React from 'react';
 import {useReducer, ReactNode} from 'react';
-import {initialValues} from '../PayingModule/Screens/Enter/component/EnterDataValues';
+import {initialValues} from '../PayingModule/Components/EnterDataValues';
 import {UpdateData} from '../PayingModule/Components/dbUtility';
 import {reducer} from './Reducer';
 import {StateContext} from './Context';
