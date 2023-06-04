@@ -158,42 +158,102 @@ export const selectCountFromDataTable = (): Promise<{
 
 export const insertData = (
   formValues: FormValues,
-  callback: (tx: Transaction, results: ResultSet) => void = () => {},
+  //callback: (tx: Transaction, results: ResultSet) => void = () => {},
 ) => {
-  if (db) {
-    db.transaction((txn: Transaction) => {
-      txn.executeSql(
-        'INSERT INTO datatable (Date, Day, Shift, Taxi, Jobs_Done, Hours_Worked, Meter_Start, Meter_Finish, Km_Start, Km_Finish, Paidkm_Start, Paidkm_Finish, Eftpos, M3_Dockets, Electronic_Account_Payments, Total_Manual_MPTP31_And_MPTP_Values, Number_Of_Manual_Liftings, Eftpos_Lifting_Value, Car_Wash, Misc, Fuel, Insurance) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-        [
-          formValues.Date,
-          formValues.Day,
-          formValues.Shift,
-          formValues.Taxi,
-          formValues.Jobs_Done,
-          formValues.Hours_Worked,
-          formValues.Meter_Start,
-          formValues.Meter_Finish,
-          formValues.Km_Start,
-          formValues.Km_Finish,
-          formValues.Paidkm_Start,
-          formValues.Paidkm_Finish,
-          formValues.Eftpos,
-          formValues.M3_Dockets,
-          formValues.Electronic_Account_Payments,
-          formValues.Total_Manual_MPTP31_And_MPTP_Values,
-          formValues.Number_Of_Manual_Liftings,
-          formValues.Eftpos_Lifting_Value,
-          formValues.Car_Wash,
-          formValues.Misc,
-          formValues.Fuel,
-          formValues.Insurance,
-        ],
-        callback,
-      );
-    });
-  } else {
-    console.log('db is undefined');
-  }
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'SELECT * FROM datatable WHERE Date = ?',
+          [formValues.Date],
+          (_: Transaction, results: ResultSet) => {
+            if (results.rows.length > 0) {
+              // Record with same date already exists.
+              resolve('Same Date');
+              Alert.alert(
+                'A record with this date already exists. Please choose another date.',
+              );
+            } else {
+              txn.executeSql(
+                'INSERT INTO datatable (Date, Day, Shift, Taxi, Jobs_Done, Hours_Worked, Meter_Start, Meter_Finish, Km_Start, Km_Finish, Paidkm_Start, Paidkm_Finish, Eftpos, M3_Dockets, Electronic_Account_Payments, Total_Manual_MPTP31_And_MPTP_Values, Number_Of_Manual_Liftings, Eftpos_Lifting_Value, Car_Wash, Misc, Fuel, Insurance) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                [
+                  formValues.Date,
+                  formValues.Day,
+                  formValues.Shift,
+                  formValues.Taxi,
+                  formValues.Jobs_Done,
+                  formValues.Hours_Worked,
+                  formValues.Meter_Start,
+                  formValues.Meter_Finish,
+                  formValues.Km_Start,
+                  formValues.Km_Finish,
+                  formValues.Paidkm_Start,
+                  formValues.Paidkm_Finish,
+                  formValues.Eftpos,
+                  formValues.M3_Dockets,
+                  formValues.Electronic_Account_Payments,
+                  formValues.Total_Manual_MPTP31_And_MPTP_Values,
+                  formValues.Number_Of_Manual_Liftings,
+                  formValues.Eftpos_Lifting_Value,
+                  formValues.Car_Wash,
+                  formValues.Misc,
+                  formValues.Fuel,
+                  formValues.Insurance,
+                ],
+                (transaction: Transaction, resultSet: ResultSet) => {
+                  if (resultSet.rowsAffected > 0) {
+                    resolve('Inserted');
+                  } else {
+                    reject(new Error('Insert operation failed'));
+                  }
+                },
+                (error: any) => {
+                  reject(error);
+                },
+              );
+            }
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
+  });
+};
+
+export const ViewRecordsByDate = (
+  start_date: string,
+  finish_date: string,
+): Promise<FormValues[]> => {
+  //console.log('res in updateData in dbUtility', searchByDate);
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'SELECT * from datatable where Date between ? and ? order by Date',
+          [start_date, finish_date],
+          (_tx: Transaction, results: ResultSet) => {
+            if (results.rows.length > 0) {
+              let res = [];
+              for (let i = 0; i < results.rows.length; i++) {
+                res.push(results.rows.item(i));
+              }
+              resolve(res);
+              Alert.alert('Search successfully');
+            } else {
+              Alert.alert('No record exist on this date');
+              reject(new Error('Search operation failed'));
+            }
+          },
+          (error: any) => {
+            reject(error);
+          },
+        );
+      });
+    } else {
+      reject(new Error('db is undefined'));
+    }
+  });
 };
 
 export const UpdateData = (
@@ -285,13 +345,14 @@ export function updateDataInTable(formValues: FormValues): Promise<ResultSet> {
   });
 }
 
-export const deleteDataInTable = (date: string) => {
+export const deleteDataInTable = (id: string, date: string) => {
+  console.log('data in db Utility==', id, date);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'DELETE FROM datatable WHERE Date = ?',
-          [date],
+          'DELETE FROM datatable WHERE Record_id = ? AND Date = ?',
+          [id, date],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
               resolve('Deleted successfully');

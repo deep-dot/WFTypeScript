@@ -63,7 +63,7 @@ const EnterData = () => {
     useLiftingRefs();
   const payinRefs: {[key: string]: React.RefObject<TextInput>} = usePayinRefs();
 
-  let submitalltogather = () => {
+  let Save = () => {
     let Cdeductions = DdeductionsProperties.reduce(
       (acc, curr) => acc + Number(formValues[curr]),
       0,
@@ -149,7 +149,7 @@ const EnterData = () => {
         {
           text: 'No',
           onPress: () => {
-            navigation.navigate('Enter Data');
+            navigation.navigate('Home');
           },
         },
         {
@@ -163,13 +163,16 @@ const EnterData = () => {
 
   const executeSqlQuery = async () => {
     if (formValues.Search_Date !== undefined && formValues.Search_Date !== '') {
-      const res = await updateDataInTable(formValues);
+      let res = await updateDataInTable(formValues);
       if (res) {
         setFormValues(prevState => ({...prevState, Search_Date: ''}));
       }
     } else {
-      insertData(formValues);
-      alertForSaveRecord();
+      let res = await insertData(formValues);
+      console.log('res in insertData function in EnterData screen==', res);
+      if (res === 'Inserted') {
+        alertForSaveRecord();
+      }
     }
   };
 
@@ -702,18 +705,7 @@ const EnterData = () => {
           <Text style={styles.buttontext}>Report</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            if (
-              formValues.Date ||
-              new Date().toLocaleDateString(undefined, {weekday: 'long'})
-            ) {
-              submitalltogather();
-            } else {
-              Alert.alert('Please select Date.');
-            }
-          }}>
+        <TouchableOpacity style={styles.button} onPress={Save}>
           <Text style={styles.buttontext}>Save</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={Refresh}>

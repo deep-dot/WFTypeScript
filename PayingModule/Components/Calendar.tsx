@@ -15,7 +15,10 @@ interface CalendarProps {
 }
 
 const Calendar = ({onChange, value}: CalendarProps) => {
-  const [date, setDate] = useState(new Date());
+  // const [date, setDate] = useState(new Date());
+  // const [date, setDate] = useState(
+  //   new Date().toLocaleDateString(undefined, {weekday: 'long'}),
+  // );
   const [show, setShow] = useState(false);
 
   const daysOfWeek = [
@@ -37,7 +40,8 @@ const Calendar = ({onChange, value}: CalendarProps) => {
   };
 
   const handleConfirm = (date: Date) => {
-    const formattedDate = moment(date).format('YYYY/MM/DD');
+    const formattedDate = moment(date).format('M/D/YY');
+    // const formattedDate = moment(date).format('YYYY/MM/DD');
     const dayOfWeek = daysOfWeek[date.getDay()];
 
     onChange(formattedDate, dayOfWeek);

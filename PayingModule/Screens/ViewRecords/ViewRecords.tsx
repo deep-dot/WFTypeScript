@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   TouchableOpacity,
   ScrollView,
@@ -13,15 +13,13 @@ import {
   Alert,
 } from 'react-native';
 import {
+  ViewRecordsByDate,
   UpdateData,
   selectCountFromDataTable,
   deleteDataInTable,
 } from '../../Components/dbUtility';
 import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
-//import Icon from 'react-native-vector-icons/Ionicons';
-import db from '../../Database/databaseService';
-import {Transaction, ResultSet} from '../../Database/databaseTypes';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
 import {useNavigation} from '@react-navigation/core';
@@ -33,85 +31,49 @@ const ViewRecords = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackParamList, 'View Records'>>();
   const [formValues, setFormValues] = useState<FormValues>(initialValues);
+  const [flatListItems, setFlatListItems] = useState([{}]);
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
   const {dispatch} = stateContext;
 
-  useEffect(() => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'SELECT * from datatable',
-          [],
-          (_tx: Transaction, results: ResultSet) => {
-            var len = results.rows.length;
-            setFormValues(prevState => ({
-              ...prevState,
-              Number_Of_Entries: len.toString(),
-            }));
-          },
-        );
-      });
-    } else {
-      console.log('db is undefined');
-    }
-  }, []);
-
-  let SearchRecord = () => {
-    if (!formValues.start_date || !formValues.finish_date) {
-      setFormValues(prevState => ({...prevState, show2Alert: true}));
-    } else {
-      if (db) {
-        db.transaction((txn: Transaction) => {
-          txn.executeSql(
-            'SELECT * from datatable where Date between ? and ? order by Date',
-            [formValues.start_date, formValues.finish_date],
-            (_tx: Transaction, results: ResultSet) => {
-              console.log('results in View records==', results);
-              var len = results.rows.length;
-              setFormValues(prevState => ({
-                ...prevState,
-                totalrecords: len.toString(),
-              }));
-              if (len > 0) {
-                var temp: any = [];
-                for (let i = 0; i < len; i++) {
-                  temp.push(results.rows.item(i));
-                }
-                // console.log('temp in view records==',temp);
-                setFormValues(prevState => ({
-                  ...prevState,
-                  flatListItems: temp,
-                }));
-              } else {
-                setFormValues(prevState => ({
-                  ...prevState,
-                  sorryAlert: true,
-                  flatListItems: [],
-                }));
-              }
-            },
-          );
-        });
-      } else {
-        console.log('db is undefined');
+  let SearchRecord = async (start_date: string, finish_date: string) => {
+    console.log('start date==', start_date);
+    const current_date = new Date().toLocaleDateString();
+    const startDate = start_date ? start_date : current_date;
+    const endDate = finish_date ? finish_date : current_date;
+    try {
+      const res = await ViewRecordsByDate(startDate, endDate);
+      console.log('res===', res);
+      setFormValues(prevState => ({
+        ...prevState,
+        totalrecords: res.length.toString(),
+      }));
+      setFlatListItems(res);
+      if (res.length === 0) {
+        setFormValues(prevState => ({
+          ...prevState,
+          sorryAlert: true,
+        }));
+        setFlatListItems([]);
       }
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const Delete = async (date: string) => {
-    const res = await deleteDataInTable(date);
+  const Delete = async (id: string, date: string) => {
+    const res = await deleteDataInTable(id, date);
     if (res === 'Deleted successfully') {
       selectCountFromDataTable()
         .then(({len, temp}) => {
-        //  console.log(len, temp);
+          //  console.log(len, temp);
           setFormValues(prevState => ({
             ...prevState,
             totalrecords: len.toString(),
-            flatListItems: temp,
           }));
+          setFlatListItems(temp);
         })
         .catch(error => {
           console.error(error);
@@ -119,7 +81,7 @@ const ViewRecords = () => {
     }
   };
 
-  const DeleteRecord = (date: string) => {
+  const DeleteRecord = (id: string, date: string) => {
     Alert.alert(
       'Please confirm!',
       'Do you wish to delete the record?',
@@ -127,7 +89,7 @@ const ViewRecords = () => {
         {
           text: 'Yes',
           onPress: () => {
-            Delete(date);
+            Delete(id, date);
           },
         },
         {
@@ -157,22 +119,21 @@ const ViewRecords = () => {
   };
 
   let listItemView = (item: FormValues) => {
-    console.log(item?.Day);
+    console.log('item in flatlist==', item?.Day);
     if (item == null || item === undefined) {
       return null;
     }
     return (
-      <View
-        key={item?.Record_id}
-        style={{backgroundColor: '#ffffff', marginTop: 10, padding: 5}}>
+      <View style={{backgroundColor: '#ffffff', marginTop: 10, padding: 5}}>
         <View style={styles.textinputview}>
           <MyButton
             title="Delete"
-            customClick={() => DeleteRecord(item?.Date)}
+            customClick={() =>
+              DeleteRecord(item?.Record_id.toString(), item?.Date)
+            }
           />
           <MyButton
             title="Update"
-            // customClick={() => updateData(item?.Date)}
             customClick={() => handleRefresh(item?.Date)}
           />
         </View>
@@ -212,26 +173,6 @@ const ViewRecords = () => {
         </View>
 
         <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Total fare</Text>
-          <Text style={styles.titletext}>{item?.Shift_Total}</Text>
-        </View>
-
-        {/* <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Commission Company</Text>
-          <Text style={styles.titletext}>{item?.Com_GTN}</Text>
-        </View> */}
-
-        <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Total Km</Text>
-          <Text style={styles.titletext}>{item?.Kms}</Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Total Paid Km</Text>
-          <Text style={styles.titletext}>{item?.Paid_Kms}</Text>
-        </View>
-
-        <View style={styles.textinputview}>
           <Text style={styles.titletext}>Eftpos</Text>
           <Text style={styles.titletext}>{item?.Eftpos}</Text>
         </View>
@@ -260,11 +201,6 @@ const ViewRecords = () => {
           </Text>
         </View>
 
-        {/* <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Gov Sub Manual-31</Text>
-          <Text style={styles.titletext}>{item?.Gov_Sub_Manual31}</Text>
-        </View> */}
-
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Number Of Manual Lifts</Text>
           <Text style={styles.titletext}>
@@ -280,11 +216,6 @@ const ViewRecords = () => {
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Fuel</Text>
           <Text style={styles.titletext}>{item?.Fuel}</Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Text style={styles.titletext}>CPK</Text>
-          <Text style={styles.titletext}>{item?.CPK}</Text>
         </View>
       </View>
     );
@@ -326,18 +257,19 @@ const ViewRecords = () => {
       />
       <ScrollView>
         <Text style={{color: '#ffffff', textAlign: 'center'}}>
-          Total Number of Entries = {formValues.Number_Of_Entries}
+          Total Number of Entries = {formValues.totalrecords}
         </Text>
 
         <View style={styles.textinputview}>
           <Calendar
             value={formValues.start_date}
-            onChange={(date: string, day: string) => {
+            onChange={async (date: string, day: string) => {
               setFormValues(prevValues => ({
                 ...prevValues,
                 start_date: date,
                 start_day: day,
               }));
+              await SearchRecord(date, formValues.finish_date);
             }}
           />
           <Text style={styles.Textinput}>
@@ -350,12 +282,13 @@ const ViewRecords = () => {
         <View style={styles.textinputview}>
           <Calendar
             value={formValues.finish_date}
-            onChange={(date: string, day: string) => {
+            onChange={async (date: string, day: string) => {
               setFormValues(prevValues => ({
                 ...prevValues,
                 finish_date: date,
                 finish_day: day,
               }));
+              await SearchRecord(formValues.start_date, date);
             }}
           />
           <Text style={styles.Textinput}>
@@ -365,31 +298,8 @@ const ViewRecords = () => {
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={{
-            alignItems: 'center',
-            backgroundColor: '#54cb77',
-            borderRadius: 5,
-            elevation: 20,
-            shadowColor: '#000000',
-            padding: 10,
-            margin: 5,
-            marginLeft: 0,
-            width: '50%',
-            alignSelf: 'center',
-          }}
-          onPress={SearchRecord}>
-          <Text
-            style={{
-              color: '#ffffff',
-              fontSize: 14,
-            }}>
-            View
-          </Text>
-        </TouchableOpacity>
-
         <View style={{borderBottomWidth: 1, alignItems: 'center'}}>
-          <Text style={styles.titletext}>
+          <Text style={styles.Textinput}>
             {' '}
             Display Records = {formValues.totalrecords}
           </Text>
@@ -397,10 +307,10 @@ const ViewRecords = () => {
       </ScrollView>
 
       <FlatList
-        data={formValues.flatListItems}
+        data={flatListItems}
         ItemSeparatorComponent={listViewItemSeparator}
-        keyExtractor={(index: number) => index.toString()}
-        renderItem={(item: FormValues) => listItemView(item)}
+        keyExtractor={(item: FormValues, index: number) => index.toString()}
+        renderItem={({item}: {item: FormValues}) => listItemView(item)}
       />
 
       <View

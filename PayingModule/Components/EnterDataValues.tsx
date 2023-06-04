@@ -111,7 +111,7 @@ export type FormValues = {
   Indicator: boolean;
   Search_Date: string;
   //View Records
-  flatListItems: Array<any>;
+  flatListItems: [];
   totalrecords: string;
   start_date: string;
   start_day: string;
@@ -176,7 +176,7 @@ export const initialValues = {
   Search_Date: '',
   //View Records
   flatListItems: '',
-  totalrecords: '',
+  totalrecords: '0',
   start_date: '',
   start_day: '',
   finish_day: '',
