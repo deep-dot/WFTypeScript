@@ -58,7 +58,10 @@ export function deleteIntoCab(rego: string): Promise<ResultSet> {
   });
 }
 
-export const selectFromCab = () => {
+export const selectFromCab = (
+  formValues: FormValues,
+  dispatch: React.Dispatch<Action>,
+) => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -72,6 +75,14 @@ export const selectFromCab = () => {
               for (let j = 0; j < len; j++) {
                 temp.push(results.rows.item(j));
               }
+              let res = {
+                Rego_Modal: !formValues.Rego_Modal,
+                Cab_Data: temp,
+              };
+              dispatch({
+                type: 'UPDATE',
+                payload: res,
+              });
               resolve(temp);
             } else {
               resolve([]);
@@ -95,7 +106,9 @@ interface liftingModalItems {
   Driver_Comm_Rate: string;
   Company_Comm_Rate: string;
 }
-export const selectFromUpdateItems = (): Promise<liftingModalItems> => {
+export const selectFromUpdateItems = (
+  dispatch: React.Dispatch<Action>,
+): Promise<liftingModalItems> => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -107,6 +120,7 @@ export const selectFromUpdateItems = (): Promise<liftingModalItems> => {
             var len = results.rows.length;
             if (len > 0) {
               let res = results.rows.item(0);
+              dispatch({type: 'UPDATE', payload: res});
               resolve(res);
             } else {
               resolve({
@@ -129,8 +143,10 @@ export const selectFromUpdateItems = (): Promise<liftingModalItems> => {
   });
 };
 
-export const selectCountFromDataTable = (): Promise<{
-  len: number;
+export const selectCountFromDataTable = (
+  dispatch: React.Dispatch<Action>,
+): Promise<{
+  // len: number;
   temp: Array<any>;
 }> => {
   return new Promise((resolve, reject) => {
@@ -140,13 +156,15 @@ export const selectCountFromDataTable = (): Promise<{
           'SELECT * from datatable',
           [],
           (_tx: Transaction, results: ResultSet) => {
-            var len = results.rows.length;
-            if (len > 0) {
+            var Number_Of_Entries = results.rows.length;
+            if (Number_Of_Entries > 0) {
               const temp = [];
-              for (let j = 0; j < len; j++) {
+              for (let j = 0; j < Number_Of_Entries; j++) {
                 temp.push(results.rows.item(j));
               }
-              resolve({len, temp});
+              //resolve({len, temp});
+              resolve(temp);
+              dispatch({type: 'UPDATE', payload: Number_Of_Entries});
             } else {
               resolve({len: 0, temp: []});
             }
@@ -249,8 +267,9 @@ export const insertLiftingModalItems = (
             formValues.Driver_Comm_Rate,
             Company_Comm_Rate,
           ],
-          (transaction: Transaction, resultSet: ResultSet) => {
-            if (resultSet.rowsAffected > 0) {
+          (transaction: Transaction, result: ResultSet) => {
+            if (result.rowsAffected > 0) {
+              console.log('insertLiftingModalItems ===', result.rows.item(0));
               resolve('Inserted');
             } else {
               reject(new Error('Insert operation failed'));
@@ -266,6 +285,7 @@ export const insertLiftingModalItems = (
     }
   });
 };
+
 export const ViewRecordsByDate = (
   start_date: string,
   finish_date: string,
@@ -334,7 +354,10 @@ export const UpdateData = (
   });
 };
 
-export function updateDataInTable(formValues: FormValues): Promise<ResultSet> {
+export function updateDataInTable(
+  formValues: FormValues,
+  dispatch: React.Dispatch<Action>,
+): Promise<ResultSet> {
   let Company_Comm_Rate = (100 - Number(formValues.Driver_Comm_Rate)).toFixed(
     0,
   );
@@ -389,14 +412,6 @@ export function updateDataInTable(formValues: FormValues): Promise<ResultSet> {
             },
           );
         } else {
-          console.log(
-            'dbutility',
-            formValues.Gov_Lifting_Fee,
-            formValues.Driver_Share_In_LiftingFee,
-            formValues.Gov_Levy,
-            formValues.Driver_Comm_Rate,
-            Company_Comm_Rate,
-          );
           txn.executeSql(
             `UPDATE datatable
            SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ?`,
@@ -407,10 +422,11 @@ export function updateDataInTable(formValues: FormValues): Promise<ResultSet> {
               formValues.Driver_Comm_Rate,
               Company_Comm_Rate,
             ],
-            (_tx: Transaction, results: ResultSet) => {
-              if (results.rowsAffected > 0) {
-                console.log(results);
-                resolve(results);
+            (_tx: Transaction, result: ResultSet) => {
+              if (result.rowsAffected > 0) {
+                console.log(result);
+                dispatch({type: 'UPDATE', payload: result});
+                resolve(result);
                 Alert.alert('Update operation successful');
               } else {
                 reject(new Error('Update operation failed'));

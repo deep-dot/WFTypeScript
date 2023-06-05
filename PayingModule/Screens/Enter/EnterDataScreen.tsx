@@ -17,13 +17,11 @@ import Calculator from './component/Calculator';
 import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
-//import envs from '../../config/env';
-//import db from '../../databaseService';
 import {
   insertIntoCab,
   deleteIntoCab,
   selectFromCab,
-  selectFromUpdateItems,
+  //selectFromUpdateItems,
   selectCountFromDataTable,
   insertData,
   updateDataInTable,
@@ -57,7 +55,6 @@ const EnterData = () => {
   }
   const {state, dispatch} = stateContext;
   const [formValues, setFormValues] = useState<FormValues>(initialValues);
-  //const [formValues, setFormValues] = useState<State>(initialState);
   const inputRefs: {[key: string]: React.RefObject<TextInput>} = useInputRefs();
   const liftingRefs: {[key: string]: React.RefObject<TextInput>} =
     useLiftingRefs();
@@ -109,11 +106,11 @@ const EnterData = () => {
   };
 
   const handleDeduction = (deductions: number, netpayin: number) => {
-    setFormValues(prevState => ({
-      ...prevState,
+    let result = {
       Deductions: deductions.toFixed(2),
-      Net_Payin: netpayin.toFixed(2),
-    }));
+      Net_Paying: netpayin.toFixed(2),
+    };
+    dispatch({type: 'UPDATE', payload: result});
     alertConfirm('Wish to Save?', () => executeSqlQuery());
   };
 
@@ -163,13 +160,13 @@ const EnterData = () => {
 
   const executeSqlQuery = async () => {
     if (formValues.Search_Date !== undefined && formValues.Search_Date !== '') {
-      let res = await updateDataInTable(formValues);
+      let res = await updateDataInTable(formValues, dispatch);
       if (res) {
         setFormValues(prevState => ({...prevState, Search_Date: ''}));
       }
     } else {
       let res = await insertData(formValues);
-      console.log('res in insertData function in EnterData screen==', res);
+      // console.log('res in insertData function in EnterData screen==', res);
       if (res === 'Inserted') {
         alertForSaveRecord();
       }
@@ -187,52 +184,20 @@ const EnterData = () => {
     dispatch({type: 'REFRESH', payload: null});
   };
 
-  //number of Entries
   useEffect(() => {
-    const fetchUpdateItemsData = async () => {
-      try {
-        const res = await selectFromUpdateItems();
-        //console.log(' selectFromUpdateItems==', res);
-        setFormValues(prevState => ({
-          ...prevState,
-          res,
-        }));
-      } catch (error) {
-        console.log(error);
-      }
-    };
     const fetchCabData = async () => {
       try {
-        const res = (await selectFromCab()) as FormValues['Cab_Data'];
-        setFormValues(prevState => ({
-          ...prevState,
-          Cab_Data: res,
-        }));
+        await selectFromCab(formValues, dispatch);
       } catch (error) {
         console.log(error);
       }
     };
     const fetchNumberOfEntries = async () => {
-      try {
-        selectCountFromDataTable()
-          .then(({len}) => {
-            setFormValues(prevState => ({
-              ...prevState,
-              totalrecords: len.toString(),
-              Number_Of_Entries: len.toString(),
-            }));
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      } catch (error) {
-        console.log(error);
-      }
+      await selectCountFromDataTable(dispatch);
     };
-    fetchUpdateItemsData();
-    fetchCabData();
-    fetchNumberOfEntries();
-  }, [setFormValues]);
+   // fetchCabData();
+   // fetchNumberOfEntries();
+  }, [dispatch, formValues]);
 
   //calculator...
   let Authoritycalculator = (num: Number) => {
@@ -266,13 +231,7 @@ const EnterData = () => {
     }
     try {
       await action(formValues.Rego.toString());
-      const res = (await selectFromCab()) as Cab[];
-      console.log('handleCabChange ==', res);
-      setFormValues(prevValue => ({
-        ...prevValue,
-        Rego_Modal: !prevValue.Rego_Modal,
-        Cab_Data: res,
-      }));
+      await selectFromCab(formValues, dispatch);
     } catch (error) {
       console.log(error);
     }

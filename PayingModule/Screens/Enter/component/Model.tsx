@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-lone-blocks */
-import React, {useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {
   TextInput,
   ScrollView,
@@ -17,6 +17,7 @@ import {
   updateDataInTable,
   insertLiftingModalItems,
 } from '../../../Components/dbUtility';
+import {StateContext} from '../../../../Utilities/Context';
 
 interface Props {
   onupdate: () => void;
@@ -26,32 +27,35 @@ interface Props {
 
 const Model = ({onupdate, onCancel, modvisible}: Props) => {
   const [formValues, setFormValues] = useState<FormValues>(initialValues);
-
-  let UpdateItems = async () => {
-    console.log(formValues.Driver_Comm_Rate);
-    //const res = await updateDataInTable(formValues);
-    const res = await insertLiftingModalItems(formValues);
-    if (res === 'Inserted') {
-      onupdate();
-      updateDataInTable(formValues);
-    }
-  };
+  const stateContext = useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {state, dispatch} = stateContext;
 
   useEffect(() => {
-    const fetchUpdateItemsData = async () => {
-      try {
-        const res = await selectFromUpdateItems();
-        console.log(' selectFromUpdateItems==', res);
-        setFormValues(prevState => ({
-          ...prevState,
-          res,
-        }));
-      } catch (error) {
-        console.log(error);
+    selectFromUpdateItems(dispatch);
+  }, [dispatch]);
+
+  useEffect(() => {
+    setFormValues(prevState => ({
+      ...prevState,
+      ...state,
+    }));
+  }, [state]);
+
+  let UpdateItems = async () => {
+    try {
+      console.log(formValues.Driver_Comm_Rate);
+      const res = await insertLiftingModalItems(formValues);
+      if (res === 'Inserted') {
+        onupdate();
+        updateDataInTable(formValues, dispatch);
       }
-    };
-    fetchUpdateItemsData();
-  }, []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -68,7 +72,7 @@ const Model = ({onupdate, onCancel, modvisible}: Props) => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={String(formValues.Gov_Lifting_Fee)}
+                value={formValues.Gov_Lifting_Fee}
                 onChangeText={(value: string) =>
                   setFormValues(prevState => ({
                     ...prevState,
