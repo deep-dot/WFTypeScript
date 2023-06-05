@@ -191,20 +191,11 @@ const EnterData = () => {
   useEffect(() => {
     const fetchUpdateItemsData = async () => {
       try {
-        interface UpdateItemsResponse {
-          GovLFee: number;
-          DriverLFee: number;
-          Levy: number;
-          Driver_Comm_Rate: number;
-        }
-        const res = (await selectFromUpdateItems()) as UpdateItemsResponse;
+        const res = await selectFromUpdateItems();
         //console.log(' selectFromUpdateItems==', res);
         setFormValues(prevState => ({
           ...prevState,
-          Gov_Lifting_Fee: res.GovLFee.toFixed(2),
-          Driver_Share_In_LiftingFee: res.DriverLFee.toFixed(2),
-          Gov_Levy: res.Levy.toFixed(2),
-          Driver_Comm_Rate: res.Driver_Comm_Rate.toFixed(0),
+          res,
         }));
       } catch (error) {
         console.log(error);

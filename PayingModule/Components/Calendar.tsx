@@ -15,10 +15,6 @@ interface CalendarProps {
 }
 
 const Calendar = ({onChange, value}: CalendarProps) => {
-  // const [date, setDate] = useState(new Date());
-  // const [date, setDate] = useState(
-  //   new Date().toLocaleDateString(undefined, {weekday: 'long'}),
-  // );
   const [show, setShow] = useState(false);
 
   const daysOfWeek = [

@@ -88,12 +88,20 @@ export const selectFromCab = () => {
   });
 };
 
-export const selectFromUpdateItems = () => {
+interface liftingModalItems {
+  Gov_Lifting_Fee: string;
+  Driver_Share_In_LiftingFee: string;
+  Gov_Levy: string;
+  Driver_Comm_Rate: string;
+  Company_Comm_Rate: string;
+}
+export const selectFromUpdateItems = (): Promise<liftingModalItems> => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'SELECT GovLFee, DriverLFee, Levy, Driver_Comm_Rate FROM UpdateItems',
+          // 'SELECT GovLFee, DriverLFee, Levy, Driver_Comm_Rate FROM UpdateItems',
+          'SELECT Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate FROM datatable',
           [],
           (_tx: Transaction, results: ResultSet) => {
             var len = results.rows.length;
@@ -102,10 +110,11 @@ export const selectFromUpdateItems = () => {
               resolve(res);
             } else {
               resolve({
-                GovLFee: '',
-                DriverLFee: '',
-                Levy: '',
+                Gov_Lifting_Fee: '',
+                Driver_Share_In_LiftingFee: '',
+                Gov_Levy: '',
                 Driver_Comm_Rate: '',
+                Company_Comm_Rate: '',
               });
             }
           },
@@ -221,6 +230,42 @@ export const insertData = (
   });
 };
 
+export const insertLiftingModalItems = (
+  formValues: FormValues,
+  //callback: (tx: Transaction, results: ResultSet) => void = () => {},
+) => {
+  let Company_Comm_Rate = (100 - Number(formValues.Driver_Comm_Rate)).toFixed(
+    0,
+  );
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'INSERT INTO datatable (Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?)',
+          [
+            formValues.Gov_Lifting_Fee,
+            formValues.Driver_Share_In_LiftingFee,
+            formValues.Gov_Levy,
+            formValues.Driver_Comm_Rate,
+            Company_Comm_Rate,
+          ],
+          (transaction: Transaction, resultSet: ResultSet) => {
+            if (resultSet.rowsAffected > 0) {
+              resolve('Inserted');
+            } else {
+              reject(new Error('Insert operation failed'));
+            }
+          },
+          (error: any) => {
+            reject(error);
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
+  });
+};
 export const ViewRecordsByDate = (
   start_date: string,
   finish_date: string,
@@ -290,54 +335,93 @@ export const UpdateData = (
 };
 
 export function updateDataInTable(formValues: FormValues): Promise<ResultSet> {
+  let Company_Comm_Rate = (100 - Number(formValues.Driver_Comm_Rate)).toFixed(
+    0,
+  );
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          `UPDATE datatable 
+        if (formValues.Search_Date) {
+          txn.executeSql(
+            `UPDATE datatable 
            SET Date = ?, Day = ?, Shift = ?, Taxi = ?, Jobs_Done = ?, Hours_Worked = ?, 
                Meter_Start = ?, Meter_Finish = ?, Km_Start = ?, Km_Finish = ?, Paidkm_Start = ?, 
                Paidkm_Finish = ?, Eftpos = ?, M3_Dockets = ?, Electronic_Account_Payments = ?, 
                Total_Manual_MPTP31_And_MPTP_Values = ?, Number_Of_Manual_Liftings = ?, 
                Eftpos_Lifting_Value = ?, Car_Wash = ?, Misc = ?, Fuel = ?, Insurance = ? 
            WHERE Date = ?`,
-          [
-            formValues.Date,
-            formValues.Day,
-            formValues.Shift,
-            formValues.Taxi,
-            formValues.Jobs_Done,
-            formValues.Hours_Worked,
-            formValues.Meter_Start,
-            formValues.Meter_Finish,
-            formValues.Km_Start,
-            formValues.Km_Finish,
-            formValues.Paidkm_Start,
-            formValues.Paidkm_Finish,
-            formValues.Eftpos,
-            formValues.M3_Dockets,
-            formValues.Electronic_Account_Payments,
-            formValues.Total_Manual_MPTP31_And_MPTP_Values,
-            formValues.Number_Of_Manual_Liftings,
-            formValues.Eftpos_Lifting_Value,
-            formValues.Car_Wash,
-            formValues.Misc,
-            formValues.Fuel,
-            formValues.Insurance,
-            formValues.Search_Date,
-          ],
-          (_tx: Transaction, results: ResultSet) => {
-            if (results.rowsAffected > 0) {
-              resolve(results);
-              Alert.alert('Update operation successful');
-            } else {
-              reject(new Error('Update operation failed'));
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
+            [
+              formValues.Date,
+              formValues.Day,
+              formValues.Shift,
+              formValues.Taxi,
+              formValues.Jobs_Done,
+              formValues.Hours_Worked,
+              formValues.Meter_Start,
+              formValues.Meter_Finish,
+              formValues.Km_Start,
+              formValues.Km_Finish,
+              formValues.Paidkm_Start,
+              formValues.Paidkm_Finish,
+              formValues.Eftpos,
+              formValues.M3_Dockets,
+              formValues.Electronic_Account_Payments,
+              formValues.Total_Manual_MPTP31_And_MPTP_Values,
+              formValues.Number_Of_Manual_Liftings,
+              formValues.Eftpos_Lifting_Value,
+              formValues.Car_Wash,
+              formValues.Misc,
+              formValues.Fuel,
+              formValues.Insurance,
+              formValues.Search_Date,
+            ],
+            (_tx: Transaction, results: ResultSet) => {
+              if (results.rowsAffected > 0) {
+                console.log(results.rows.item(0));
+                resolve(results);
+                Alert.alert('Update operation successful');
+              } else {
+                reject(new Error('Update operation failed'));
+              }
+            },
+            (error: any) => {
+              reject(error);
+            },
+          );
+        } else {
+          console.log(
+            'dbutility',
+            formValues.Gov_Lifting_Fee,
+            formValues.Driver_Share_In_LiftingFee,
+            formValues.Gov_Levy,
+            formValues.Driver_Comm_Rate,
+            Company_Comm_Rate,
+          );
+          txn.executeSql(
+            `UPDATE datatable
+           SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ?`,
+            [
+              formValues.Gov_Lifting_Fee,
+              formValues.Driver_Share_In_LiftingFee,
+              formValues.Gov_Levy,
+              formValues.Driver_Comm_Rate,
+              Company_Comm_Rate,
+            ],
+            (_tx: Transaction, results: ResultSet) => {
+              if (results.rowsAffected > 0) {
+                console.log(results);
+                resolve(results);
+                Alert.alert('Update operation successful');
+              } else {
+                reject(new Error('Update operation failed'));
+              }
+            },
+            (error: any) => {
+              console.log('SQL execution error: ', error);
+              reject(error);
+            },
+          );
+        }
       });
     } else {
       reject(new Error('db is undefined'));
@@ -346,7 +430,7 @@ export function updateDataInTable(formValues: FormValues): Promise<ResultSet> {
 }
 
 export const deleteDataInTable = (id: string, date: string) => {
-  console.log('data in db Utility==', id, date);
+  // console.log('data in db Utility==', id, date);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -371,3 +455,40 @@ export const deleteDataInTable = (id: string, date: string) => {
     }
   });
 };
+
+//lifting modal
+
+export function updateLiftingModalItems(
+  formValues: FormValues,
+): Promise<ResultSet> {
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          `UPDATE datatable 
+           SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ?`,
+          [
+            formValues.Gov_Lifting_Fee,
+            formValues.Driver_Share_In_LiftingFee,
+            formValues.Gov_Levy,
+            formValues.Driver_Comm_Rate,
+            100 - Number(formValues.Driver_Comm_Rate),
+          ],
+          (_tx: Transaction, results: ResultSet) => {
+            if (results.rowsAffected > 0) {
+              resolve(results);
+              Alert.alert('Update operation successful');
+            } else {
+              reject(new Error('Update operation failed'));
+            }
+          },
+          (error: any) => {
+            reject(error);
+          },
+        );
+      });
+    } else {
+      reject(new Error('db is undefined'));
+    }
+  });
+}

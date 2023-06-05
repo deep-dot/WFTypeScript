@@ -58,14 +58,17 @@ interface Cab {
   Cab: string;
 }
 export type FormValues = {
-  Record_id: number;
-  Cab_Data: Cab[];
-  Number_Of_Entries: string;
-  User_Name: string;
+  //Lifting Modal
   Gov_Lifting_Fee: string;
   Driver_Share_In_LiftingFee: string;
   Gov_Levy: string;
   Driver_Comm_Rate: string;
+  Company_Comm_Rate: string;
+
+  Record_id: number;
+  Cab_Data: Cab[];
+  Number_Of_Entries: string;
+  User_Name: string;
   Lifting_Modal_Visible: boolean;
   Shift: string;
   Taxi: string;
@@ -111,7 +114,6 @@ export type FormValues = {
   Indicator: boolean;
   Search_Date: string;
   //View Records
-  flatListItems: [];
   totalrecords: string;
   start_date: string;
   start_day: string;
@@ -122,13 +124,16 @@ export type FormValues = {
 };
 
 export const initialValues = {
-  Record_id: 0,
-  Number_Of_Entries: '',
-  User_Name: '',
+  //Lifting Modal
   Gov_Lifting_Fee: '',
   Driver_Share_In_LiftingFee: '',
   Gov_Levy: '',
   Driver_Comm_Rate: '',
+  Company_Comm_Rate: '',
+
+  Record_id: 0,
+  Number_Of_Entries: '',
+  User_Name: '',
   Lifting_Modal_Visible: false,
   Shift: '',
   Taxi: '',
@@ -175,7 +180,6 @@ export const initialValues = {
   Indicator: false,
   Search_Date: '',
   //View Records
-  flatListItems: '',
   totalrecords: '0',
   start_date: '',
   start_day: '',

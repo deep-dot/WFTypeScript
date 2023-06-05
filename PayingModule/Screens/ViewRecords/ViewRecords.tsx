@@ -39,13 +39,13 @@ const ViewRecords = () => {
   const {dispatch} = stateContext;
 
   let SearchRecord = async (start_date: string, finish_date: string) => {
-    console.log('start date==', start_date);
+   // console.log('start date==', start_date);
     const current_date = new Date().toLocaleDateString();
     const startDate = start_date ? start_date : current_date;
     const endDate = finish_date ? finish_date : current_date;
     try {
       const res = await ViewRecordsByDate(startDate, endDate);
-      console.log('res===', res);
+     // console.log('res===', res);
       setFormValues(prevState => ({
         ...prevState,
         totalrecords: res.length.toString(),
