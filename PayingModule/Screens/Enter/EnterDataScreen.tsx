@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect, useContext, RefObject} from 'react';
+import React, {useEffect, useContext, RefObject} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -20,16 +20,13 @@ import styles from './EnterDataScreen.style';
 import {
   insertIntoCab,
   deleteIntoCab,
-  selectFromCab,
-  //selectFromUpdateItems,
-  selectCountFromDataTable,
-  insertData,
-  updateDataInTable,
+  SelectFromCab,
+  SelectCountFromDataTable,
+  InsertData,
+  UpdateDataInTable,
 } from '../../Components/dbUtility';
 import {StateContext} from '../../../Utilities/Context';
 import {
-  FormValues,
-  initialValues,
   DdeductionsProperties,
   DdeductionsAdditionalProperties,
   useInputRefs,
@@ -54,7 +51,6 @@ const EnterData = () => {
     throw new Error('Component must be used within a StateProvider');
   }
   const {state, dispatch} = stateContext;
-  const [formValues, setFormValues] = useState<FormValues>(initialValues);
   const inputRefs: {[key: string]: React.RefObject<TextInput>} = useInputRefs();
   const liftingRefs: {[key: string]: React.RefObject<TextInput>} =
     useLiftingRefs();
@@ -62,19 +58,19 @@ const EnterData = () => {
 
   let Save = () => {
     let Cdeductions = DdeductionsProperties.reduce(
-      (acc, curr) => acc + Number(formValues[curr]),
+      (acc, curr) => acc + Number(state[curr]),
       0,
     );
     let Ddeductions = [
       ...DdeductionsProperties,
       ...DdeductionsAdditionalProperties,
-    ].reduce((acc, curr) => acc + Number(formValues[curr]), 0);
+    ].reduce((acc, curr) => acc + Number(state[curr]), 0);
 
-    let Cnetpayin = Number(formValues.Commission_Driver) - Cdeductions;
-    let Dnetpayin = Number(formValues.Commission_Driver) - Ddeductions;
+    let Cnetpayin = Number(state.Commission_Driver) - Cdeductions;
+    let Dnetpayin = Number(state.Commission_Driver) - Ddeductions;
     if (
       DdeductionsAdditionalProperties.some(
-        property => Number(formValues[property]) > 0,
+        property => Number(state[property]) > 0,
       )
     ) {
       Alert.alert(
@@ -159,13 +155,18 @@ const EnterData = () => {
   };
 
   const executeSqlQuery = async () => {
-    if (formValues.Search_Date !== undefined && formValues.Search_Date !== '') {
-      let res = await updateDataInTable(formValues, dispatch);
+    if (state.Search_Date !== undefined && state.Search_Date !== '') {
+      let res = await UpdateDataInTable(state, dispatch);
       if (res) {
-        setFormValues(prevState => ({...prevState, Search_Date: ''}));
+        dispatch({
+          type: 'UPDATE',
+          payload: {
+            Search_Date: '',
+          },
+        });
       }
     } else {
-      let res = await insertData(formValues);
+      let res = await InsertData(state);
       // console.log('res in insertData function in EnterData screen==', res);
       if (res === 'Inserted') {
         alertForSaveRecord();
@@ -173,65 +174,52 @@ const EnterData = () => {
     }
   };
 
-  useEffect(() => {
-    setFormValues(prevState => ({
-      ...prevState,
-      ...state,
-    }));
-  }, [state]);
-
   const Refresh = () => {
     dispatch({type: 'REFRESH', payload: null});
   };
 
   useEffect(() => {
-    const fetchCabData = async () => {
-      try {
-        await selectFromCab(formValues, dispatch);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    const fetchNumberOfEntries = async () => {
-      await selectCountFromDataTable(dispatch);
-    };
-   // fetchCabData();
-   // fetchNumberOfEntries();
-  }, [dispatch, formValues]);
+    SelectFromCab(state, dispatch);
+    SelectCountFromDataTable(dispatch);
+  });
 
   //calculator...
   let Authoritycalculator = (num: Number) => {
     // console.log('charge auth num===', num);
-    num = Number(num);
-    setFormValues(prevState => ({
-      ...prevState,
-      Electronic_Account_Payments: num.toFixed(2),
-      Calculator_Modal_Visible: !prevState.Calculator_Modal_Visible,
-    }));
+    dispatch({
+      type: 'UPDATE',
+      payload: {
+        Electronic_Account_Payments: num.toFixed(2),
+        Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+      },
+    });
   };
   let CCcalculator = (num: Number) => {
-    num = Number(num);
-    setFormValues(prevState => ({
-      ...prevState,
-      M3_Dockets: num.toFixed(2),
-      Calculator_Modal_Visible: !prevState.Calculator_Modal_Visible,
-    }));
+    dispatch({
+      type: 'UPDATE',
+      payload: {
+        M3_Dockets: num.toFixed(2),
+        Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+      },
+    });
   };
   let Cancelcalculator = () => {
-    setFormValues(prevValue => ({
-      ...prevValue,
-      Calculator_Modal_Visible: !prevValue.Calculator_Modal_Visible,
-    }));
+    dispatch({
+      type: 'UPDATE',
+      payload: {
+        Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+      },
+    });
   };
 
   const handleCabChange = async (action: Function) => {
-    if (!formValues.Rego) {
+    if (!state.Rego) {
       Alert.alert('Please put rego in.');
       return;
     }
     try {
-      await action(formValues.Rego.toString());
-      await selectFromCab(formValues, dispatch);
+      await action(state.Rego.toString());
+      await SelectFromCab(state, dispatch);
     } catch (error) {
       console.log(error);
     }
@@ -246,19 +234,19 @@ const EnterData = () => {
   };
 
   const hideModal = () => {
-    setFormValues(prevValues => ({
-      ...prevValues,
-      Lifting_Modal_Visible: !prevValues.Lifting_Modal_Visible,
-    }));
+    dispatch({
+      type: 'UPDATE',
+      payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
+    });
   };
 
   const onChange = (name: string, value: string | boolean) => {
     //console.log('onchange in enter data ==', name, 'and', value);
-    setFormValues(prevValues => ({...prevValues, [name]: value}));
+    dispatch({type: 'UPDATE', payload: {[name]: value}});
   };
 
   const updateStateContext = () => {
-    dispatch({type: 'UPDATE', payload: formValues});
+    dispatch({type: 'UPDATE', payload: state});
     navigation.navigate('Enter Data');
   };
 
@@ -268,7 +256,7 @@ const EnterData = () => {
     nextInputRef: React.RefObject<TextInput>,
   ) => {
     if (!isNaN(Number(value))) {
-      let updatedValues = {...formValues, [name]: value};
+      let updatedValues = {...state, [name]: value};
       console.log(`name ${name} and value ${value}`);
       if (name === 'Jobs_Done') {
         const val1 = Number(updatedValues.Jobs_Done || 0);
@@ -328,12 +316,12 @@ const EnterData = () => {
           Number(updatedValues.Number_Of_Manual_Liftings) * val5
         ).toFixed(2);
       }
-      setFormValues(updatedValues);
+      dispatch({type: 'UPDATE', payload: updatedValues});
       nextInputRef.current?.focus();
     } else {
       Alert.alert('Please input a correct number');
-      let updatedValues = {...formValues, [name]: ''};
-      setFormValues(updatedValues);
+      let updatedValues = {...state, [name]: ''};
+      dispatch({type: 'UPDATE', payload: updatedValues});
     }
   };
 
@@ -342,28 +330,30 @@ const EnterData = () => {
       <Database />
 
       <AwesomeAlert
-        show={formValues.Indicator}
+        show={state.Indicator}
         showProgress={true}
         title="Please wait"
         closeOnTouchOutside={false}
       />
 
       <Calculator
-        calculatorVisible={formValues.Calculator_Modal_Visible}
+        calculatorVisible={state.Calculator_Modal_Visible}
         Cancelcalcu={Cancelcalculator}
         Docketcalcu={CCcalculator}
         CAcalcu={Authoritycalculator}
       />
 
       <Model
-        modvisible={formValues.Lifting_Modal_Visible}
+        modvisible={state.Lifting_Modal_Visible}
         onCancel={hideModal}
         onupdate={hideModal}
       />
 
       <RegoModal
-        formValues={formValues}
-        setFormValues={setFormValues}
+        visible={state.Rego_Modal}
+        state={state}
+        //setstate={setstate}
+        dispatch={dispatch}
         pushcab={pushcab}
         deletecab={deletecab}
       />
@@ -381,7 +371,7 @@ const EnterData = () => {
               returnKeyType="next"
               keyboardType="numeric"
               // onChangeText={(value: string) => onChange(input.name, value)}
-              value={formValues[input.name]}
+              value={state[input.name]}
               ref={(ref: RefObject<TextInput>) => {
                 if (ref) {
                   liftingRefs[input.name] = ref;
@@ -392,7 +382,7 @@ const EnterData = () => {
                   ? () =>
                       SubmitEditing(
                         input.name,
-                        formValues[input.name].toString(),
+                        state[input.name].toString(),
                         liftingRefs[inputs[index + 1]?.name],
                       )
                   : () => {}
@@ -402,11 +392,18 @@ const EnterData = () => {
         ))}
         <TouchableOpacity
           style={styles.button}
-          onPress={() =>
-            setFormValues(prevValue => ({
-              ...prevValue,
-              Lifting_Modal_Visible: !prevValue.Lifting_Modal_Visible,
-            }))
+          onPress={
+            () =>
+              dispatch({
+                type: 'UPDATE',
+                payload: {
+                  Lifting_Modal_Visible: !state.Lifting_Modal_Visible,
+                },
+              })
+            // setstate(prevValue => ({
+            //   ...prevValue,
+            //   Lifting_Modal_Visible: !prevValue.Lifting_Modal_Visible,
+            // }))
           }>
           <Text style={styles.buttontext}>Update above Items if needed</Text>
         </TouchableOpacity>
@@ -427,16 +424,21 @@ const EnterData = () => {
             editable={false}
             style={styles.textInput}>
             <Text style={[styles.titleText, {color: '#fff'}]}>
-              {formValues.Shift}
+              {state.Shift}
             </Text>
           </TextInput>
           <Picker
-            selectedValue={formValues.Shift}
+            selectedValue={state.Shift}
             style={{
               width: 100,
             }}
             onValueChange={(itemValue: string) => {
-              setFormValues(prevValues => ({...prevValues, Shift: itemValue}));
+              dispatch({
+                type: 'UPDATE',
+                payload: {
+                  Shift: itemValue,
+                },
+              });
             }}>
             <Picker.Item label="Select" value="  " color="#fff" />
             <Picker.Item label="Day" value="Day" color="#fff" />
@@ -461,17 +463,22 @@ const EnterData = () => {
             editable={false}
             style={styles.textInput}>
             <Text style={[styles.titleText, {color: '#fff'}]}>
-              {formValues.Taxi}
+              {state.Taxi}
             </Text>
           </TextInput>
           <Picker
-            selectedValue={formValues.Taxi}
+            selectedValue={state.Taxi}
             style={{width: 120}}
             onValueChange={(itemValue: string) => {
-              setFormValues(prevValue => ({...prevValue, Taxi: itemValue}));
+              dispatch({
+                type: 'UPDATE',
+                payload: {
+                  Taxi: itemValue,
+                },
+              });
             }}>
             <Picker.Item label="Select" key=" " value=" " />
-            {formValues.Cab_Data.map((cab: Cab, i: number) => (
+            {state.Cab_Data.map((cab: Cab, i: number) => (
               <Picker.Item
                 label={cab.Cab}
                 key={i}
@@ -484,29 +491,33 @@ const EnterData = () => {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() =>
-            setFormValues(prevValue => ({
-              ...prevValue,
-              Rego_Modal: !prevValue.Rego_Modal,
-            }))
-          }>
+          onPress={() => {
+            dispatch({
+              type: 'UPDATE',
+              payload: {
+                Rego_Modal: !state.Rego_Modal,
+              },
+            });
+          }}>
           <Text style={styles.buttontext}>Registration Number</Text>
         </TouchableOpacity>
 
         <View style={styles.textinputview}>
           <Calendar
-            value={formValues.Date}
+            value={state.Date}
             onChange={(date: string, day: string) => {
-              setFormValues(prevValues => ({
-                ...prevValues,
-                Date: date,
-                Day: day,
-              }));
+              dispatch({
+                type: 'UPDATE',
+                payload: {
+                  Date: date,
+                  Day: day,
+                },
+              });
             }}
           />
           <Text style={styles.Textinput}>
-            {formValues.Date
-              ? formValues.Day + ' ' + formValues.Date
+            {state.Date
+              ? state.Day + ' ' + state.Date
               : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
           </Text>
         </View>
@@ -523,7 +534,7 @@ const EnterData = () => {
               returnKeyType="next"
               // keyboardType="numeric"
               onChangeText={(value: string) => onChange(input.name, value)}
-              value={String(formValues[input.name])}
+              value={String(state[input.name])}
               ref={(ref: RefObject<TextInput>) => {
                 if (ref) {
                   inputRefs[input.name] = ref;
@@ -534,7 +545,7 @@ const EnterData = () => {
                   ? () =>
                       SubmitEditing(
                         input.name,
-                        formValues[input.name].toString(),
+                        state[input.name].toString(),
                         inputRefs[inputs[index + 1]?.name],
                       )
                   : () => {}
@@ -552,13 +563,13 @@ const EnterData = () => {
             returnKeyType="next"
             keyboardType="numeric"
             OnChange={(meter2: string) =>
-              setFormValues(prevValues => ({...prevValues, meter2}))
+              setstate(prevValues => ({...prevValues, meter2}))
             }
-            // value={formValues.meter2}
+            // value={state.meter2}
             ref={inputRefs.meter2}
             onSubmitEditing={() =>
               onSubmitEditing(
-                formValues.meter2.toString(),
+                state.meter2.toString(),
                 inputRefs.Shift_Total,
               )
             }
@@ -573,12 +584,12 @@ const EnterData = () => {
             returnKeyType="next"
             keyboardType="numeric"
             OnChange={(Shift_Total: string) =>
-              setFormValues(prevValues => ({...prevValues, Shift_Total}))
+              setstate(prevValues => ({...prevValues, Shift_Total}))
             }
             ref={inputRefs.Shift_Total}
             onSubmitEditing={() =>
               onSubmitEditing(
-                formValues.Shift_Total.toString(),
+                state.Shift_Total.toString(),
                 inputRefs.insurancefee,
               )
             }
@@ -587,12 +598,14 @@ const EnterData = () => {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() =>
-            setFormValues(prevValue => ({
-              ...prevValue,
-              Calculator_Modal_Visible: !prevValue.Calculator_Modal_Visible,
-            }))
-          }>
+          onPress={() => {
+            dispatch({
+              type: 'UPDATE',
+              payload: {
+                Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+              },
+            });
+          }}>
           <Text
             style={{
               color: '#ffffff',
@@ -624,7 +637,7 @@ const EnterData = () => {
               returnKeyType="next"
               keyboardType="numeric"
               // onChangeText={(value: string) => onChange(input.name, value)}
-              value={formValues[input.name]}
+              value={state[input.name]}
               ref={(ref: RefObject<TextInput>) => {
                 if (ref) {
                   inputRefs[input.name] = ref;
@@ -635,7 +648,7 @@ const EnterData = () => {
                   ? () =>
                       SubmitEditing(
                         input.name,
-                        formValues[input.name].toString(),
+                        state[input.name].toString(),
                         payinRefs[inputs[index + 1]?.name],
                       )
                   : () => {}

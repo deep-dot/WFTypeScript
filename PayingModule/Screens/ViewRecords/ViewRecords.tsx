@@ -15,7 +15,7 @@ import {
 import {
   ViewRecordsByDate,
   UpdateData,
-  selectCountFromDataTable,
+  SelectCountFromDataTable,
   deleteDataInTable,
 } from '../../Components/dbUtility';
 import Calendar from '../../Components/Calendar';
@@ -23,39 +23,38 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
 import {useNavigation} from '@react-navigation/core';
-import {FormValues, initialValues} from '../../Components/EnterDataValues';
+import {FormValues} from '../../Components/EnterDataValues';
 import MyButton from '../../Components/Mybutton';
 import {StateContext} from '../../../Utilities/Context';
 
 const ViewRecords = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackParamList, 'View Records'>>();
-  const [formValues, setFormValues] = useState<FormValues>(initialValues);
   const [flatListItems, setFlatListItems] = useState([{}]);
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {dispatch} = stateContext;
+  const {state, dispatch} = stateContext;
 
   let SearchRecord = async (start_date: string, finish_date: string) => {
-   // console.log('start date==', start_date);
+    // console.log('start date==', start_date);
     const current_date = new Date().toLocaleDateString();
     const startDate = start_date ? start_date : current_date;
     const endDate = finish_date ? finish_date : current_date;
     try {
       const res = await ViewRecordsByDate(startDate, endDate);
-     // console.log('res===', res);
-      setFormValues(prevState => ({
-        ...prevState,
-        totalrecords: res.length.toString(),
-      }));
+      // console.log('res===', res);
+      dispatch({
+        type: 'UPDATE',
+        payload: {totalrecords: res.length.toString()},
+      });
       setFlatListItems(res);
       if (res.length === 0) {
-        setFormValues(prevState => ({
-          ...prevState,
-          sorryAlert: true,
-        }));
+        dispatch({
+          type: 'UPDATE',
+          payload: {sorryAlert: true},
+        });
         setFlatListItems([]);
       }
     } catch (error) {
@@ -66,13 +65,8 @@ const ViewRecords = () => {
   const Delete = async (id: string, date: string) => {
     const res = await deleteDataInTable(id, date);
     if (res === 'Deleted successfully') {
-      selectCountFromDataTable()
-        .then(({len, temp}) => {
-          //  console.log(len, temp);
-          setFormValues(prevState => ({
-            ...prevState,
-            totalrecords: len.toString(),
-          }));
+      SelectCountFromDataTable(dispatch)
+        .then(temp => {
           setFlatListItems(temp);
         })
         .catch(error => {
@@ -109,8 +103,7 @@ const ViewRecords = () => {
 
   const handleRefresh = async (searchDate: string) => {
     try {
-      const searchedData = await UpdateData(searchDate, dispatch);
-      dispatch({type: 'UPDATE', payload: searchedData});
+      await UpdateData(searchDate, dispatch);
       navigation.navigate('Enter Data');
     } catch (error) {
       // handle error
@@ -222,17 +215,13 @@ const ViewRecords = () => {
   };
 
   const HideAlert = () => {
-    setFormValues(prevState => ({
-      ...prevState,
-      sorryAlert: false,
-      show2Alert: false,
-    }));
+    dispatch({type: 'UPDATE', payload: {sorryAlert: false, show2Alert: false}});
   };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#35363A'}}>
       <AwesomeAlert
-        show={formValues.sorryAlert}
+        show={state.sorryAlert}
         showProgress={false}
         title="SORRY !"
         message="No data found."
@@ -244,7 +233,7 @@ const ViewRecords = () => {
         onConfirmPressed={HideAlert}
       />
       <AwesomeAlert
-        show={formValues.show2Alert}
+        show={state.show2Alert}
         showProgress={false}
         title=""
         message="Please select Date !"
@@ -257,43 +246,41 @@ const ViewRecords = () => {
       />
       <ScrollView>
         <Text style={{color: '#ffffff', textAlign: 'center'}}>
-          Total Number of Entries = {formValues.totalrecords}
+          Total Number of Entries = {state.totalrecords}
         </Text>
 
         <View style={styles.textinputview}>
           <Calendar
-            value={formValues.start_date}
+            value={state.start_date}
             onChange={async (date: string, day: string) => {
-              setFormValues(prevValues => ({
-                ...prevValues,
-                start_date: date,
-                start_day: day,
-              }));
-              await SearchRecord(date, formValues.finish_date);
+              dispatch({
+                type: 'UPDATE',
+                payload: {start_date: date, start_day: day},
+              });
+              await SearchRecord(date, state.finish_date);
             }}
           />
           <Text style={styles.Textinput}>
-            {formValues.start_date
-              ? formValues.start_day + ' ' + formValues.start_date
+            {state.start_date
+              ? state.start_day + ' ' + state.start_date
               : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
           </Text>
         </View>
 
         <View style={styles.textinputview}>
           <Calendar
-            value={formValues.finish_date}
+            value={state.finish_date}
             onChange={async (date: string, day: string) => {
-              setFormValues(prevValues => ({
-                ...prevValues,
-                finish_date: date,
-                finish_day: day,
-              }));
-              await SearchRecord(formValues.start_date, date);
+              dispatch({
+                type: 'UPDATE',
+                payload: {finish_date: date, finish_day: day},
+              });
+              await SearchRecord(state.start_date, date);
             }}
           />
           <Text style={styles.Textinput}>
-            {formValues.finish_date
-              ? formValues.finish_day + ' ' + formValues.finish_date
+            {state.finish_date
+              ? state.finish_day + ' ' + state.finish_date
               : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
           </Text>
         </View>
@@ -301,7 +288,7 @@ const ViewRecords = () => {
         <View style={{borderBottomWidth: 1, alignItems: 'center'}}>
           <Text style={styles.Textinput}>
             {' '}
-            Display Records = {formValues.totalrecords}
+            Display Records = {state.totalrecords}
           </Text>
         </View>
       </ScrollView>

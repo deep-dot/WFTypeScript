@@ -3,28 +3,28 @@ import React from 'react';
 import {Modal, View, Text, TextInput} from 'react-native';
 import MyButton from '../../../Components/Mybutton';
 import styles from '../EnterDataScreen.style';
+import {Action} from '../../../../Utilities/Actions';
 
 interface RegoModalProps {
-  formValues: {
+  visible: boolean;
+  state: {
     Rego_Modal: boolean;
     Rego: string;
   };
-  setFormValues: React.Dispatch<React.SetStateAction<any>>;
+  dispatch: React.Dispatch<Action>;
   pushcab: () => void;
   deletecab: () => void;
 }
 
 export const RegoModal = ({
-  formValues,
-  setFormValues,
+  visible,
+  state,
+  dispatch,
   pushcab,
   deletecab,
 }: RegoModalProps) => {
   return (
-    <Modal
-      visible={formValues.Rego_Modal}
-      animationType={'fade'}
-      onRequestClose={() => {}}>
+    <Modal visible={visible} animationType={'fade'} onRequestClose={() => {}}>
       <View style={styles.model}>
         <Text style={{color: '#000000'}}>
           Please add vehcle's registration number.
@@ -41,25 +41,19 @@ export const RegoModal = ({
             textAlign: 'center',
             color: '#000000',
           }}
-          onChangeText={(num: string) =>
-            setFormValues((prevValues: {Rego: string}) => ({
-              ...prevValues,
-              Rego: num,
-            }))
-          }>
-          <Text style={styles.titleText}>{formValues.Rego}</Text>
+          onChangeText={(rego: string) => {
+            dispatch({type: 'UPDATE', payload: {Rego: rego}});
+          }}>
+          <Text style={styles.titleText}>{state.Rego}</Text>
         </TextInput>
         <View style={{flexDirection: 'row', marginTop: 10}}>
           <MyButton title="Add" customClick={pushcab} />
           <MyButton title="Delete" customClick={deletecab} />
           <MyButton
             title="Cancel"
-            customClick={() =>
-              setFormValues((prevValues: {Rego_Modal: boolean}) => ({
-                ...prevValues,
-                Rego_Modal: false,
-              }))
-            }
+            customClick={() => {
+              dispatch({type: 'UPDATE', payload: {Rego_Modal: false}});
+            }}
           />
         </View>
       </View>

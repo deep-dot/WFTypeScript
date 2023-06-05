@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-lone-blocks */
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {
   TextInput,
   ScrollView,
@@ -11,11 +11,10 @@ import {
   Modal,
 } from 'react-native';
 import Mybutton from '../../../Components/Mybutton';
-import {FormValues, initialValues} from '../../../Components/EnterDataValues';
 import {
-  selectFromUpdateItems,
-  updateDataInTable,
-  insertLiftingModalItems,
+  SelectFromUpdateItems,
+  UpdateDataInTable,
+  InsertLiftingModalItems,
 } from '../../../Components/dbUtility';
 import {StateContext} from '../../../../Utilities/Context';
 
@@ -26,7 +25,6 @@ interface Props {
 }
 
 const Model = ({onupdate, onCancel, modvisible}: Props) => {
-  const [formValues, setFormValues] = useState<FormValues>(initialValues);
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
@@ -34,23 +32,15 @@ const Model = ({onupdate, onCancel, modvisible}: Props) => {
   const {state, dispatch} = stateContext;
 
   useEffect(() => {
-    selectFromUpdateItems(dispatch);
+    SelectFromUpdateItems(dispatch);
   }, [dispatch]);
-
-  useEffect(() => {
-    setFormValues(prevState => ({
-      ...prevState,
-      ...state,
-    }));
-  }, [state]);
 
   let UpdateItems = async () => {
     try {
-      console.log(formValues.Driver_Comm_Rate);
-      const res = await insertLiftingModalItems(formValues);
+      const res = await InsertLiftingModalItems(state);
       if (res === 'Inserted') {
         onupdate();
-        updateDataInTable(formValues, dispatch);
+        UpdateDataInTable(state, dispatch);
       }
     } catch (error) {
       console.error(error);
@@ -72,13 +62,10 @@ const Model = ({onupdate, onCancel, modvisible}: Props) => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={formValues.Gov_Lifting_Fee}
-                onChangeText={(value: string) =>
-                  setFormValues(prevState => ({
-                    ...prevState,
-                    Gov_Lifting_Fee: value,
-                  }))
-                }
+                value={state.Gov_Lifting_Fee}
+                onChangeText={(value: string) => {
+                  dispatch({type: 'UPDATE', payload: {Gov_Lifting_Fee: value}});
+                }}
                 onSubmitEditing={() => {}}
               />
             </View>
@@ -90,13 +77,13 @@ const Model = ({onupdate, onCancel, modvisible}: Props) => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={String(formValues.Driver_Share_In_LiftingFee)}
-                onChangeText={(value: string) =>
-                  setFormValues(prevState => ({
-                    ...prevState,
-                    Driver_Share_In_LiftingFee: value,
-                  }))
-                }
+                value={String(state.Driver_Share_In_LiftingFee)}
+                onChangeText={(value: string) => {
+                  dispatch({
+                    type: 'UPDATE',
+                    payload: {Driver_Share_In_LiftingFee: value},
+                  });
+                }}
                 onSubmitEditing={() => {}}
               />
             </View>
@@ -108,13 +95,13 @@ const Model = ({onupdate, onCancel, modvisible}: Props) => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={String(formValues.Gov_Levy)}
-                onChangeText={(value: string) =>
-                  setFormValues(prevState => ({
-                    ...prevState,
-                    Gov_Levy: value,
-                  }))
-                }
+                value={String(state.Gov_Levy)}
+                onChangeText={(value: string) => {
+                  dispatch({
+                    type: 'UPDATE',
+                    payload: {Gov_Levy: value},
+                  });
+                }}
                 onSubmitEditing={() => {}}
               />
             </View>
@@ -128,13 +115,13 @@ const Model = ({onupdate, onCancel, modvisible}: Props) => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={String(formValues.Driver_Comm_Rate)}
-                onChangeText={(value: string) =>
-                  setFormValues(prevState => ({
-                    ...prevState,
-                    Driver_Comm_Rate: value,
-                  }))
-                }
+                value={String(state.Driver_Comm_Rate)}
+                onChangeText={(value: string) => {
+                  dispatch({
+                    type: 'UPDATE',
+                    payload: {Driver_Comm_Rate: value},
+                  });
+                }}
                 onSubmitEditing={() => {}}
               />
             </View>
