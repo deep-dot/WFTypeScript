@@ -3,11 +3,7 @@ import React from 'react';
 import {Modal, View, Text, TextInput, Alert} from 'react-native';
 import MyButton from '../../../Components/Mybutton';
 import styles from '../EnterDataScreen.style';
-import {
-  insertIntoCab,
-  deleteIntoCab,
-  SelectFromCab,
-} from '../../../Components/dbUtility';
+import {insertIntoCab, deleteIntoCab, SelectFromCab} from '../Actions';
 import {StateContext} from '../../../../Utilities/Context';
 
 export const RegoModal = () => {
@@ -30,12 +26,12 @@ export const RegoModal = () => {
   };
   let pushcab = async () => {
     handleCabChange(insertIntoCab);
-    await SelectFromCab(state, dispatch);
+    await SelectFromCab(dispatch);
   };
 
   const deletecab = async () => {
     handleCabChange(deleteIntoCab);
-    await SelectFromCab(state, dispatch);
+    await SelectFromCab(dispatch);
   };
   return (
     <Modal

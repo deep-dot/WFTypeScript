@@ -14,7 +14,7 @@ interface CalendarProps {
   onChange: (date: string, day: string) => void;
 }
 
-const Calendar = ({onChange, value}: CalendarProps) => {
+export const Calendar = ({onChange, value}: CalendarProps) => {
   const [show, setShow] = useState(false);
 
   const daysOfWeek = [
@@ -63,5 +63,3 @@ const Calendar = ({onChange, value}: CalendarProps) => {
     </SafeAreaView>
   );
 };
-
-export default Calendar;

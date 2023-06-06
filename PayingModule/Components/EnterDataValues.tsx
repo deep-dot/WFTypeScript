@@ -58,6 +58,15 @@ interface Cab {
   Cab: string;
 }
 export type FormValues = {
+  //Home Screen Modal
+  modalVisible: boolean;
+  date: string;
+  name: string;
+  day: string;
+  showAlert: boolean;
+  numberOfEntries: string;
+  Week_Ending_Date: string;
+
   //Lifting Modal
   Gov_Lifting_Fee: string;
   Driver_Share_In_LiftingFee: string;
@@ -124,6 +133,15 @@ export type FormValues = {
 };
 
 export const initialValues = {
+  //Home Screen Modal
+  modalVisible: true,
+  date: '',
+  name: '',
+  day: '',
+  showAlert: false,
+  numberOfEntries: 0,
+  Week_Ending_Date: '',
+
   //Lifting Modal
   Gov_Lifting_Fee: '',
   Driver_Share_In_LiftingFee: '',
@@ -132,7 +150,7 @@ export const initialValues = {
   Company_Comm_Rate: '',
 
   Record_id: 0,
-  Number_Of_Entries: '',
+  Number_Of_Entries: 0,
   User_Name: '',
   Lifting_Modal_Visible: false,
   Shift: '',
@@ -179,6 +197,7 @@ export const initialValues = {
   Calculator_Modal_Visible: false,
   Indicator: false,
   Search_Date: '',
+
   //View Records
   totalrecords: '0',
   start_date: '',

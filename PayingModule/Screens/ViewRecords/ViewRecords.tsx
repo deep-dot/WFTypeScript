@@ -17,8 +17,8 @@ import {
   UpdateData,
   SelectCountFromDataTable,
   deleteDataInTable,
-} from '../../Components/dbUtility';
-import Calendar from '../../Components/Calendar';
+} from './Actions';
+import {Calendar} from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
@@ -246,7 +246,7 @@ const ViewRecords = () => {
       />
       <ScrollView>
         <Text style={{color: '#ffffff', textAlign: 'center'}}>
-          Total Number of Entries = {state.totalrecords}
+          Total Number of Entries = {state.Number_Of_Entries}
         </Text>
 
         <View style={styles.textinputview}>

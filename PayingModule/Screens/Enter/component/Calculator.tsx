@@ -15,7 +15,7 @@ import {
 import {ScrollView} from 'react-native-gesture-handler';
 import {StateContext} from '../../../../Utilities/Context';
 
-const Calculator = () => {
+export const Calculator = () => {
   const stateContext = React.useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
@@ -261,8 +261,6 @@ const Calculator = () => {
     </SafeAreaView>
   );
 };
-
-export default Calculator;
 
 const styles = StyleSheet.create({
   model: {

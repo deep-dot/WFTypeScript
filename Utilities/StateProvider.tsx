@@ -2,7 +2,6 @@
 import * as React from 'react';
 import {useReducer, ReactNode} from 'react';
 import {initialValues} from '../PayingModule/Components/EnterDataValues';
-import {UpdateData} from '../PayingModule/Components/dbUtility';
 import {reducer} from './Reducer';
 import {StateContext} from './Context';
 import {NavigationContainer} from '@react-navigation/native';
@@ -23,7 +22,7 @@ export const StateProvider = ({children}: Props) => {
   const {theme} = themeContext;
 
   return (
-    <StateContext.Provider value={{state, dispatch, UpdateData}}>
+    <StateContext.Provider value={{state, dispatch}}>
       <PaperProvider theme={theme}>
         <NavigationContainer theme={theme}>{children}</NavigationContainer>
       </PaperProvider>

@@ -15,10 +15,10 @@ import {
   SelectFromUpdateItems,
   UpdateDataInTable,
   InsertLiftingModalItems,
-} from '../../../Components/dbUtility';
+} from '../Actions';
 import {StateContext} from '../../../../Utilities/Context';
 
-const Model = () => {
+export const LiftingModel = () => {
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
@@ -33,7 +33,6 @@ const Model = () => {
     try {
       const res = await InsertLiftingModalItems(state);
       if (res === 'Inserted') {
-        //onupdate();
         dispatch({
           type: 'UPDATE',
           payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
@@ -142,8 +141,6 @@ const Model = () => {
     </SafeAreaView>
   );
 };
-
-export default Model;
 
 const styles = StyleSheet.create({
   container: {

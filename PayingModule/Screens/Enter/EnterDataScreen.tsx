@@ -10,11 +10,10 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {RegoModal} from './component/RegoModal';
-import Model from './component/Model';
-// import MyButton from '../../Components/Mybutton';
+import {LiftingModel} from './component/LiftingModel';
 import {Picker} from '@react-native-picker/picker';
-import Calculator from './component/Calculator';
-import Calendar from '../../Components/Calendar';
+import {Calculator} from './component/Calculator';
+import {Calendar} from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
 import {
@@ -22,7 +21,7 @@ import {
   SelectCountFromDataTable,
   InsertData,
   UpdateDataInTable,
-} from '../../Components/dbUtility';
+} from './Actions';
 import {StateContext} from '../../../Utilities/Context';
 import {
   DdeductionsProperties,
@@ -130,7 +129,7 @@ const EnterData = () => {
     if (state.Search_Date !== undefined && state.Search_Date !== '') {
       await UpdateDataInTable(state, dispatch);
     } else {
-      await InsertData(state);
+      await InsertData(state, dispatch);
     }
   };
 
@@ -138,13 +137,13 @@ const EnterData = () => {
     dispatch({type: 'REFRESH', payload: null});
   };
 
-  // useEffect(() => {
-  //   const call = async () => {
-  //     await SelectFromCab(state, dispatch);
-  //     await SelectCountFromDataTable(dispatch);
-  //   };
-  //   call();
-  // }, [dispatch]);
+  useEffect(() => {
+    const call = async () => {
+      await SelectFromCab(dispatch);
+      await SelectCountFromDataTable(dispatch);
+    };
+    call();
+  }, [dispatch]);
 
   const onChange = (name: string, value: string | boolean) => {
     //console.log('onchange in enter data ==', name, 'and', value);
@@ -243,7 +242,7 @@ const EnterData = () => {
 
       <Calculator />
 
-      <Model />
+      <LiftingModel />
 
       <RegoModal />
 

@@ -1,9 +1,9 @@
 import React from 'react';
-import {Transaction, ResultSet} from '../Database/databaseTypes';
+import {Transaction, ResultSet} from '../../Database/databaseTypes';
 import {Alert} from 'react-native';
-import db from '../Database/databaseService';
-import {Action} from '../../Utilities/Actions';
-import {FormValues} from './EnterDataValues';
+import db from '../../Database/databaseService';
+import {Action} from '../../../Utilities/Actions';
+import {FormValues} from '../../Components/EnterDataValues';
 
 export function insertIntoCab(rego: string): Promise<ResultSet> {
   //console.log('formValues.rego==', rego);
@@ -59,10 +59,7 @@ export function deleteIntoCab(rego: string): Promise<ResultSet> {
   });
 }
 
-export const SelectFromCab = (
-  state: FormValues,
-  dispatch: React.Dispatch<Action>,
-) => {
+export const SelectFromCab = (dispatch: React.Dispatch<Action>) => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -77,7 +74,7 @@ export const SelectFromCab = (
                 temp.push(results.rows.item(j));
               }
               let res = {
-                Rego_Modal: !state.Rego_Modal,
+                // Rego_Modal: !state.Rego_Modal,
                 Cab_Data: temp,
               };
               dispatch({
@@ -181,7 +178,10 @@ export const SelectCountFromDataTable = (
   });
 };
 
-export const InsertData = (state: FormValues) => {
+export const InsertData = (
+  state: FormValues,
+  dispatch: React.Dispatch<Action>,
+) => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -232,13 +232,13 @@ export const InsertData = (state: FormValues) => {
                         {
                           text: 'Yes',
                           onPress: () => {
-                            Refresh();
+                            dispatch({type: 'REFRESH', payload: null});
                           },
                         },
                         {
                           text: 'No',
                           onPress: () => {
-                           // navigation.navigate('Home');
+                            // navigation.navigate('Home');
                           },
                         },
                         {
@@ -266,106 +266,6 @@ export const InsertData = (state: FormValues) => {
   });
 };
 
-export const InsertLiftingModalItems = (state: FormValues) => {
-  let Company_Comm_Rate = (100 - Number(state.Driver_Comm_Rate)).toFixed(0);
-  return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'INSERT INTO datatable (Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?)',
-          [
-            state.Gov_Lifting_Fee,
-            state.Driver_Share_In_LiftingFee,
-            state.Gov_Levy,
-            state.Driver_Comm_Rate,
-            Company_Comm_Rate,
-          ],
-          (transaction: Transaction, result: ResultSet) => {
-            if (result.rowsAffected > 0) {
-              console.log('insertLiftingModalItems ===', result.rows.item(0));
-              resolve('Inserted');
-            } else {
-              reject(new Error('Insert operation failed'));
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
-      });
-    } else {
-      console.log('db is undefined');
-    }
-  });
-};
-
-export const ViewRecordsByDate = (
-  start_date: string,
-  finish_date: string,
-): Promise<FormValues[]> => {
-  //console.log('res in updateData in dbUtility', searchByDate);
-  return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'SELECT * from datatable where Date between ? and ? order by Date',
-          [start_date, finish_date],
-          (_tx: Transaction, results: ResultSet) => {
-            if (results.rows.length > 0) {
-              let res = [];
-              for (let i = 0; i < results.rows.length; i++) {
-                res.push(results.rows.item(i));
-              }
-              resolve(res);
-              Alert.alert('Search successfully');
-            } else {
-              Alert.alert('No record exist on this date');
-              reject(new Error('Search operation failed'));
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
-      });
-    } else {
-      reject(new Error('db is undefined'));
-    }
-  });
-};
-
-export const UpdateData = (
-  Search_Date: string,
-  dispatch: React.Dispatch<Action>,
-) => {
-  return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'SELECT * FROM datatable where Date = ?',
-          [Search_Date],
-          (_tx: Transaction, results: ResultSet) => {
-            if (results.rows.length > 0) {
-              let res = results.rows.item(0);
-              // console.log('res in updateData in dbUtility', res);
-              resolve(res);
-              dispatch({type: 'UPDATE', payload: {...res, Search_Date}});
-              Alert.alert('Search successfully');
-            } else {
-              reject(new Error('Search operation failed'));
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
-      });
-    } else {
-      reject(new Error('db is undefined'));
-    }
-  });
-};
-
 export function UpdateDataInTable(
   state: FormValues,
   dispatch: React.Dispatch<Action>,
@@ -377,12 +277,12 @@ export function UpdateDataInTable(
         if (state.Search_Date) {
           txn.executeSql(
             `UPDATE datatable 
-           SET Date = ?, Day = ?, Shift = ?, Taxi = ?, Jobs_Done = ?, Hours_Worked = ?, 
-               Meter_Start = ?, Meter_Finish = ?, Km_Start = ?, Km_Finish = ?, Paidkm_Start = ?, 
-               Paidkm_Finish = ?, Eftpos = ?, M3_Dockets = ?, Electronic_Account_Payments = ?, 
-               Total_Manual_MPTP31_And_MPTP_Values = ?, Number_Of_Manual_Liftings = ?, 
-               Eftpos_Lifting_Value = ?, Car_Wash = ?, Misc = ?, Fuel = ?, Insurance = ? 
-           WHERE Date = ?`,
+             SET Date = ?, Day = ?, Shift = ?, Taxi = ?, Jobs_Done = ?, Hours_Worked = ?, 
+                 Meter_Start = ?, Meter_Finish = ?, Km_Start = ?, Km_Finish = ?, Paidkm_Start = ?, 
+                 Paidkm_Finish = ?, Eftpos = ?, M3_Dockets = ?, Electronic_Account_Payments = ?, 
+                 Total_Manual_MPTP31_And_MPTP_Values = ?, Number_Of_Manual_Liftings = ?, 
+                 Eftpos_Lifting_Value = ?, Car_Wash = ?, Misc = ?, Fuel = ?, Insurance = ? 
+             WHERE Date = ?`,
             [
               state.Date,
               state.Day,
@@ -429,7 +329,7 @@ export function UpdateDataInTable(
         } else {
           txn.executeSql(
             `UPDATE datatable
-           SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ?`,
+             SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ?`,
             [
               state.Gov_Lifting_Fee,
               state.Driver_Share_In_LiftingFee,
@@ -460,20 +360,26 @@ export function UpdateDataInTable(
   });
 }
 
-export const deleteDataInTable = (id: string, date: string) => {
-  // console.log('data in db Utility==', id, date);
+export const InsertLiftingModalItems = (state: FormValues) => {
+  let Company_Comm_Rate = (100 - Number(state.Driver_Comm_Rate)).toFixed(0);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'DELETE FROM datatable WHERE Record_id = ? AND Date = ?',
-          [id, date],
-          (_tx: Transaction, results: ResultSet) => {
-            if (results.rowsAffected > 0) {
-              resolve('Deleted successfully');
-              Alert.alert('Deleted successfully');
+          'INSERT INTO datatable (Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?)',
+          [
+            state.Gov_Lifting_Fee,
+            state.Driver_Share_In_LiftingFee,
+            state.Gov_Levy,
+            state.Driver_Comm_Rate,
+            Company_Comm_Rate,
+          ],
+          (transaction: Transaction, result: ResultSet) => {
+            if (result.rowsAffected > 0) {
+              console.log('insertLiftingModalItems ===', result.rows.item(0));
+              resolve('Inserted');
             } else {
-              reject(new Error('No data found for the provided date'));
+              reject(new Error('Insert operation failed'));
             }
           },
           (error: any) => {
@@ -482,7 +388,7 @@ export const deleteDataInTable = (id: string, date: string) => {
         );
       });
     } else {
-      reject(new Error('db is undefined'));
+      console.log('db is undefined');
     }
   });
 };
