@@ -225,6 +225,29 @@ export const InsertData = (state: FormValues) => {
                 (transaction: Transaction, resultSet: ResultSet) => {
                   if (resultSet.rowsAffected > 0) {
                     resolve('Inserted');
+                    Alert.alert(
+                      'Record Saved Successfully!',
+                      'Do you want to add another record?',
+                      [
+                        {
+                          text: 'Yes',
+                          onPress: () => {
+                            Refresh();
+                          },
+                        },
+                        {
+                          text: 'No',
+                          onPress: () => {
+                           // navigation.navigate('Home');
+                          },
+                        },
+                        {
+                          text: 'Cancel',
+                          style: 'cancel',
+                        },
+                      ],
+                      {cancelable: true},
+                    );
                   } else {
                     reject(new Error('Insert operation failed'));
                   }
@@ -387,7 +410,12 @@ export function UpdateDataInTable(
             ],
             (_tx: Transaction, results: ResultSet) => {
               if (results.rowsAffected > 0) {
-                console.log(results.rows.item(0));
+                dispatch({
+                  type: 'UPDATE',
+                  payload: {
+                    Search_Date: '',
+                  },
+                });
                 resolve(results);
                 Alert.alert('Update operation successful');
               } else {

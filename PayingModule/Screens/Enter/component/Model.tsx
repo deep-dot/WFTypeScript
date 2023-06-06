@@ -18,13 +18,7 @@ import {
 } from '../../../Components/dbUtility';
 import {StateContext} from '../../../../Utilities/Context';
 
-interface Props {
-  onupdate: () => void;
-  onCancel: () => void;
-  modvisible: boolean;
-}
-
-const Model = ({onupdate, onCancel, modvisible}: Props) => {
+const Model = () => {
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
@@ -39,7 +33,11 @@ const Model = ({onupdate, onCancel, modvisible}: Props) => {
     try {
       const res = await InsertLiftingModalItems(state);
       if (res === 'Inserted') {
-        onupdate();
+        //onupdate();
+        dispatch({
+          type: 'UPDATE',
+          payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
+        });
         UpdateDataInTable(state, dispatch);
       }
     } catch (error) {
@@ -47,10 +45,17 @@ const Model = ({onupdate, onCancel, modvisible}: Props) => {
     }
   };
 
+  const onCancel = () => {
+    dispatch({
+      type: 'UPDATE',
+      payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Modal
-        visible={modvisible}
+        visible={state.Lifting_Modal_Visible}
         animationType={'fade'}
         onRequestClose={() => {}}>
         <ScrollView>

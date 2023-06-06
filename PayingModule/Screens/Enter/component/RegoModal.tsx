@@ -1,30 +1,47 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Modal, View, Text, TextInput} from 'react-native';
+import {Modal, View, Text, TextInput, Alert} from 'react-native';
 import MyButton from '../../../Components/Mybutton';
 import styles from '../EnterDataScreen.style';
-import {Action} from '../../../../Utilities/Actions';
+import {
+  insertIntoCab,
+  deleteIntoCab,
+  SelectFromCab,
+} from '../../../Components/dbUtility';
+import {StateContext} from '../../../../Utilities/Context';
 
-interface RegoModalProps {
-  visible: boolean;
-  state: {
-    Rego_Modal: boolean;
-    Rego: string;
+export const RegoModal = () => {
+  const stateContext = React.useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {state, dispatch} = stateContext;
+  const handleCabChange = async (action: Function) => {
+    if (!state.Rego) {
+      Alert.alert('Please put rego in.');
+      return;
+    }
+    try {
+      await action(state.Rego.toString());
+      // await SelectFromCab(state, dispatch);
+    } catch (error) {
+      console.log(error);
+    }
   };
-  dispatch: React.Dispatch<Action>;
-  pushcab: () => void;
-  deletecab: () => void;
-}
+  let pushcab = async () => {
+    handleCabChange(insertIntoCab);
+    await SelectFromCab(state, dispatch);
+  };
 
-export const RegoModal = ({
-  visible,
-  state,
-  dispatch,
-  pushcab,
-  deletecab,
-}: RegoModalProps) => {
+  const deletecab = async () => {
+    handleCabChange(deleteIntoCab);
+    await SelectFromCab(state, dispatch);
+  };
   return (
-    <Modal visible={visible} animationType={'fade'} onRequestClose={() => {}}>
+    <Modal
+      visible={state.Rego_Modal}
+      animationType={'fade'}
+      onRequestClose={() => {}}>
       <View style={styles.model}>
         <Text style={{color: '#000000'}}>
           Please add vehcle's registration number.
@@ -34,6 +51,7 @@ export const RegoModal = ({
           //keyboardType='numeric'
           keyboardType="numbers-and-punctuation"
           placeholderTextColor="#000000"
+          value={state.Rego}
           style={{
             marginTop: 30,
             borderColor: '#000000',
@@ -43,9 +61,8 @@ export const RegoModal = ({
           }}
           onChangeText={(rego: string) => {
             dispatch({type: 'UPDATE', payload: {Rego: rego}});
-          }}>
-          <Text style={styles.titleText}>{state.Rego}</Text>
-        </TextInput>
+          }}
+        />
         <View style={{flexDirection: 'row', marginTop: 10}}>
           <MyButton title="Add" customClick={pushcab} />
           <MyButton title="Delete" customClick={deletecab} />

@@ -13,22 +13,14 @@ import {
   Alert,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+import {StateContext} from '../../../../Utilities/Context';
 
-interface Props {
-  // loading?: boolean;
-  // Transparency?: any;
-  calculatorVisible: boolean;
-  CAcalcu: (value: number) => void;
-  Docketcalcu: (value: number) => void;
-  Cancelcalcu: () => void;
-}
-
-const Calculator = ({
-  calculatorVisible,
-  CAcalcu,
-  Docketcalcu,
-  Cancelcalcu,
-}: Props) => {
+const Calculator = () => {
+  const stateContext = React.useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {state, dispatch} = stateContext;
   const [resultText, setresultText] = useState('');
   const [calculationText, setcalculationText] = useState('');
   const operations = ['<', '+', '-', '*', '/'];
@@ -124,16 +116,32 @@ const Calculator = ({
   };
 
   const Authoritycalculator = () => {
-   // console.log('charge auth num in calculater component===', calculationText);
-    CAcalcu(Number(calculationText));
+    dispatch({
+      type: 'UPDATE',
+      payload: {
+        Electronic_Account_Payments: calculationText,
+        Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+      },
+    });
   };
 
   const CCcalculator = () => {
-    Docketcalcu(Number(calculationText));
+    dispatch({
+      type: 'UPDATE',
+      payload: {
+        M3_Dockets: calculationText,
+        Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+      },
+    });
   };
 
   const Cancelcalculator = () => {
-    Cancelcalcu();
+    dispatch({
+      type: 'UPDATE',
+      payload: {
+        Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+      },
+    });
   };
 
   return (
@@ -141,7 +149,7 @@ const Calculator = ({
       <Modal
         // transparent={true}
         // presentationStyle={'pageSheet'}
-        visible={calculatorVisible}
+        visible={state.Calculator_Modal_Visible}
         animationType={'fade'}
         onRequestClose={() => {}}>
         <ScrollView>

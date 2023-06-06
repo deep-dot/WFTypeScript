@@ -18,8 +18,6 @@ import Calendar from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
 import {
-  insertIntoCab,
-  deleteIntoCab,
   SelectFromCab,
   SelectCountFromDataTable,
   InsertData,
@@ -128,49 +126,11 @@ const EnterData = () => {
     );
   };
 
-  const alertForSaveRecord = () => {
-    Alert.alert(
-      'Record Saved Successfully!',
-      'Do you want to add another record?',
-      [
-        {
-          text: 'Yes',
-          onPress: () => {
-            Refresh();
-          },
-        },
-        {
-          text: 'No',
-          onPress: () => {
-            navigation.navigate('Home');
-          },
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-      ],
-      {cancelable: true},
-    );
-  };
-
   const executeSqlQuery = async () => {
     if (state.Search_Date !== undefined && state.Search_Date !== '') {
-      let res = await UpdateDataInTable(state, dispatch);
-      if (res) {
-        dispatch({
-          type: 'UPDATE',
-          payload: {
-            Search_Date: '',
-          },
-        });
-      }
+      await UpdateDataInTable(state, dispatch);
     } else {
-      let res = await InsertData(state);
-      // console.log('res in insertData function in EnterData screen==', res);
-      if (res === 'Inserted') {
-        alertForSaveRecord();
-      }
+      await InsertData(state);
     }
   };
 
@@ -178,67 +138,13 @@ const EnterData = () => {
     dispatch({type: 'REFRESH', payload: null});
   };
 
-  useEffect(() => {
-    SelectFromCab(state, dispatch);
-    SelectCountFromDataTable(dispatch);
-  });
-
-  //calculator...
-  let Authoritycalculator = (num: Number) => {
-    // console.log('charge auth num===', num);
-    dispatch({
-      type: 'UPDATE',
-      payload: {
-        Electronic_Account_Payments: num.toFixed(2),
-        Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
-      },
-    });
-  };
-  let CCcalculator = (num: Number) => {
-    dispatch({
-      type: 'UPDATE',
-      payload: {
-        M3_Dockets: num.toFixed(2),
-        Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
-      },
-    });
-  };
-  let Cancelcalculator = () => {
-    dispatch({
-      type: 'UPDATE',
-      payload: {
-        Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
-      },
-    });
-  };
-
-  const handleCabChange = async (action: Function) => {
-    if (!state.Rego) {
-      Alert.alert('Please put rego in.');
-      return;
-    }
-    try {
-      await action(state.Rego.toString());
-      await SelectFromCab(state, dispatch);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  let pushcab = async () => {
-    handleCabChange(insertIntoCab);
-  };
-
-  const deletecab = async () => {
-    handleCabChange(deleteIntoCab);
-  };
-
-  const hideModal = () => {
-    dispatch({
-      type: 'UPDATE',
-      payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
-    });
-  };
+  // useEffect(() => {
+  //   const call = async () => {
+  //     await SelectFromCab(state, dispatch);
+  //     await SelectCountFromDataTable(dispatch);
+  //   };
+  //   call();
+  // }, [dispatch]);
 
   const onChange = (name: string, value: string | boolean) => {
     //console.log('onchange in enter data ==', name, 'and', value);
@@ -246,7 +152,6 @@ const EnterData = () => {
   };
 
   const updateStateContext = () => {
-    dispatch({type: 'UPDATE', payload: state});
     navigation.navigate('Enter Data');
   };
 
@@ -336,27 +241,11 @@ const EnterData = () => {
         closeOnTouchOutside={false}
       />
 
-      <Calculator
-        calculatorVisible={state.Calculator_Modal_Visible}
-        Cancelcalcu={Cancelcalculator}
-        Docketcalcu={CCcalculator}
-        CAcalcu={Authoritycalculator}
-      />
+      <Calculator />
 
-      <Model
-        modvisible={state.Lifting_Modal_Visible}
-        onCancel={hideModal}
-        onupdate={hideModal}
-      />
+      <Model />
 
-      <RegoModal
-        visible={state.Rego_Modal}
-        state={state}
-        //setstate={setstate}
-        dispatch={dispatch}
-        pushcab={pushcab}
-        deletecab={deletecab}
-      />
+      <RegoModal />
 
       <ScrollView keyboardShouldPersistTaps="handled">
         {liftingInputs.map((input, index) => (
@@ -665,7 +554,7 @@ const EnterData = () => {
           padding: 5,
         }}>
         <TouchableOpacity style={styles.button} onPress={updateStateContext}>
-          <Text style={styles.buttontext}>Report</Text>
+          <Text style={styles.buttontext}>Print</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} onPress={Save}>
