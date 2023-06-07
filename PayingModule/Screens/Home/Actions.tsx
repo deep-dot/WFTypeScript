@@ -1,11 +1,13 @@
 import React from 'react';
 import {Transaction, ResultSet} from '../../Database/databaseTypes';
-import {Alert} from 'react-native';
+// import {Alert} from 'react-native';
 import db from '../../Database/databaseService';
 import {Action} from '../../../Utilities/Actions';
 import {FormValues} from '../../Components/EnterDataValues';
+// import {StackNavigationProp} from '@react-navigation/stack';
+// import {StackParamList} from '../../../App';
 
-export const SelectCountFromDataTable = (
+export const SelectFromDataTable = (
   dispatch: React.Dispatch<Action>,
 ): Promise<FormValues[]> => {
   return new Promise((resolve, reject) => {
@@ -16,20 +18,19 @@ export const SelectCountFromDataTable = (
           [],
           (_tx: Transaction, results: ResultSet) => {
             var len = results.rows.length;
-            if (len > 0) {
-              const temp = [];
-              for (let j = 0; j < len; j++) {
-                temp.push(results.rows.item(j));
-              }
-              //resolve({len, temp});
-              resolve(temp);
-              dispatch({
-                type: 'UPDATE',
-                payload: {Number_Of_Entries: len},
-              });
-            } else {
-              Alert.alert('Data does not exist');
-            }
+            // console.log(
+            //   'from datatable in Home actions===',
+            //   results.rows.item(len - 1).Name,
+            //   results.rows.item(len - 1).Week_Ending_Date,
+            //   results.rows.item(len - 1),
+            // );
+            dispatch({
+              type: 'UPDATE',
+              payload: {
+                ...results.rows.item(len - 1),
+                Number_Of_Entries: len,
+              },
+            });
           },
           (_t, error) => {
             console.log(error);

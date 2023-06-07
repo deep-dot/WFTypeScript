@@ -12,6 +12,7 @@ export const RegoModal = () => {
     throw new Error('Component must be used within a StateProvider');
   }
   const {state, dispatch} = stateContext;
+
   const handleCabChange = async (action: Function) => {
     if (!state.Rego) {
       Alert.alert('Please put rego in.');
@@ -55,8 +56,8 @@ export const RegoModal = () => {
             textAlign: 'center',
             color: '#000000',
           }}
-          onChangeText={(rego: string) => {
-            dispatch({type: 'UPDATE', payload: {Rego: rego}});
+          onChangeText={(Rego: string) => {
+            dispatch({type: 'UPDATE', payload: Rego});
           }}
         />
         <View style={{flexDirection: 'row', marginTop: 10}}>

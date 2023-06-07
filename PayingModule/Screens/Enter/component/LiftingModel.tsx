@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-lone-blocks */
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {
   TextInput,
   ScrollView,
@@ -11,11 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import Mybutton from '../../../Components/Mybutton';
-import {
-  SelectFromUpdateItems,
-  UpdateDataInTable,
-  InsertLiftingModalItems,
-} from '../Actions';
+import {UpdateDataInTable} from '../Actions';
 import {StateContext} from '../../../../Utilities/Context';
 
 export const LiftingModel = () => {
@@ -25,20 +21,13 @@ export const LiftingModel = () => {
   }
   const {state, dispatch} = stateContext;
 
-  useEffect(() => {
-    SelectFromUpdateItems(dispatch);
-  }, [dispatch]);
-
-  let UpdateItems = async () => {
+  let Save = async () => {
     try {
-      const res = await InsertLiftingModalItems(state);
-      if (res === 'Inserted') {
-        dispatch({
-          type: 'UPDATE',
-          payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
-        });
-        UpdateDataInTable(state, dispatch);
-      }
+      dispatch({
+        type: 'UPDATE',
+        payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
+      });
+      UpdateDataInTable(state, dispatch);
     } catch (error) {
       console.error(error);
     }
@@ -81,7 +70,7 @@ export const LiftingModel = () => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={String(state.Driver_Share_In_LiftingFee)}
+                value={state.Driver_Share_In_LiftingFee}
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',
@@ -99,7 +88,7 @@ export const LiftingModel = () => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={String(state.Gov_Levy)}
+                value={state.Gov_Levy}
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',
@@ -119,7 +108,7 @@ export const LiftingModel = () => {
                 placeholderTextColor="#ffffff"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={String(state.Driver_Comm_Rate)}
+                value={state.Driver_Comm_Rate}
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',
@@ -132,7 +121,7 @@ export const LiftingModel = () => {
 
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Mybutton title="Save" customClick={UpdateItems} />
+              <Mybutton title="Save" customClick={Save} />
               <Mybutton title="Cancel" customClick={onCancel} />
             </View>
           </View>

@@ -320,11 +320,11 @@ const EnterData = () => {
             style={{
               width: 100,
             }}
-            onValueChange={(itemValue: string) => {
+            onValueChange={(Shift: string) => {
               dispatch({
                 type: 'UPDATE',
                 payload: {
-                  Shift: itemValue,
+                  Shift,
                 },
               });
             }}>
@@ -357,11 +357,11 @@ const EnterData = () => {
           <Picker
             selectedValue={state.Taxi}
             style={{width: 120}}
-            onValueChange={(itemValue: string) => {
+            onValueChange={(Taxi: string) => {
               dispatch({
                 type: 'UPDATE',
                 payload: {
-                  Taxi: itemValue,
+                  Taxi,
                 },
               });
             }}>

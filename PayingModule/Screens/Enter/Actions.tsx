@@ -73,14 +73,6 @@ export const SelectFromCab = (dispatch: React.Dispatch<Action>) => {
               for (let j = 0; j < len; j++) {
                 temp.push(results.rows.item(j));
               }
-              let res = {
-                // Rego_Modal: !state.Rego_Modal,
-                Cab_Data: temp,
-              };
-              dispatch({
-                type: 'UPDATE',
-                payload: res,
-              });
               resolve(temp);
             } else {
               resolve([]);
@@ -182,6 +174,7 @@ export const InsertData = (
   state: FormValues,
   dispatch: React.Dispatch<Action>,
 ) => {
+  let Company_Comm_Rate = (100 - Number(state.Driver_Comm_Rate)).toFixed(0);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -197,8 +190,16 @@ export const InsertData = (
               );
             } else {
               txn.executeSql(
-                'INSERT INTO datatable (Date, Day, Shift, Taxi, Jobs_Done, Hours_Worked, Meter_Start, Meter_Finish, Km_Start, Km_Finish, Paidkm_Start, Paidkm_Finish, Eftpos, M3_Dockets, Electronic_Account_Payments, Total_Manual_MPTP31_And_MPTP_Values, Number_Of_Manual_Liftings, Eftpos_Lifting_Value, Car_Wash, Misc, Fuel, Insurance) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                'INSERT INTO datatable (Name, Week_Ending_Date, Week_Ending_Day, Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate, Date, Day, Shift, Taxi, Jobs_Done, Hours_Worked, Meter_Start, Meter_Finish, Km_Start, Km_Finish, Paidkm_Start, Paidkm_Finish, Eftpos, M3_Dockets, Electronic_Account_Payments, Total_Manual_MPTP31_And_MPTP_Values, Number_Of_Manual_Liftings, Eftpos_Lifting_Value, Car_Wash, Misc, Fuel, Insurance) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 [
+                  state.Name,
+                  state.Week_Ending_Date,
+                  state.Week_Ending_Day,
+                  state.Gov_Lifting_Fee,
+                  state.Driver_Share_In_LiftingFee,
+                  state.Gov_Levy,
+                  state.Driver_Comm_Rate,
+                  Company_Comm_Rate,
                   state.Date,
                   state.Day,
                   state.Shift,
@@ -329,13 +330,14 @@ export function UpdateDataInTable(
         } else {
           txn.executeSql(
             `UPDATE datatable
-             SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ?`,
+             SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ? WHERE Week_Ending_Date = ?`,
             [
               state.Gov_Lifting_Fee,
               state.Driver_Share_In_LiftingFee,
               state.Gov_Levy,
               state.Driver_Comm_Rate,
               Company_Comm_Rate,
+              state.Week_Ending_Date,
             ],
             (_tx: Transaction, result: ResultSet) => {
               if (result.rowsAffected > 0) {

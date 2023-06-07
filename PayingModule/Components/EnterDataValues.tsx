@@ -58,14 +58,14 @@ interface Cab {
   Cab: string;
 }
 export type FormValues = {
+  Record_id: number;
+  Number_Of_Entries: string;
   //Home Screen Modal
   modalVisible: boolean;
-  date: string;
-  name: string;
-  day: string;
+  Name: string;
   showAlert: boolean;
-  numberOfEntries: string;
   Week_Ending_Date: string;
+  Week_Ending_Day: string;
 
   //Lifting Modal
   Gov_Lifting_Fee: string;
@@ -74,10 +74,7 @@ export type FormValues = {
   Driver_Comm_Rate: string;
   Company_Comm_Rate: string;
 
-  Record_id: number;
   Cab_Data: Cab[];
-  Number_Of_Entries: string;
-  User_Name: string;
   Lifting_Modal_Visible: boolean;
   Shift: string;
   Taxi: string;
@@ -122,6 +119,7 @@ export type FormValues = {
   Calculator_Modal_Visible: boolean;
   Indicator: boolean;
   Search_Date: string;
+
   //View Records
   totalrecords: string;
   start_date: string;
@@ -133,14 +131,15 @@ export type FormValues = {
 };
 
 export const initialValues = {
+  Record_id: 0,
+  Number_Of_Entries: '',
+
   //Home Screen Modal
   modalVisible: true,
-  date: '',
-  name: '',
-  day: '',
+  Name: '',
   showAlert: false,
-  numberOfEntries: 0,
   Week_Ending_Date: '',
+  Week_Ending_Day: '',
 
   //Lifting Modal
   Gov_Lifting_Fee: '',
@@ -149,9 +148,6 @@ export const initialValues = {
   Driver_Comm_Rate: '',
   Company_Comm_Rate: '',
 
-  Record_id: 0,
-  Number_Of_Entries: 0,
-  User_Name: '',
   Lifting_Modal_Visible: false,
   Shift: '',
   Taxi: '',
@@ -207,6 +203,54 @@ export const initialValues = {
   sorryAlert: false,
   show2Alert: false,
 };
+
+export const refreshValues = {
+  Lifting_Modal_Visible: false,
+  Shift: '',
+  Taxi: '',
+  Rego: '',
+  Cab_Data: [],
+  Rego_Modal: false,
+  Current_Date: '',
+  Date: '',
+  Day: '',
+  Hours_Worked: '',
+  Insurance: '',
+  Jobs_Done: '',
+  Levy: '',
+  Meter_Start: '',
+  Meter_Finish: '',
+  Shift_Total: '',
+  Km_Start: '',
+  Km_Finish: '',
+  Kms: '',
+  Paidkm_Start: '',
+  Paidkm_Finish: '',
+  Paid_Kms: '',
+  Unpaid_Kms: '',
+  CPK: '',
+  Number_Of_Manual_Liftings: '',
+  Manual_Lifting_Value: '',
+  Total_Manual_MPTP31_And_MPTP_Values: '',
+  M3_Dockets: '',
+  Eftpos: '',
+  Eftpos_Lifting_Value: '',
+  Electronic_Account_Payments: '',
+  Misc: '',
+  Car_Wash: '',
+  Fuel: '',
+  Total_Lifting_Value: '',
+  Number_Of_Chairs: '',
+  Driver_Lifting_Value: '',
+  Commission_Driver: '',
+  Deductions: '',
+  Average_Fare: '',
+  Net_Payin: '',
+  Net_Driver_Income: '',
+  Calculator_Modal_Visible: false,
+  Indicator: false,
+  Search_Date: '',
+}
 
 export type Property =
   | 'Eftpos'

@@ -1,18 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useContext} from 'react';
 import {Image, Linking} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import MyButton from '../../Components/Mybutton';
 import {useNavigation} from '@react-navigation/core';
-
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
+import {StateContext} from '../../../Utilities/Context';
 
-interface Props {
-  changeweekendingdate: (date: Date) => void;
-}
-const NavigationButtons = ({changeweekendingdate}: Props) => {
+const NavigationButtons = () => {
   const navigation = useNavigation<StackNavigationProp<StackParamList>>();
+
+  const stateContext = useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {dispatch} = stateContext;
+  let changeweekendingdate = () => {
+    dispatch({type: 'UPDATE', payload: {modalVisible: true}});
+  };
   return (
     <ScrollView style={{marginEnd: 20, marginStart: 20, marginTop: 10}}>
       <Image

@@ -22,7 +22,7 @@ const RootStack = createStackNavigator<StackParamList>();
 const HomeScreenStack = () => {
   return (
     <RootStack.Navigator
-      initialRouteName="Enter Data"
+      initialRouteName="Home"
       screenOptions={{
         headerShown: true,
       }}>
