@@ -1,5 +1,7 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import * as React from 'react';
+import {Image} from 'react-native';
 import ThemeProvider from './Utilities/ThemeProvider';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
 import DrawerContent from './Utilities/DrawerContent';
@@ -8,10 +10,13 @@ import {StateProvider} from './Utilities/StateProvider';
 import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
 
 import {
+  DrawerNavigationProp,
   DrawerContentComponentProps,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
 import {createStackNavigator} from '@react-navigation/stack';
+import {useNavigation} from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export type StackParamList = {
   Home: undefined;
@@ -20,11 +25,27 @@ export type StackParamList = {
 };
 const RootStack = createStackNavigator<StackParamList>();
 const HomeScreenStack = () => {
+  const navigation = useNavigation<DrawerNavigationProp<StackParamList>>();
   return (
     <RootStack.Navigator
       initialRouteName="Home"
       screenOptions={{
         headerShown: true,
+        headerLeft: () => (
+          <Ionicons
+            name="home"
+            size={30}
+            color="#fff"
+            backgroundColor="transparent"
+            onPress={() => navigation.toggleDrawer()}
+          />
+        ),
+        headerRight: () => (
+          <Image
+            style={{width: 40, height: 40, margin: 10, borderRadius: 50}}
+            source={require('./PayingModule/Components/Images/WFLogo.png')}
+          />
+        ),
       }}>
       <RootStack.Screen name="Home" component={HomeScreen} />
       <RootStack.Screen name="Enter Data" component={EnterData} />
@@ -51,15 +72,15 @@ export default function App() {
         <RootDrawer.Navigator
           initialRouteName="Home Screen Stack"
           screenOptions={{
-            headerShown: true,
+            headerShown: false,
           }}
           drawerContent={CustomDrawerContent}>
           <RootDrawer.Screen
             name="Home Screen Stack"
             component={HomeScreenStack}
           />
-          <RootDrawer.Screen name="Enter Data" component={EnterData} />
-          <RootDrawer.Screen name="View Records" component={ViewRecords} />
+          {/* <RootDrawer.Screen name="Driver App" component={} />
+          <RootDrawer.Screen name="View Records" component={ViewRecords} /> */}
         </RootDrawer.Navigator>
       </StateProvider>
     </ThemeProvider>

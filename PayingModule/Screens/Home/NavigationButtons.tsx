@@ -21,10 +21,10 @@ const NavigationButtons = () => {
   };
   return (
     <ScrollView style={{marginEnd: 20, marginStart: 20, marginTop: 10}}>
-      <Image
+      {/* <Image
         style={{width: 100, height: 100, alignSelf: 'center'}}
         source={require('../../Components/Images/WFLogo.png')}
-      />
+      /> */}
       <MyButton
         title="Add"
         customClick={() => navigation.navigate('Enter Data')}

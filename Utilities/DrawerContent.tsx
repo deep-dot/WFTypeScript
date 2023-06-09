@@ -55,7 +55,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
                 props.navigation.navigate('Home');
               }}
             />
-            <DrawerItem
+            {/* <DrawerItem
               label="Enter Shift Data"
               onPress={() => {
                 props.navigation.navigate('Enter Data');
@@ -66,7 +66,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
               onPress={() => {
                 props.navigation.navigate('View Records');
               }}
-            />
+            /> */}
           </Drawer.Section>
           <Drawer.Section title="">
             <TouchableRipple
