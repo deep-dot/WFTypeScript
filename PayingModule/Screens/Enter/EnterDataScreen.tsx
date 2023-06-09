@@ -21,6 +21,7 @@ import {
   SelectCountFromDataTable,
   InsertData,
   UpdateDataInTable,
+  SelectFromDataTable,
 } from './Actions';
 import {StateContext} from '../../../Utilities/Context';
 import {
@@ -37,6 +38,9 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
 import Database from '../../Database/Database';
 import {useNavigation} from '@react-navigation/core';
+import ModalForm from './component/ModalForm';
+import Icon from 'react-native-vector-icons/Ionicons';
+
 interface Cab {
   Cab: string;
 }
@@ -139,6 +143,7 @@ const EnterData = () => {
 
   useEffect(() => {
     const call = async () => {
+      await SelectFromDataTable(dispatch);
       await SelectFromCab(dispatch);
       await SelectCountFromDataTable(dispatch);
     };
@@ -232,7 +237,7 @@ const EnterData = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Database />
-
+      <ModalForm />
       <AwesomeAlert
         show={state.Indicator}
         showProgress={true}
@@ -247,6 +252,11 @@ const EnterData = () => {
       <RegoModal />
 
       <ScrollView keyboardShouldPersistTaps="handled">
+        <View style={{alignItems: 'center'}}>
+          <Text style={[styles.titleText, {color: 'green', marginVertical: 5}]}>
+            Total Entries: {state.Number_Of_Entries}
+          </Text>
+        </View>
         {liftingInputs.map((input, index) => (
           <View key={input.name} style={styles.textinputview}>
             <Text style={[styles.titleText, {color: '#55a8fa'}]}>
@@ -335,60 +345,59 @@ const EnterData = () => {
           </Picker>
         </View>
 
-        <View
-          style={{
-            flexDirection: 'row',
-            marginLeft: 10,
-            marginRight: 10,
-            alignItems: 'center',
-            borderBottomWidth: 0.5,
-            justifyContent: 'space-between',
-          }}>
-          <Text style={[styles.titleText, {color: '#fff'}]}>Rego</Text>
-          <TextInput
-            placeholder="............"
-            placeholderTextColor="#ffffff"
-            editable={false}
-            style={styles.textInput}>
-            <Text style={[styles.titleText, {color: '#fff'}]}>
-              {state.Taxi}
-            </Text>
-          </TextInput>
-          <Picker
-            selectedValue={state.Taxi}
-            style={{width: 120}}
-            onValueChange={(Taxi: string) => {
+        <View style={{borderBottomWidth: 0.5}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginHorizontal: 10,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+            <Text style={[styles.titleText, {color: '#fff'}]}>Rego</Text>
+            <TextInput
+              placeholder="............"
+              placeholderTextColor="#ffffff"
+              editable={false}
+              style={styles.textInput}>
+              <Text style={[styles.titleText, {color: '#fff'}]}>
+                {state.Taxi}
+              </Text>
+            </TextInput>
+            <Picker
+              selectedValue={state.Taxi}
+              style={{width: 120}}
+              onValueChange={(Taxi: string) => {
+                dispatch({
+                  type: 'UPDATE',
+                  payload: {
+                    Taxi,
+                  },
+                });
+              }}>
+              <Picker.Item label="Select" key=" " value=" " />
+              {state.Cab_Data.map((cab: Cab, i: number) => (
+                <Picker.Item
+                  label={cab.Cab}
+                  key={i}
+                  value={cab.Cab}
+                  color="#fff"
+                />
+              ))}
+            </Picker>
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
               dispatch({
                 type: 'UPDATE',
                 payload: {
-                  Taxi,
+                  Rego_Modal: !state.Rego_Modal,
                 },
               });
             }}>
-            <Picker.Item label="Select" key=" " value=" " />
-            {state.Cab_Data.map((cab: Cab, i: number) => (
-              <Picker.Item
-                label={cab.Cab}
-                key={i}
-                value={cab.Cab}
-                color="#fff"
-              />
-            ))}
-          </Picker>
+            <Text style={styles.buttontext}>Registration Number</Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            dispatch({
-              type: 'UPDATE',
-              payload: {
-                Rego_Modal: !state.Rego_Modal,
-              },
-            });
-          }}>
-          <Text style={styles.buttontext}>Registration Number</Text>
-        </TouchableOpacity>
 
         <View style={styles.textinputview}>
           <Calendar
@@ -410,37 +419,56 @@ const EnterData = () => {
           </Text>
         </View>
 
-        {inputs.map((input, index) => (
-          <View key={input.name} style={styles.textinputview}>
-            <Text style={[styles.titleText, {color: '#fff'}]}>
-              {input.title}
-            </Text>
-            <TextInput
-              placeholder="0.00"
-              placeholderTextColor="#fff"
-              style={[styles.textInput, {color: '#fff'}]}
-              returnKeyType="next"
-              // keyboardType="numeric"
-              onChangeText={(value: string) => onChange(input.name, value)}
-              value={String(state[input.name])}
-              ref={(ref: RefObject<TextInput>) => {
-                if (ref) {
-                  inputRefs[input.name] = ref;
+        <View style={{borderBottomWidth: 0.5}}>
+          {inputs.map((input, index) => (
+            <View key={input.name} style={styles.textinputview}>
+              <Text style={[styles.titleText, {color: '#fff'}]}>
+                {input.title}
+              </Text>
+              <TextInput
+                placeholder="0.00"
+                placeholderTextColor="#fff"
+                style={[styles.textInput, {color: '#fff'}]}
+                returnKeyType="next"
+                // keyboardType="numeric"
+                onChangeText={(value: string) => onChange(input.name, value)}
+                value={String(state[input.name])}
+                ref={(ref: RefObject<TextInput>) => {
+                  if (ref) {
+                    inputRefs[input.name] = ref;
+                  }
+                }}
+                onSubmitEditing={
+                  input.name
+                    ? () =>
+                        SubmitEditing(
+                          input.name,
+                          state[input.name].toString(),
+                          inputRefs[inputs[index + 1]?.name],
+                        )
+                    : () => {}
                 }
-              }}
-              onSubmitEditing={
-                input.name
-                  ? () =>
-                      SubmitEditing(
-                        input.name,
-                        state[input.name].toString(),
-                        inputRefs[inputs[index + 1]?.name],
-                      )
-                  : () => {}
-              }
+              />
+            </View>
+          ))}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              dispatch({
+                type: 'UPDATE',
+                payload: {
+                  Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+                },
+              });
+            }}>
+            <Icon
+              name="calculator-outline"
+              size={30}
+              color="#fff"
+              style={styles.buttonIcon}
             />
-          </View>
-        ))}
+          </TouchableOpacity>
+        </View>
 
         {/*<View style={styles.textinputview}>
           <Text style={[styles.titleText, {color: '#fff'}]}>Finish Meter</Text>
@@ -484,66 +512,48 @@ const EnterData = () => {
           />
         </View> */}
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            dispatch({
-              type: 'UPDATE',
-              payload: {
-                Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
-              },
-            });
-          }}>
+        <View style={{marginTop: 20}}>
           <Text
             style={{
               color: '#ffffff',
-              fontSize: 18,
               fontWeight: 'bold',
+              fontSize: 16,
+              textAlign: 'center',
             }}>
-            Calculator
+            Payin Details
           </Text>
-        </TouchableOpacity>
-
-        <Text
-          style={{
-            color: '#ffffff',
-            fontWeight: 'bold',
-            fontSize: 16,
-            textAlign: 'center',
-          }}>
-          Payin Details
-        </Text>
-        {payinInputs.map((input, index) => (
-          <View key={input.name} style={styles.textinputview}>
-            <Text style={[styles.titleText, {color: '#55a8fa'}]}>
-              {input.title}
-            </Text>
-            <TextInput
-              placeholder="0.0"
-              placeholderTextColor="#55a8fa"
-              style={[styles.textInput, {color: '#55a8fa'}]}
-              returnKeyType="next"
-              keyboardType="numeric"
-              // onChangeText={(value: string) => onChange(input.name, value)}
-              value={state[input.name]}
-              ref={(ref: RefObject<TextInput>) => {
-                if (ref) {
-                  inputRefs[input.name] = ref;
+          {payinInputs.map((input, index) => (
+            <View key={input.name} style={styles.textinputview}>
+              <Text style={[styles.titleText, {color: '#55a8fa'}]}>
+                {input.title}
+              </Text>
+              <TextInput
+                placeholder="0.0"
+                placeholderTextColor="#55a8fa"
+                style={[styles.textInput, {color: '#55a8fa'}]}
+                returnKeyType="next"
+                keyboardType="numeric"
+                // onChangeText={(value: string) => onChange(input.name, value)}
+                value={state[input.name]}
+                ref={(ref: RefObject<TextInput>) => {
+                  if (ref) {
+                    inputRefs[input.name] = ref;
+                  }
+                }}
+                onSubmitEditing={
+                  input.name
+                    ? () =>
+                        SubmitEditing(
+                          input.name,
+                          state[input.name].toString(),
+                          payinRefs[inputs[index + 1]?.name],
+                        )
+                    : () => {}
                 }
-              }}
-              onSubmitEditing={
-                input.name
-                  ? () =>
-                      SubmitEditing(
-                        input.name,
-                        state[input.name].toString(),
-                        payinRefs[inputs[index + 1]?.name],
-                      )
-                  : () => {}
-              }
-            />
-          </View>
-        ))}
+              />
+            </View>
+          ))}
+        </View>
       </ScrollView>
 
       <View
@@ -552,15 +562,32 @@ const EnterData = () => {
           justifyContent: 'space-between',
           padding: 5,
         }}>
-        <TouchableOpacity style={styles.button} onPress={updateStateContext}>
-          <Text style={styles.buttontext}>Print</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('View Records')}>
+          <Icon
+            name="eye-outline"
+            size={25}
+            color="#fff"
+            style={styles.buttonIcon}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} onPress={Save}>
-          <Text style={styles.buttontext}>Save</Text>
+          <Icon
+            name="save-outline"
+            size={25}
+            color="#fff"
+            style={styles.buttonIcon}
+          />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={Refresh}>
-          <Text style={styles.buttontext}>Refresh</Text>
+          <Icon
+            name="refresh"
+            size={25}
+            color="#fff"
+            style={styles.buttonIcon}
+          />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

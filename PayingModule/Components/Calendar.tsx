@@ -48,11 +48,11 @@ export const Calendar = ({onChange, value}: CalendarProps) => {
     <SafeAreaView>
       <TouchableOpacity
         style={{
-          width: 40,
-          height: 40,
+          width: 30,
+          height: 30,
         }}
         onPress={showDatePicker}>
-        <Image source={calendarIcon} style={{width: 45, height: 45}} />
+        <Image source={calendarIcon} style={{width: 30, height: 30}} />
       </TouchableOpacity>
       <DateTimePickerModal
         isVisible={show}

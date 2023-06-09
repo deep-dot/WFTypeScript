@@ -20,16 +20,16 @@ import {
 } from './Actions';
 import {Calendar} from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import {StackNavigationProp} from '@react-navigation/stack';
+import {NavigationProp} from '@react-navigation/native';
 import {StackParamList} from '../../../App';
 import {useNavigation} from '@react-navigation/core';
 import {FormValues} from '../../Components/EnterDataValues';
-import MyButton from '../../Components/Mybutton';
 import {StateContext} from '../../../Utilities/Context';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const ViewRecords = () => {
   const navigation =
-    useNavigation<StackNavigationProp<StackParamList, 'View Records'>>();
+    useNavigation<NavigationProp<StackParamList, 'View Records'>>();
   const [flatListItems, setFlatListItems] = useState([{}]);
   const stateContext = useContext(StateContext);
   if (!stateContext) {
@@ -117,18 +117,44 @@ const ViewRecords = () => {
       return null;
     }
     return (
-      <View style={{backgroundColor: '#ffffff', marginTop: 10, padding: 5}}>
+      <View style={{backgroundColor: '#ffffff', marginTop: 10, padding: 20}}>
         <View style={styles.textinputview}>
-          <MyButton
-            title="Delete"
-            customClick={() =>
-              DeleteRecord(item?.Record_id.toString(), item?.Date)
-            }
-          />
-          <MyButton
-            title="Update"
-            customClick={() => handleRefresh(item?.Date)}
-          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              DeleteRecord(item?.Record_id, item?.Date);
+            }}>
+            <Icon
+              name="trash-outline"
+              size={20}
+              color="#000"
+              style={styles.buttonIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              DeleteRecord(item?.Record_id, item?.Date);
+            }}>
+            <Icon
+              name="print-outline"
+              size={20}
+              color="#000"
+              style={styles.buttonIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              handleRefresh(item?.Date);
+            }}>
+            <Icon
+              name="create-outline"
+              size={20}
+              color="#000"
+              style={styles.buttonIcon}
+            />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.textinputview}>
@@ -309,23 +335,21 @@ const ViewRecords = () => {
           borderTopColor: 'white',
           borderTopWidth: 2,
         }}>
+
         <TouchableOpacity
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('Enter Data')}
           style={{
             justifyContent: 'center',
             alignItems: 'center',
             flex: 1,
             flexDirection: 'column',
           }}>
-          {/* <Icon name="home" size={20} color="#fff" /> */}
-          <Text
-            style={{
-              color: '#ffffff',
-              fontSize: 10,
-              textAlign: 'center',
-            }}>
-            HOME
-          </Text>
+         <Icon
+              name="enter-outline"
+              size={20}
+              color="#fff"
+              style={styles.buttonIcon}
+            />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -5,7 +5,7 @@ import {Image} from 'react-native';
 import ThemeProvider from './Utilities/ThemeProvider';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
 import DrawerContent from './Utilities/DrawerContent';
-import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
+//import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
 import {StateProvider} from './Utilities/StateProvider';
 import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
 
@@ -28,12 +28,12 @@ const HomeScreenStack = () => {
   const navigation = useNavigation<DrawerNavigationProp<StackParamList>>();
   return (
     <RootStack.Navigator
-      initialRouteName="Home"
+      initialRouteName="Enter Data"
       screenOptions={{
         headerShown: true,
         headerLeft: () => (
           <Ionicons
-            name="home"
+            name="menu-outline"
             size={30}
             color="#fff"
             backgroundColor="transparent"
@@ -47,7 +47,7 @@ const HomeScreenStack = () => {
           />
         ),
       }}>
-      <RootStack.Screen name="Home" component={HomeScreen} />
+      {/* <RootStack.Screen name="Home" component={HomeScreen} /> */}
       <RootStack.Screen name="Enter Data" component={EnterData} />
       <RootStack.Screen name="View Records" component={ViewRecords} />
     </RootStack.Navigator>

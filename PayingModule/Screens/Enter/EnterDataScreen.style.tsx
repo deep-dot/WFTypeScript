@@ -1,10 +1,8 @@
-import {StyleSheet, StatusBar} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight,
-    justifyContent: 'center',
     backgroundColor: '#35363A',
   },
   scrollView: {
@@ -16,8 +14,7 @@ export default StyleSheet.create({
     backgroundColor: '#f2f2f2',
     marginTop: 80,
     borderRadius: 20,
-    padding: 10,
-    alignItems: 'center',
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -30,12 +27,11 @@ export default StyleSheet.create({
   textinputview: {
     flexDirection: 'row',
     borderBottomWidth: 0.5,
-    marginRight: 5,
-    marginTop: 10,
+    marginVertical: 10,
+    marginHorizontal: 5,
     padding: 2,
     paddingBottom: 0,
     alignItems: 'baseline',
-    marginLeft: 5,
     justifyContent: 'space-between',
   },
   textInput: {
@@ -55,7 +51,7 @@ export default StyleSheet.create({
     padding: 10,
     margin: 5,
     //backgroundColor: '#54cb77',
-    backgroundColor: '#434343',
+    // backgroundColor: '#434343',
     borderRadius: 20,
     elevation: 5,
     alignItems: 'center',

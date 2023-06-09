@@ -18,7 +18,7 @@ import {
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
 import {StateContext} from './Context';
-//import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const DrawerContent = (props: DrawerContentComponentProps) => {
   const paperTheme = useTheme();
@@ -50,9 +50,12 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
 
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
-              label="Home"
+              label="Enter Data"
+              icon={({color, size}) => (
+                <Icon name="enter-outline" color={color} size={size} />
+              )}
               onPress={() => {
-                props.navigation.navigate('Home');
+                props.navigation.navigate('Enter Data');
               }}
             />
             {/* <DrawerItem
