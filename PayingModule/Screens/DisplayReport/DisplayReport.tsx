@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useContext, useState, useEffect} from 'react';
 import {
@@ -12,19 +13,18 @@ import {
 } from 'react-native';
 import {Table, Row} from 'react-native-table-component';
 import {Calendar} from '../../Components/Calendar';
-import Mybutton from '../../components/Mybutton';
-import Mytextinput from '../../components/Mytextinput';
+import Mybutton from '../../Components/Mybutton';
 import {openDatabase} from 'react-native-sqlite-storage';
 import RNPrint from 'react-native-print';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './DisplayReport.style';
 import {ViewRecordsByDate} from '../ViewRecords/Actions';
 import {StateContext} from '../../../Utilities/Context';
-import envs from '../../config/env';
+//import envs from '../../config/env';
 import {FormValues} from '../../Components/EnterDataValues';
-const {DATABASE_NAME} = envs;
+//const {DATABASE_NAME} = envs;
 var db = openDatabase(
-  {name: DATABASE_NAME, createFromLocation: 1},
+  {name: 'database', createFromLocation: 1},
   () => {},
   error => {
     console.log('ERROR:' + error);
@@ -40,9 +40,11 @@ export default function DisplayReport(_props) {
   const [nametable, setNameTable] = useState<FormValues[]>([]);
   const [table, setTable] = useState<FormValues[]>([]);
   const [userData, setuserData] = useState({});
-  const [total, setTotal] = useState([]);
-  const [liftingtable, setLiftingtable] = useState([]);
-  const [deducttable, setDeducttable] = useState([]);
+  const [total, setTotal] = useState<FormValues[]>([]);
+  const [liftingtable, setLiftingtable] = useState<FormValues[]>([]);
+  const [deducttable, setDeducttable] = useState<FormValues[]>([]);
+  const [done, setDone] = useState(false);
+  const [usingservice, setUsingservice] = useState(false);
 
   const tableHead = [
     'Date',
@@ -106,7 +108,7 @@ export default function DisplayReport(_props) {
       );
       setTable(results);
       setNameTable(results);
-      Total();
+      Total(results);
     }
   };
 
@@ -115,22 +117,22 @@ export default function DisplayReport(_props) {
     record.Day,
     record.Shift,
     record.Taxi,
-    Number(record.Jobs_Done).toFixed(0),
-    Number(record.Insurance).toFixed(2),
-    Number(record.Shift_Total).toFixed(2),
-    Number(record.Comm_GTN).toFixed(2),
-    Number(record.Kms).toFixed(2),
-    Number(record.Paid_Kms).toFixed(2),
-    Number(record.Eftpos).toFixed(2),
-    Number(record.Eftpos_Lifting_Value).toFixed(2),
-    Number(record.M3_Dockets).toFixed(2),
-    Number(record.Electronic_Account_Payments).toFixed(2),
-    Number(record.Total_Manual_MPTP31_And_MPTP_Values).toFixed(2),
-    Number(record.Number_Of_Manual_Liftings).toFixed(0),
-    Number(record.Misc).toFixed(2),
-    Number(record.Fuel).toFixed(2),
-    Number(record.Net_Payin).toFixed(2),
-    Number(record.CPK).toFixed(2),
+    record.Jobs_Done,
+    record.Insurance,
+    record.Shift_Total,
+    record.Company_Comm_Rate,
+    record.Kms,
+    record.Paid_Kms,
+    record.Eftpos,
+    record.Eftpos_Lifting_Value,
+    record.M3_Dockets,
+    record.Electronic_Account_Payments,
+    record.Total_Manual_MPTP31_And_MPTP_Values,
+    record.Number_Of_Manual_Liftings,
+    record.Misc,
+    record.Fuel,
+    record.Net_Payin,
+    record.CPK,
   ]);
 
   const tableNameData = nametable.map(record => [
@@ -139,47 +141,25 @@ export default function DisplayReport(_props) {
     new Date().toDateString(),
   ]);
 
-  let Total = () => {
+  let Total = (results) => {
+    console.log('results in display report===', results);
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT Date as Date, SUM(Jobs) as Jobs, SUM(Ins) as Ins, SUM(Shift_Total) as Shift_Total, SUM(Com_GTN) as Com_GTN, SUM(Kms) as Kms, SUM(Paid_Kms) as Paid_Kms, SUM(Eftpos_Total) as Eftpos_Total, SUM(Eftpos_LFee) as Eftpos_LFee, SUM(Dockets) as Dockets, SUM(Charge_Authority) as Charge_Authority, SUM(Manual_MPTP_Total) as Manual_MPTP_Total, SUM(No_of_Manual_Lifts) as No_of_Manual_Lifts, SUM(Total_Lifting_Fee_Value) as Total_Lifting_Fee_Value, SUM(Misc) as Misc, SUM(Acc_Fuel) as Acc_Fuel, SUM(Net_Payin) as Net_Payin, SUM(manual_lifting_fee_value) as manual_lifting_fee_value, SUM(no_wheelchair_lifts) as no_wheelchair_lifts, SUM(company_portion_lifting_fee) as company_portion_lifting_fee, SUM(driver_portion_lifting_fee) as driver_portion_lifting_fee, SUM(Deductions) as Deductions, SUM(Gov_Sub_Manual31) as Gov_Sub_Manual31, AVG(CPK) as CPK FROM displaytable',
+        'SELECT Date as Date, SUM(Jobs_Done) as Jobs_Done, SUM(Insurance) as Insurance FROM datatable',
         [],
         (_tx, results) => {
+          console.log('results in display report===', results);
           var len = results.rows.length;
           if (len >= 0) {
             setuserData(results.rows.item(0));
             tx.executeSql('Delete from totaltable', []);
             tx.executeSql(
-              'INSERT INTO totaltable (Jobs, Ins, Shift_Total, Com_GTN, Kms, Paid_Kms, Eftpos_Total, Eftpos_LFee, Dockets, Charge_Authority, Manual_MPTP_Total, No_of_Manual_Lifts,Total_Lifting_Fee_Value, Misc, Acc_Fuel, Net_Payin, manual_lifting_fee_value, no_wheelchair_lifts, company_portion_lifting_fee, driver_portion_lifting_fee, Deductions, Gov_Sub_Manual31, CPK) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-              [
-                userData.Jobs,
-                userData.Ins,
-                userData.Shift_Total,
-                userData.Com_GTN,
-                userData.Kms,
-                userData.Paid_Kms,
-                userData.Eftpos_Total,
-                userData.Eftpos_LFee,
-                userData.Dockets,
-                userData.Charge_Authority,
-                userData.Manual_MPTP_Total,
-                userData.No_of_Manual_Lifts,
-                userData.Total_Lifting_Fee_Value,
-                userData.Misc,
-                userData.Acc_Fuel,
-                userData.Net_Payin,
-                userData.Gov_Sub_Manual31,
-                userData.no_wheelchair_lifts,
-                userData.company_portion_lifting_fee,
-                userData.driver_portion_lifting_fee,
-                userData.Deductions,
-                userData.Gov_Sub_Manual31,
-                userData.CPK,
-              ],
+              'INSERT INTO totaltable (Jobs_Done, Insurance) VALUES(?,?)',
+              [state.Jobs_Done, state.Insurance],
               (_tx, results) => {
                 console.log('insert into totaltable', results.rowsAffected);
                 tx.executeSql(
-                  'SELECT Date,Day,Jobs,Ins,Shift_Total,Com_GTN,Kms,Paid_Kms,Eftpos_Total,Eftpos_LFee,Dockets,Charge_Authority,Manual_MPTP_Total,No_of_Manual_Lifts,Misc,Acc_Fuel,Net_Payin,CPK FROM totaltable',
+                  'SELECT Jobs_done,Insurance FROM totaltable',
                   [],
                   (tx, results) => {
                     const temp = [];
@@ -202,7 +182,7 @@ export default function DisplayReport(_props) {
   let Lifting = () => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT Total_Lifting_Fee_Value, No_of_Manual_Lifts, manual_lifting_fee_value, no_wheelchair_lifts, Eftpos_LFee, company_portion_lifting_fee, driver_portion_lifting_fee FROM totaltable',
+        'SELECT Jobs_done,Insurance FROM totaltable',
         [],
         (tx, results) => {
           const temp = [];
@@ -215,7 +195,7 @@ export default function DisplayReport(_props) {
   let Deduction = () => {
     db.transaction(tx => {
       tx.executeSql(
-        'SELECT Eftpos_Total, Manual_MPTP_Total, Gov_Sub_Manual, Dockets, Charge_Authority, Misc, Deductions FROM totaltable',
+        'SELECT Jobs_done,Insurance FROM totaltable',
         [],
         (tx, results) => {
           const temp = [];
@@ -225,50 +205,50 @@ export default function DisplayReport(_props) {
       );
     });
   };
-  const datatotal = total.map(record => [
+  const datatotal = [
     'Total',
     '',
     '',
     '',
-    Number(userData.Jobs).toFixed(0),
-    Number(userData.Ins).toFixed(2),
-    Number(userData.Shift_Total).toFixed(2),
-    Number(userData.Com_GTN).toFixed(2),
-    Number(userData.Kms).toFixed(2),
-    Number(userData.Paid_Kms).toFixed(2),
-    Number(userData.Eftpos_Total).toFixed(2),
-    Number(userData.Eftpos_LFee).toFixed(2),
-    Number(userData.Dockets).toFixed(2),
-    Number(userData.Charge_Authority).toFixed(2),
-    Number(userData.Manual_MPTP_Total).toFixed(2),
-    Number(userData.No_of_Manual_Lifts).toFixed(0),
-    Number(userData.Misc).toFixed(2),
-    Number(userData.Acc_Fuel).toFixed(2),
-    Number(userData.Net_Payin).toFixed(2),
+    Number(state.Jobs_Done).toFixed(0),
+    Number(state.Insurance).toFixed(2),
+    Number(state.Shift_Total).toFixed(2),
+    Number(state.Company_Comm_Rate).toFixed(2),
+    Number(state.Kms).toFixed(2),
+    Number(state.Paid_Kms).toFixed(2),
+    Number(state.Eftpos).toFixed(2),
+    Number(state.Eftpos).toFixed(2),
+    Number(state.M3_Dockets).toFixed(2),
+    Number(state.Electronic_Account_Payments).toFixed(2),
+    Number(state.Total_Manual_MPTP31_And_MPTP_Values).toFixed(2),
+    Number(state.Number_Of_Manual_Liftings).toFixed(0),
+    Number(state.Misc).toFixed(2),
+    Number(state.Fuel).toFixed(2),
+    Number(state.Net_Payin).toFixed(2),
     // Number(userData.CPK).toFixed(2),
-  ]);
+  ];
 
-  const liftingdata = liftingtable.map(record => [
-    Number(userData.Total_Lifting_Fee_Value).toFixed(2),
-    Number(userData.no_wheelchair_lifts).toFixed(0),
-    Number(userData.No_of_Manual_Lifts).toFixed(0),
-    // Number(userData.manual_lifting_fee_value).toFixed(2),
-    Number(userData.Gov_Sub_Manual31).toFixed(2),
-    Number(userData.Eftpos_LFee).toFixed(2),
-    Number(userData.company_portion_lifting_fee).toFixed(2),
-    Number(userData.driver_portion_lifting_fee).toFixed(2),
-  ]);
+  const liftingdata = [
+    Number(state.Total_Lifting_Value).toFixed(2),
+    Number(state.Number_Of_Chairs).toFixed(0),
+    Number(state.Number_Of_Manual_Liftings).toFixed(0),
+    // Number(state.manual_lifting_fee_value).toFixed(2),
+    Number(state.Total_Manual_MPTP31_And_MPTP_Values).toFixed(2),
+    Number(state.Eftpos).toFixed(2),
+    Number(state.Driver_Share_In_LiftingFee).toFixed(2),
+    Number(state.Driver_Share_In_LiftingFee).toFixed(2),
+  ];
 
-  const Deductdata = deducttable.map(record => [
-    Number(userData.Eftpos_Total).toFixed(2),
-    Number(userData.Manual_MPTP_Total).toFixed(2),
-    Number(userData.Gov_Sub_Manual31).toFixed(2),
-    Number(userData.Dockets).toFixed(2),
-    Number(userData.Charge_Authority).toFixed(2),
-    Number(userData.Misc).toFixed(2),
-    Number(userData.Deductions).toFixed(2),
-    Number(userData.Net_Payin).toFixed(2),
-  ]);
+  const Deductdata = [
+    Number(state.Eftpos).toFixed(2),
+    Number(state.Total_Manual_MPTP31_And_MPTP_Values).toFixed(2),
+    Number(state.Total_Manual_MPTP31_And_MPTP_Values).toFixed(2),
+    Number(state.M3_Dockets).toFixed(2),
+    Number(state.Electronic_Account_Payments).toFixed(2),
+    Number(state.Misc).toFixed(2),
+    Number(state.Deductions).toFixed(2),
+    Number(state.Net_Payin).toFixed(2),
+  ];
 
   let printHTML = async () => {
     try {
@@ -541,11 +521,6 @@ export default function DisplayReport(_props) {
     );
   };
 
-  //Alert
-
-  const [done, setDone] = useState(false);
-  const [usingservice, setUsingservice] = useState(false);
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#35363A'}}>
       <AwesomeAlert show={done} title="Done it!" message="Thank you." />
@@ -555,50 +530,6 @@ export default function DisplayReport(_props) {
       />
 
       <ScrollView verical={true}>
-        <View style={styles.textinputview}>
-          <Calendar
-            value={state.start_date}
-            onChange={(date: string, day: string) => {
-              dispatch({
-                type: 'UPDATE',
-                payload: {
-                  Date: date,
-                  Day: day,
-                },
-              });
-            }}
-          />
-          <Text>
-            {state.start_date
-              ? state.start_day + ' ' + state.start_date
-              : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
-          </Text>
-        </View>
-
-        <View style={styles.textinputview}>
-          <Calendar
-            value={state.finish_date}
-            onChange={(date: string, day: string) => {
-              dispatch({
-                type: 'UPDATE',
-                payload: {
-                  Date: date,
-                  Day: day,
-                },
-              });
-            }}
-          />
-          <Text>
-            {state.finish_date
-              ? state.finish_day + ' ' + state.finish_date
-              : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
-          </Text>
-        </View>
-
-        <View style={{alignItems: 'center'}}>
-          <Text>YYYY/MM/DD</Text>
-        </View>
-
         <Mybutton title="Display Data" customClick={Report} />
 
         <View
@@ -646,7 +577,7 @@ export default function DisplayReport(_props) {
                 ))}
               </Table>
               <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
-                {datatotal.map((rowdata, index) => (
+                {/* {datatotal.map((rowdata, index) => (
                   <Row
                     key={index}
                     data={rowdata}
@@ -657,7 +588,7 @@ export default function DisplayReport(_props) {
                     ]}
                     textStyle={styles.text}
                   />
-                ))}
+                ))} */}
               </Table>
 
               <View style={{flex: 1, alignItems: 'flex-start', marginTop: 5}}>
@@ -674,7 +605,7 @@ export default function DisplayReport(_props) {
                 />
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-                {liftingdata.map((rowData, index) => (
+                {/* {liftingdata.map((rowData, index) => (
                   <Row
                     key={index}
                     data={rowData}
@@ -685,7 +616,7 @@ export default function DisplayReport(_props) {
                     ]}
                     textStyle={styles.text}
                   />
-                ))}
+                ))} */}
               </Table>
 
               <View style={{flex: 1, alignItems: 'flex-start', marginTop: 5}}>
@@ -702,7 +633,7 @@ export default function DisplayReport(_props) {
                 />
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-                {Deductdata.map((rowData, index) => (
+                {/* {Deductdata.map((rowData, index) => (
                   <Row
                     key={index}
                     data={rowData}
@@ -713,7 +644,7 @@ export default function DisplayReport(_props) {
                     ]}
                     textStyle={styles.text}
                   />
-                ))}
+                ))} */}
               </Table>
             </View>
           </ScrollView>

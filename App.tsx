@@ -8,6 +8,7 @@ import DrawerContent from './Utilities/DrawerContent';
 //import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
 import {StateProvider} from './Utilities/StateProvider';
 import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
+import DisplayReport from './PayingModule/Screens/DisplayReport/DisplayReport';
 
 import {
   DrawerNavigationProp,
@@ -20,9 +21,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Database from './PayingModule/Database/Database';
 
 export type StackParamList = {
-  Home: undefined;
   'Enter Data': undefined;
   'View Records': undefined;
+  'Display Report': undefined;
 };
 const RootStack = createStackNavigator<StackParamList>();
 const HomeScreenStack = () => {
@@ -56,6 +57,7 @@ const HomeScreenStack = () => {
       {/* <RootStack.Screen name="Home" component={HomeScreen} /> */}
       <RootStack.Screen name="Enter Data" component={EnterData} />
       <RootStack.Screen name="View Records" component={ViewRecords} />
+      <RootStack.Screen name="Display Report" component={DisplayReport} />
     </RootStack.Navigator>
   );
 };

@@ -319,7 +319,7 @@ const ViewRecords = () => {
         <TouchableOpacity onPress={() => navigation.navigate('Enter Data')}>
           <Icon name="enter-outline" size={20} color="#fff" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Enter Data')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Display Report')}>
           <Icon name="print-outline" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
