@@ -9,10 +9,12 @@ import {
   View,
   Text,
   Modal,
+  TouchableOpacity,
 } from 'react-native';
 import Mybutton from '../../../Components/Mybutton';
 import {UpdateDataInTable} from '../Actions';
 import {StateContext} from '../../../../Utilities/Context';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export const LiftingModel = () => {
   const stateContext = useContext(StateContext);
@@ -52,7 +54,7 @@ export const LiftingModel = () => {
               <Text style={styles.titletext}>Total Lifting Fee</Text>
               <TextInput
                 placeholder="0.00"
-                placeholderTextColor="#ffffff"
+                placeholderTextColor="#000"
                 style={styles.textInput}
                 keyboardType="numeric"
                 value={state.Gov_Lifting_Fee}
@@ -67,7 +69,7 @@ export const LiftingModel = () => {
               <Text style={styles.titletext}>Driver's Share</Text>
               <TextInput
                 placeholder="0.00"
-                placeholderTextColor="#ffffff"
+                placeholderTextColor="#000"
                 style={styles.textInput}
                 keyboardType="numeric"
                 value={state.Driver_Share_In_LiftingFee}
@@ -85,7 +87,7 @@ export const LiftingModel = () => {
               <Text style={styles.titletext}>Levy</Text>
               <TextInput
                 placeholder="0.00"
-                placeholderTextColor="#ffffff"
+                placeholderTextColor="#000"
                 style={styles.textInput}
                 keyboardType="numeric"
                 value={state.Gov_Levy}
@@ -105,7 +107,7 @@ export const LiftingModel = () => {
               </Text>
               <TextInput
                 placeholder="00"
-                placeholderTextColor="#ffffff"
+                placeholderTextColor="#000"
                 style={styles.textInput}
                 keyboardType="numeric"
                 value={state.Driver_Comm_Rate}
@@ -120,9 +122,17 @@ export const LiftingModel = () => {
             </View>
 
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Mybutton title="Save" customClick={Save} />
-              <Mybutton title="Cancel" customClick={onCancel} />
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                padding: 40,
+              }}>
+              <TouchableOpacity onPress={Save}>
+                <Icon name="save-outline" size={20} color="#000" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onCancel}>
+                <Icon name="exit-outline" size={20} color="#000" />
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
@@ -133,16 +143,14 @@ export const LiftingModel = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    opacity: 0.5,
-    justifyContent: 'center',
+    display: 'flex',
   },
   model: {
     margin: 10,
     marginTop: 60,
     borderRadius: 20,
     padding: 10,
-    backgroundColor: '#35363A',
+    backgroundColor: '#fff',
     //alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -175,13 +183,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   titletext: {
-    color: '#ffffff',
+    color: '#000',
     fontSize: 16,
     fontWeight: 'bold',
   },
   textInput: {
     height: 35,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#000',
   },
 });

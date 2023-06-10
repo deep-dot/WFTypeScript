@@ -33,12 +33,18 @@ const Database = () => {
     initializeTable('cab', 'CREATE TABLE IF NOT EXISTS cab (Cab TEXT)');
   }, []);
 
-  // useEffect(() => {
-  //   initializeTable(
-  //     'Update',
-  //     'CREATE TABLE IF NOT EXISTS UpdateItems ( GovLFee NUMERIC, CompanyLFee NUMERIC, DriverLFee NUMERIC, Levy NUMERIC, Driver_Comm_Rate NUMERIC, Company_Comm_Rate NUMERIC)',
-  //   );
-  // }, []);
+  useEffect(() => {
+    initializeTable(
+      'displaytable',
+      'CREATE TABLE IF NOT EXISTS displaytable (Date TEXT,Day TEXT, Shift TEXT, Taxi TEXT, Jobs NUMERIC, Ins NUMERIC, Shift_Total NUMERIC, Com_GTN NUMERIC, Kms NUMERIC, Paid_Kms NUMERIC, Eftpos_Total NUMERIC, Eftpos_LFee NUMERIC, Dockets NUMERIC, Charge_Authority NUMERIC, Manual_MPTP_Total NUMERIC, No_of_Manual_Lifts NUMERIC,Total_Lifting_Fee_Value NUMERIC, Misc NUMERIC, Acc_Fuel NUMERIC, Net_Payin NUMERIC, manual_lifting_fee_value NUMERIC, no_wheelchair_lifts NUMERIC, company_portion_lifting_fee NUMERIC, driver_portion_lifting_fee NUMERIC, Gov_Sub_Manual31 NUMERIC, CPK NUMERIC, Deductions NUMERIC)',
+    );
+  }, []);
+  useEffect(() => {
+    initializeTable(
+      'totaltable',
+      'CREATE TABLE IF NOT EXISTS totaltable (Date TEXT, Day TEXT, Jobs NUMERIC, Ins NUMERIC, Shift_Total NUMERIC, Com_GTN NUMERIC, Kms NUMERIC, Paid_Kms NUMERIC, Unpaid_kms NUMERIC, Eftpos_Total NUMERIC, Eftpos_LFee NUMERIC, Dockets NUMERIC, Charge_Authority NUMERIC, Manual_MPTP_Total NUMERIC, No_of_Manual_Lifts NUMERIC, Total_Lifting_Fee_Value NUMERIC, Misc NUMERIC, Acc_Fuel NUMERIC, Net_Payin NUMERIC, manual_lifting_fee_value NUMERIC, no_wheelchair_lifts NUMERIC, company_portion_lifting_fee NUMERIC, driver_portion_lifting_fee NUMERIC, Gov_Sub_Manual NUMERIC, Gov_Sub_Manual31 NUMERIC, CPK NUMERIC, Deductions NUMERIC)',
+    );
+  }, []);
 
   return null;
 };

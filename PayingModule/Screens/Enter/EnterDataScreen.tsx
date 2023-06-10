@@ -36,7 +36,6 @@ import {
 } from '../../Components/EnterDataValues';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
-import Database from '../../Database/Database';
 import {useNavigation} from '@react-navigation/core';
 import ModalForm from './component/ModalForm';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -235,8 +234,7 @@ const EnterData = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Database />
+    <SafeAreaView style={styles.container}>      
       <ModalForm />
       <AwesomeAlert
         show={state.Indicator}

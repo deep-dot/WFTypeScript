@@ -4,7 +4,6 @@
 import React, {useState, useContext} from 'react';
 import {
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
   Text,
   FlatList,
@@ -117,43 +116,19 @@ const ViewRecords = () => {
       return null;
     }
     return (
-      <View style={{backgroundColor: '#ffffff', marginTop: 10, padding: 20}}>
-        <View style={styles.textinputview}>
+      <View style={{backgroundColor: '#ffffff', padding: 20}}>
+        <View style={[styles.textinputview,{borderColor: '#fff'}]}>
           <TouchableOpacity
-            style={styles.button}
             onPress={() => {
-              DeleteRecord(item?.Record_id, item?.Date);
+              DeleteRecord(item?.Record_id.toString(), item?.Date);
             }}>
-            <Icon
-              name="trash-outline"
-              size={20}
-              color="#000"
-              style={styles.buttonIcon}
-            />
+            <Icon name="trash-outline" size={20} color="tomato" />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              DeleteRecord(item?.Record_id, item?.Date);
-            }}>
-            <Icon
-              name="print-outline"
-              size={20}
-              color="#000"
-              style={styles.buttonIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
             onPress={() => {
               handleRefresh(item?.Date);
             }}>
-            <Icon
-              name="create-outline"
-              size={20}
-              color="#000"
-              style={styles.buttonIcon}
-            />
+            <Icon name="create-outline" size={20} color="#000" />
           </TouchableOpacity>
         </View>
 
@@ -245,7 +220,8 @@ const ViewRecords = () => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#35363A'}}>
+    <SafeAreaView
+      style={{display: 'flex', flex: 1, backgroundColor: '#35363A'}}>
       <AwesomeAlert
         show={state.sorryAlert}
         showProgress={false}
@@ -270,12 +246,18 @@ const ViewRecords = () => {
         confirmButtonColor="#54cb77"
         onConfirmPressed={HideAlert}
       />
-      <ScrollView>
-        <Text style={{color: '#ffffff', textAlign: 'center'}}>
-          Total Number of Entries = {state.Number_Of_Entries}
+
+      <View
+        style={{
+          backgroundColor: '#fff',
+          borderColor: '#000',
+          borderBottomWidth: 0.5,
+        }}>
+        <Text style={{textAlign: 'center', color: 'green', paddingTop: 20}}>
+          Total Entries = {state.Number_Of_Entries}
         </Text>
 
-        <View style={styles.textinputview}>
+        <View style={[styles.textinputview,{borderColor: '#fff'}]}>
           <Calendar
             value={state.start_date}
             onChange={async (date: string, day: string) => {
@@ -293,7 +275,7 @@ const ViewRecords = () => {
           </Text>
         </View>
 
-        <View style={styles.textinputview}>
+        <View style={[styles.textinputview,{borderColor: '#fff'}]}>
           <Calendar
             value={state.finish_date}
             onChange={async (date: string, day: string) => {
@@ -311,13 +293,11 @@ const ViewRecords = () => {
           </Text>
         </View>
 
-        <View style={{borderBottomWidth: 1, alignItems: 'center'}}>
-          <Text style={styles.Textinput}>
-            {' '}
-            Display Records = {state.totalrecords}
-          </Text>
-        </View>
-      </ScrollView>
+        <Text style={[styles.Textinput, {alignSelf: 'center'}]}>
+          {' '}
+          Display Records = {state.totalrecords}
+        </Text>
+      </View>
 
       <FlatList
         data={flatListItems}
@@ -331,25 +311,16 @@ const ViewRecords = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           backgroundColor: '#444444',
-          padding: 15,
+          paddingHorizontal: 35,
+          paddingVertical: 10,
           borderTopColor: 'white',
           borderTopWidth: 2,
         }}>
-
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Enter Data')}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            flex: 1,
-            flexDirection: 'column',
-          }}>
-         <Icon
-              name="enter-outline"
-              size={20}
-              color="#fff"
-              style={styles.buttonIcon}
-            />
+        <TouchableOpacity onPress={() => navigation.navigate('Enter Data')}>
+          <Icon name="enter-outline" size={20} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Enter Data')}>
+          <Icon name="print-outline" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -359,7 +330,7 @@ const ViewRecords = () => {
 const styles = StyleSheet.create({
   textinputview: {
     flexDirection: 'row',
-    borderColor: '#ffffff',
+    borderColor: '#000',
     borderBottomWidth: 0.5,
     marginRight: 10,
     marginTop: 20,

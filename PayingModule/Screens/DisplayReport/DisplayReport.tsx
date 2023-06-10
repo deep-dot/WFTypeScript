@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useContext, useState, useEffect} from 'react';
 import {
   Text,
   View,
@@ -10,15 +11,18 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {Table, Row} from 'react-native-table-component';
-import Calendar from '../../components/Calendar';
+import {Calendar} from '../../Components/Calendar';
 import Mybutton from '../../components/Mybutton';
 import Mytextinput from '../../components/Mytextinput';
 import {openDatabase} from 'react-native-sqlite-storage';
 import RNPrint from 'react-native-print';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './DisplayReport.style';
-import  envs  from '../../config/env';
-const {DATABASE_NAME} = envs
+import {ViewRecordsByDate} from '../ViewRecords/Actions';
+import {StateContext} from '../../../Utilities/Context';
+import envs from '../../config/env';
+import {FormValues} from '../../Components/EnterDataValues';
+const {DATABASE_NAME} = envs;
 var db = openDatabase(
   {name: DATABASE_NAME, createFromLocation: 1},
   () => {},
@@ -28,52 +32,48 @@ var db = openDatabase(
 );
 
 export default function DisplayReport(_props) {
-  const [tableHead, setTableHead] = useState([
+  const stateContext = useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {state, dispatch} = stateContext;
+  const [nametable, setNameTable] = useState<FormValues[]>([]);
+  const [table, setTable] = useState<FormValues[]>([]);
+  const [userData, setuserData] = useState({});
+  const [total, setTotal] = useState([]);
+  const [liftingtable, setLiftingtable] = useState([]);
+  const [deducttable, setDeducttable] = useState([]);
+
+  const tableHead = [
     'Date',
     'Day',
     'Shift',
     'Taxi',
-    'Jobs',
-    'Ins',
-    'Shift Total',
-    'Com Company',
-    'Kms',
-    'Paid Kms',
-    'Eftpos Total',
-    'EftposLFee',
-    'Dockets',
-    'Charge Authority',
-    'Manual MPTP Dockets',
-    'No.of Manual Lifts',
+    'Jobs_Done',
+    'Hours_Worked',
+    'Meter_Start',
+    'Meter_Finish',
+    'Km_Start',
+    'Km_Finish',
+    'Paidkm_Start',
+    'Paidkm_Finish',
+    'Eftpos',
+    'M3_Dockets',
+    'Electronic_Account_Payments',
+    'Total_Manual_MPTP31_And_MPTP_Values',
+    'Number_Of_Manual_Liftings',
+    'Eftpos_Lifting_Value',
+    'Car_Wash',
     'Misc',
-    'A/c Fuel',
-    'Net Payin',
-    'CPK',
-  ]);
-  const [widthArr, setWidthArr] = useState([
-    80,
-    80,
-    60,
-    70,
+    'Fuel',
+    'Insurance',
+  ];
+  const widthArr = [
+    80, 80, 60, 70, 50, 60, 80, 60, 60, 80, 80, 100, 80, 80, 80, 80, 60, 60, 80,
     50,
-    60,
-    80,
-    60,
-    60,
-    80,
-    80,
-    100,
-    80,
-    80,
-    80,
-    80,
-    60,
-    60,
-    80,
-    50,
-  ]);
+  ];
 
-  const [tableHead1, setTableHead1] = useState([
+  const tableHead1 = [
     'Total Lifting Fee Value',
     'Total No. of Wheelchairs Lifts;',
     'Total No. of Manual MPTP Lifts:',
@@ -81,18 +81,10 @@ export default function DisplayReport(_props) {
     'Total Eftpos Lifting Fee Value:',
     'Total Company Portion of Lifting Fee:',
     'Total Driver Portion of Lifting Fee:',
-  ]);
-  const [widthArr1, setWidthArr1] = useState([
-    150,
-    150,
-    150,
-    150,
-    150,
-    150,
-    150,
-  ]);
+  ];
+  const widthArr1 = [150, 150, 150, 150, 150, 150, 150];
 
-  const [tableHead2, setTableHead2] = useState([
+  const tableHead2 = [
     'Eftpos',
     'Gov-Sub Manual',
     'Gov-Sub Manual31',
@@ -101,149 +93,51 @@ export default function DisplayReport(_props) {
     'Misc',
     'Deductions',
     'Pay Ins-Cash',
-  ]);
-  const [widthArr2, setWidthArr2] = useState([
-    140,
-    140,
-    140,
-    140,
-    140,
-    140,
-    140,
-    140,
-  ]);
+  ];
+  const widthArr2 = [140, 140, 140, 140, 140, 140, 140, 140];
 
-  //displaytable
-  useEffect(() => {
-    db.transaction(function (txn) {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='displaytable'",
-        [],
-        function (_tx, res) {
-          console.log('displaytable', res.rows.length);
-          if (res.rows.length === 0) {
-            txn.executeSql('DROP TABLE IF EXISTS displaytable', []);
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS displaytable (Date TEXT,Day TEXT, Shift TEXT, Taxi TEXT, Jobs NUMERIC, Ins NUMERIC, Shift_Total NUMERIC, Com_GTN NUMERIC, Kms NUMERIC, Paid_Kms NUMERIC, Eftpos_Total NUMERIC, Eftpos_LFee NUMERIC, Dockets NUMERIC, Charge_Authority NUMERIC, Manual_MPTP_Total NUMERIC, No_of_Manual_Lifts NUMERIC,Total_Lifting_Fee_Value NUMERIC, Misc NUMERIC, Acc_Fuel NUMERIC, Net_Payin NUMERIC, manual_lifting_fee_value NUMERIC, no_wheelchair_lifts NUMERIC, company_portion_lifting_fee NUMERIC, driver_portion_lifting_fee NUMERIC, Gov_Sub_Manual31 NUMERIC, CPK NUMERIC, Deductions NUMERIC)',
-              [],
-            );
-          }
-        },
-      );
-    });
-  }, []);
-
-  let Report = () => {
-    if (!start_date || !finish_date) {
+  let Report = async () => {
+    if (!state.start_date || !state.finish_date) {
       Alert.alert('Please select Date !');
     } else {
-      db.transaction(function (tx) {
-        tx.executeSql('Delete from displaytable', []);
-        tx.executeSql(
-          'INSERT INTO displaytable SELECT Date,Day,Shift,Taxi,Jobs,Ins,Shift_Total,Com_GTN,Kms,Paid_Kms,Eftpos_Total,Eftpos_LFee,Dockets,Charge_Authority,Manual_MPTP_Total,No_of_Manual_Lifts,Total_Lifting_Fee_Value,Misc,Acc_Fuel,Net_Payin,manual_lifting_fee_value,no_wheelchair_lifts,company_portion_lifting_fee,driver_portion_lifting_fee,Gov_Sub_Manual31,CPK, Deductions from datatable where Date >= ? and Date <= ? order by Date',
-          [start_date, finish_date],
-          (_tx, results) => {
-            tx.executeSql(
-              'SELECT Date,Day,Shift,Taxi,Jobs,Ins,Shift_Total,Com_GTN,Kms,Paid_Kms,Eftpos_Total,Eftpos_LFee,Dockets,Charge_Authority,Manual_MPTP_Total,No_of_Manual_Lifts,Misc,Acc_Fuel,Net_Payin,CPK FROM displaytable',
-              [],
-              (_tx, results) => {
-                const temp = [];
-                var len = results.rows.length;
-                if (len > 0) {
-                  for (let j = 0; j < len; ++j) {
-                    temp.push(results.rows.item(j));
-                  }
-                  setTable(temp);
-                  searchUser();
-                  Total();
-                } else {
-                  Alert.alert('Sorry !', 'Record does not exist.');
-                }
-              },
-            );
-          },
-        );
-      });
+      const results = await ViewRecordsByDate(
+        state.start_date,
+        state.finish_date,
+      );
+      setTable(results);
+      setNameTable(results);
+      Total();
     }
   };
-  const [table, setTable] = useState([]);
+
   const tableData = table.map(record => [
     record.Date,
     record.Day,
     record.Shift,
     record.Taxi,
-    Number(record.Jobs).toFixed(0),
-    Number(record.Ins).toFixed(2),
+    Number(record.Jobs_Done).toFixed(0),
+    Number(record.Insurance).toFixed(2),
     Number(record.Shift_Total).toFixed(2),
-    Number(record.Com_GTN).toFixed(2),
+    Number(record.Comm_GTN).toFixed(2),
     Number(record.Kms).toFixed(2),
     Number(record.Paid_Kms).toFixed(2),
-    Number(record.Eftpos_Total).toFixed(2),
-    Number(record.Eftpos_LFee).toFixed(2),
-    Number(record.Dockets).toFixed(2),
-    Number(record.Charge_Authority).toFixed(2),
-    Number(record.Manual_MPTP_Total).toFixed(2),
-    Number(record.No_of_Manual_Lifts).toFixed(0),
+    Number(record.Eftpos).toFixed(2),
+    Number(record.Eftpos_Lifting_Value).toFixed(2),
+    Number(record.M3_Dockets).toFixed(2),
+    Number(record.Electronic_Account_Payments).toFixed(2),
+    Number(record.Total_Manual_MPTP31_And_MPTP_Values).toFixed(2),
+    Number(record.Number_Of_Manual_Liftings).toFixed(0),
     Number(record.Misc).toFixed(2),
-    Number(record.Acc_Fuel).toFixed(2),
+    Number(record.Fuel).toFixed(2),
     Number(record.Net_Payin).toFixed(2),
     Number(record.CPK).toFixed(2),
   ]);
-
-  const [nametable, setNameTable] = useState([]);
-  let [userdata, setuserdata] = useState({});
-
-  let searchUser = () => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'SELECT Name, Week_Ending_Date FROM nameweekendingtable',
-        [],
-        (_tx, results) => {
-          var len = results.rows.length;
-          console.log('name n wed', len);
-          if (len > 0) {
-            setuserdata(results.rows.item(0));
-            const temp = [];
-            temp.push(results.rows.item(0));
-            setNameTable(temp);
-          } else {
-            setuserdata('');
-          }
-        },
-      );
-    });
-  };
 
   const tableNameData = nametable.map(record => [
     record.Name,
     record.Week_Ending_Date,
     new Date().toDateString(),
   ]);
-
-  //Toaltable
-  useEffect(() => {
-    db.transaction(function (txn) {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='totaltable'",
-        [],
-        function (_tx, res) {
-          console.log('totaltable', res.rows.length);
-          if (res.rows.length === 0) {
-            txn.executeSql('DROP TABLE IF EXISTS totaltable', []);
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS totaltable (Date TEXT, Day TEXT, Jobs NUMERIC, Ins NUMERIC, Shift_Total NUMERIC, Com_GTN NUMERIC, Kms NUMERIC, Paid_Kms NUMERIC, Unpaid_kms NUMERIC, Eftpos_Total NUMERIC, Eftpos_LFee NUMERIC, Dockets NUMERIC, Charge_Authority NUMERIC, Manual_MPTP_Total NUMERIC, No_of_Manual_Lifts NUMERIC, Total_Lifting_Fee_Value NUMERIC, Misc NUMERIC, Acc_Fuel NUMERIC, Net_Payin NUMERIC, manual_lifting_fee_value NUMERIC, no_wheelchair_lifts NUMERIC, company_portion_lifting_fee NUMERIC, driver_portion_lifting_fee NUMERIC, Gov_Sub_Manual NUMERIC, Gov_Sub_Manual31 NUMERIC, CPK NUMERIC, Deductions NUMERIC)',
-              [],
-            );
-          }
-        },
-      );
-    });
-  }, []);
-
-  let [userData, setuserData] = useState({});
-  const [total, setTotal] = useState([]);
-  const [liftingtable, setLiftingtable] = useState([]);
-  const [deducttable, setDeducttable] = useState([]);
 
   let Total = () => {
     db.transaction(tx => {
@@ -647,18 +541,13 @@ export default function DisplayReport(_props) {
     );
   };
 
-  let [start_date, setstart_date] = useState('');
-  let [start_day, setstart_day] = useState('');
-  let [finish_date, setfinish_date] = useState('');
-  let [finish_day, setfinish_day] = useState('');
-
   //Alert
 
   const [done, setDone] = useState(false);
   const [usingservice, setUsingservice] = useState(false);
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#35363A',}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#35363A'}}>
       <AwesomeAlert show={done} title="Done it!" message="Thank you." />
       <AwesomeAlert
         show={usingservice}
@@ -668,58 +557,45 @@ export default function DisplayReport(_props) {
       <ScrollView verical={true}>
         <View style={styles.textinputview}>
           <Calendar
-            value={start_date}
-            onChange={tareek => setstart_date(tareek)}
-            OnChange={tareek => setstart_day(tareek)}
-          />
-          <Mytextinput
-            placeholder="From"
-            placeholderTextColor="#ffffff"
-            style={{
-              fontSize: 18,
-              fontWeight: 'bold',
-              color: '#ffffff',
-              paddingBottom: 0,
-            }}
-            // onChange={(tareek) => setSearch_date(tareek)}
-            value={start_date}
-            editable={false}
-            onSubmitEditing={() => {
-              if (!start_date) {
-                Alert.alert('Please input Date');
-              }
+            value={state.start_date}
+            onChange={(date: string, day: string) => {
+              dispatch({
+                type: 'UPDATE',
+                payload: {
+                  Date: date,
+                  Day: day,
+                },
+              });
             }}
           />
+          <Text>
+            {state.start_date
+              ? state.start_day + ' ' + state.start_date
+              : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
+          </Text>
         </View>
 
         <View style={styles.textinputview}>
           <Calendar
-            value={finish_date}
-            onChange={tareek => setfinish_date(tareek)}
-            OnChange={tareek => setfinish_day(tareek)}
-          />
-          <Mytextinput
-            placeholder="To"
-            placeholderTextColor="#ffffff"
-            style={{
-              fontSize: 18,
-              fontWeight: 'bold',
-              color: '#ffffff',
-              paddingBottom: 0,
-            }}
-            // onChange={(tareek) => setSearch_date(tareek)}
-            value={finish_date}
-            editable={false}
-            onSubmitEditing={() => {
-              if (!finish_date) {
-                Alert.alert('Please input Date');
-              } else {
-              }
+            value={state.finish_date}
+            onChange={(date: string, day: string) => {
+              dispatch({
+                type: 'UPDATE',
+                payload: {
+                  Date: date,
+                  Day: day,
+                },
+              });
             }}
           />
+          <Text>
+            {state.finish_date
+              ? state.finish_day + ' ' + state.finish_date
+              : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
+          </Text>
         </View>
 
-        <View style={{ alignItems: 'center'}}>
+        <View style={{alignItems: 'center'}}>
           <Text>YYYY/MM/DD</Text>
         </View>
 
@@ -733,13 +609,13 @@ export default function DisplayReport(_props) {
             alignItems: 'center',
           }}>
           <Text style={{fontSize: 14, fontWeight: 'bold'}}>
-            Name: {userdata.Name}
+            Name: {state.Name}
           </Text>
           <Text style={{fontSize: 14, fontWeight: 'bold'}}>
             Payin Summary for the Week Ending:
           </Text>
           <Text style={{fontSize: 14, fontWeight: 'bold'}}>
-            {userdata.Week_Ending_Date}
+            {state.Week_Ending_Date}
           </Text>
           <Text style={{fontSize: 14, fontWeight: 'bold'}}>
             Report creating date: {new Date().toDateString()}
@@ -855,4 +731,3 @@ export default function DisplayReport(_props) {
     </SafeAreaView>
   );
 }
-

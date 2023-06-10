@@ -32,6 +32,7 @@ const ModalForm = ({navigation}: Props) => {
     InsertData(state, dispatch);
   };
 
+  const inCloud = () => {};
   let load = () => {
     if (!state.Week_Ending_Date || !state.Name) {
       Alert.alert('Put name and date in');
@@ -50,12 +51,19 @@ const ModalForm = ({navigation}: Props) => {
       onRequestClose={() => {}}>
       <ScrollView>
         <View style={styles.model}>
-          <Text style={styles.titletext}>Enter Name & Week Ending Date</Text>
+          <Text style={[styles.titleText, {alignSelf: 'center'}]}>
+            Enter Name & Week Ending Date
+          </Text>
 
           <TextInput
             placeholder="Enter Your Name"
-            placeholderTextColor="#ffffff"
-            style={{color: '#fff', marginTop: 20, fontSize: 25}}
+            placeholderTextColor="#000"
+            style={{
+              color: '#fff',
+              marginTop: 20,
+              fontSize: 15,
+              alignSelf: 'center',
+            }}
             onChangeText={(Name: string) => {
               dispatch({
                 type: 'UPDATE',
@@ -80,7 +88,7 @@ const ModalForm = ({navigation}: Props) => {
                 });
               }}
             />
-            <Text style={{fontSize: 25, padding: 5, color: '#55a8fa'}}>
+            <Text style={{fontSize: 15, padding: 5, color: '#55a8fa'}}>
               {state.Week_Ending_Date
                 ? state.Week_Ending_Day + ' ' + state.Week_Ending_Date
                 : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
@@ -94,20 +102,13 @@ const ModalForm = ({navigation}: Props) => {
               justifyContent: 'space-between',
             }}>
             <TouchableOpacity onPress={load}>
-              <Icon
-                name="save-outline"
-                size={20}
-                color="#000"
-                style={styles.buttonIcon}
-              />
+              <Icon name="save-outline" size={20} color="#000" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={inCloud}>
+              <Icon name="cloud-outline" size={20} color="#000" />
             </TouchableOpacity>
             <TouchableOpacity onPress={cancel}>
-              <Icon
-                name="exit-outline"
-                size={20}
-                color="#000"
-                style={styles.buttonIcon}
-              />
+              <Icon name="exit-outline" size={20} color="#000" />
             </TouchableOpacity>
           </View>
         </View>

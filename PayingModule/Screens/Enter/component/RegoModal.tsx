@@ -1,10 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Modal, View, Text, TextInput, Alert} from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import MyButton from '../../../Components/Mybutton';
 import styles from '../EnterDataScreen.style';
 import {insertIntoCab, deleteIntoCab, SelectFromCab} from '../Actions';
 import {StateContext} from '../../../../Utilities/Context';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export const RegoModal = () => {
   const stateContext = React.useContext(StateContext);
@@ -39,9 +47,9 @@ export const RegoModal = () => {
       visible={state.Rego_Modal}
       animationType={'fade'}
       onRequestClose={() => {}}>
-      <View style={styles.model}>
-        <Text style={{color: '#000000'}}>
-          Please add vehcle's registration number.
+      <View style={[styles.model, {alignSelf: 'center'}]}>
+        <Text style={{color: '#000000', alignSelf: 'center'}}>
+          Please add vehcle's registration number
         </Text>
         <TextInput
           placeholder="Enter Rego"
@@ -51,24 +59,32 @@ export const RegoModal = () => {
           value={state.Rego}
           style={{
             marginTop: 30,
-            borderColor: '#000000',
-            borderBottomWidth: 1,
-            textAlign: 'center',
+            alignSelf: 'center',
             color: '#000000',
           }}
-          onChangeText={(Rego: string) => {
-            dispatch({type: 'UPDATE', payload: Rego});
+          onChangeText={(text: string) => {
+            dispatch({type: 'UPDATE', payload: {Rego: text}});
           }}
         />
-        <View style={{flexDirection: 'row', marginTop: 10}}>
-          <MyButton title="Add" customClick={pushcab} />
-          <MyButton title="Delete" customClick={deletecab} />
-          <MyButton
-            title="Cancel"
-            customClick={() => {
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            padding: 40,
+          }}>
+          <TouchableOpacity onPress={pushcab}>
+            <Icon name="add-outline" size={20} color="#000" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={deletecab}>
+            <Icon name="remove-outline" size={20} color="#000" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
               dispatch({type: 'UPDATE', payload: {Rego_Modal: false}});
-            }}
-          />
+            }}>
+            <Icon name="exit-outline" size={20} color="#000" />
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>

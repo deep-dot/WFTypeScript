@@ -17,6 +17,7 @@ import {
 import {createStackNavigator} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Database from './PayingModule/Database/Database';
 
 export type StackParamList = {
   Home: undefined;
@@ -42,7 +43,12 @@ const HomeScreenStack = () => {
         ),
         headerRight: () => (
           <Image
-            style={{width: 40, height: 40, margin: 10, borderRadius: 50}}
+            style={{
+              width: 40,
+              height: 40,
+              margin: 10,
+              borderRadius: 50,
+            }}
             source={require('./PayingModule/Components/Images/WFLogo.png')}
           />
         ),
@@ -69,6 +75,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <StateProvider>
+        <Database />
         <RootDrawer.Navigator
           initialRouteName="Home Screen Stack"
           screenOptions={{
