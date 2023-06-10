@@ -128,6 +128,15 @@ export type FormValues = {
   finish_date: string;
   sorryAlert: boolean;
   show2Alert: boolean;
+
+  //display table
+  nametable: any[];
+  table: any[];
+  total: any[];
+  liftingtable: any[];
+  deducttable: any[];
+  done: boolean;
+  usingservice: boolean;
 };
 
 export const initialValues = {
@@ -202,6 +211,15 @@ export const initialValues = {
   finish_date: '',
   sorryAlert: false,
   show2Alert: false,
+
+  // display report
+  nametable: [],
+  table: [],
+  total: [],
+  liftingtable: [],
+  deducttable: [],
+  done: false,
+  usingservice: false,
 };
 
 export const refreshValues = {
@@ -250,7 +268,7 @@ export const refreshValues = {
   Calculator_Modal_Visible: false,
   Indicator: false,
   Search_Date: '',
-}
+};
 
 export type Property =
   | 'Eftpos'

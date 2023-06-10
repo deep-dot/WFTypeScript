@@ -154,10 +154,6 @@ const EnterData = () => {
     dispatch({type: 'UPDATE', payload: {[name]: value}});
   };
 
-  const updateStateContext = () => {
-    navigation.navigate('Enter Data');
-  };
-
   const SubmitEditing = (
     name: string,
     value: string,
@@ -165,7 +161,7 @@ const EnterData = () => {
   ) => {
     if (!isNaN(Number(value))) {
       let updatedValues = {...state, [name]: value};
-      console.log(`name ${name} and value ${value}`);
+      // console.log(`name ${name} and value ${value}`);
       if (name === 'Jobs_Done') {
         const val1 = Number(updatedValues.Jobs_Done || 0);
         const val2 = Number(updatedValues.Gov_Levy || 0);
@@ -234,7 +230,7 @@ const EnterData = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>      
+    <SafeAreaView style={styles.container}>
       <ModalForm />
       <AwesomeAlert
         show={state.Indicator}
@@ -459,12 +455,7 @@ const EnterData = () => {
                 },
               });
             }}>
-            <Icon
-              name="calculator-outline"
-              size={30}
-              color="#fff"
-              style={styles.buttonIcon}
-            />
+            <Icon name="calculator-outline" size={30} color="#fff" />
           </TouchableOpacity>
         </View>
 
@@ -563,29 +554,14 @@ const EnterData = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('View Records')}>
-          <Icon
-            name="eye-outline"
-            size={25}
-            color="#fff"
-            style={styles.buttonIcon}
-          />
+          <Icon name="eye-outline" size={25} color="#fff" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} onPress={Save}>
-          <Icon
-            name="save-outline"
-            size={25}
-            color="#fff"
-            style={styles.buttonIcon}
-          />
+          <Icon name="save-outline" size={25} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={Refresh}>
-          <Icon
-            name="refresh"
-            size={25}
-            color="#fff"
-            style={styles.buttonIcon}
-          />
+          <Icon name="refresh" size={25} color="#fff" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
