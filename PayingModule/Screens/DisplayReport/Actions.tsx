@@ -16,9 +16,7 @@ export const insertIntoTotalTable = (): Promise<FormValues[]> => {
             // console.log('results in display report===', results.rows.item(0));
             var len = results.rows.length;
             if (len >= 0) {
-              const temp: FormValues[] = [];
-              temp.push(results.rows.item(0));
-              resolve(temp);
+              resolve(results.rows.item(0));
             } else {
               Alert.alert('No data found');
             }

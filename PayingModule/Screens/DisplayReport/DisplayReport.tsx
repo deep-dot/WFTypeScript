@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useContext, useState} from 'react';
+import React, {useCallback, useContext, useEffect} from 'react';
 import {Text, View, ScrollView, Alert, SafeAreaView} from 'react-native';
 import {Table, Row} from 'react-native-table-component';
-import Mybutton from '../../Components/Mybutton';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './DisplayReport.style';
 import {ViewRecordsByDate} from '../ViewRecords/Actions';
@@ -15,7 +14,7 @@ export default function DisplayReport(_props) {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {state, dispatch, starRating} = stateContext;
+  const {state, dispatch} = stateContext;
 
   const tableHead = [
     'Date',
@@ -69,18 +68,36 @@ export default function DisplayReport(_props) {
   ];
   const widthArr2 = [140, 140, 140, 140, 140, 140, 140, 140];
 
-  let Report = async () => {
-    if (!state.start_date || !state.finish_date) {
-      Alert.alert('Please select Date !');
-    } else {
-      const results = await ViewRecordsByDate(
-        state.start_date,
-        state.finish_date,
-      );
-      dispatch({type: 'UPDATE', payload: {table: results, nametable: results}});
-      Total();
-    }
-  };
+  let Total = useCallback(async () => {
+    const res = await insertIntoTotalTable();
+    console.log('results in display report===', res);
+    dispatch({
+      type: 'UPDATE',
+      payload: {
+        total: res,
+        //liftingtable: res, deducttable: res
+      },
+    });
+  }, [dispatch]);
+
+  useEffect(() => {
+    let Report = async () => {
+      if (!state.start_date || !state.finish_date) {
+        Alert.alert('Please select Date !');
+      } else {
+        const results = await ViewRecordsByDate(
+          state.start_date,
+          state.finish_date,
+        );
+        dispatch({
+          type: 'UPDATE',
+          payload: {table: results, nametable: results},
+        });
+        Total();
+      }
+    };
+    Report();
+  }, [Total, dispatch, state.finish_date, state.start_date]);
 
   const tableData = state.table.map(record => [
     record.Date,
@@ -105,64 +122,49 @@ export default function DisplayReport(_props) {
     record.CPK,
   ]);
 
-  const tableNameData = state.nametable.map(record => [
-    record.Name,
-    record.Week_Ending_Date,
-    new Date().toDateString(),
-  ]);
-
-  let Total = async () => {
-    const res = await insertIntoTotalTable();
-    console.log('results in display report===', res);
-    dispatch({
-      type: 'UPDATE',
-      payload: {total: res, liftingtable: res, deducttable: res},
-    });
-  };
-
-  const datatotal = state.total.map(total => [
+  const datatotal = [
     'Total',
     '',
     '',
     '',
-    total.Jobs_Done,
-    total.Insurance,
-    total.Shift_Total,
-    total.Company_Comm_Rate,
-    total.Kms,
-    total.Paid_Kms,
-    total.Eftpos,
-    total.Eftpos,
-    total.M3_Dockets,
-    total.Electronic_Account_Payments,
-    total.Total_Manual_MPTP31_And_MPTP_Values,
-    total.Number_Of_Manual_Liftings,
-    total.Misc,
-    total.Fuel,
-    total.Net_Payin,
-    total.CPK,
-  ]);
+    state.total.Jobs_Done,
+    state.total.Insurance,
+    // state.Shift_Total,
+    // state.Company_Comm_Rate,
+    // state.Kms,
+    // state.Paid_Kms,
+    // state.Eftpos,
+    // state.Eftpos,
+    // state.M3_Dockets,
+    // state.Electronic_Account_Payments,
+    // state.Total_Manual_MPTP31_And_MPTP_Values,
+    // state.Number_Of_Manual_Liftings,
+    // state.Misc,
+    // state.Fuel,
+    // state.Net_Payin,
+    // state.CPK,
+  ];
+  console.log(datatotal);
+  // const liftingdata = [
+  //   state.Total_Lifting_Value,
+  //   state.Number_Of_Chairs,
+  //   state.Number_Of_Manual_Liftings,
+  //   // state.manual_lifting_fee_value,
+  //   state.Total_Manual_MPTP31_And_MPTP_Values,
+  //   state.Eftpos,
+  //   state.Driver_Share_In_LiftingFee,
+  //   state.Driver_Share_In_LiftingFee,
+  // ];
 
-  const liftingdata = state.liftingtable.map(total => [
-    total.Total_Lifting_Value,
-    total.Number_Of_Chairs,
-    total.Number_Of_Manual_Liftings,
-    // total.manual_lifting_fee_value,
-    total.Total_Manual_MPTP31_And_MPTP_Values,
-    total.Eftpos,
-    total.Driver_Share_In_LiftingFee,
-    total.Driver_Share_In_LiftingFee,
-  ]);
-
-  const Deductdata = state.deducttable.map(total => [
-    total.Eftpos,
-    total.Total_Manual_MPTP31_And_MPTP_Values,
-    total.M3_Dockets,
-    total.Electronic_Account_Payments,
-    total.Misc,
-    total.Deductions,
-    total.Net_Payin,
-  ]);
+  // const Deductdata = [
+  //   state.Eftpos,
+  //   state.Total_Manual_MPTP31_And_MPTP_Values,
+  //   state.M3_Dockets,
+  //   state.Electronic_Account_Payments,
+  //   state.Misc,
+  //   state.Deductions,
+  //   state.Net_Payin,
+  // ];
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#35363A'}}>
@@ -205,25 +207,19 @@ export default function DisplayReport(_props) {
                     widthArr={widthArr}
                     style={[
                       styles.row,
-                      index % 0 && {backgroundColor: 'white'},
+                      index % 2 === 0 && {backgroundColor: 'white'},
                     ]}
                     textStyle={styles.text}
                   />
                 ))}
               </Table>
               <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
-                {datatotal.map((rowdata, index) => (
-                  <Row
-                    key={index}
-                    data={rowdata}
-                    widthArr={widthArr}
-                    style={[
-                      styles.row,
-                      index % 0 && {backgroundColor: 'white'},
-                    ]}
-                    textStyle={styles.text}
-                  />
-                ))}
+                <Row
+                  data={datatotal}
+                  widthArr={widthArr}
+                  style={styles.row}
+                  textStyle={styles.text}
+                />
               </Table>
 
               <View style={{flex: 1, alignItems: 'flex-start', marginTop: 5}}>
@@ -240,18 +236,18 @@ export default function DisplayReport(_props) {
                 />
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-                {liftingdata.map((rowData, index) => (
+                {/* {liftingdata.map((rowData, index) => (
                   <Row
                     key={index}
                     data={rowData}
                     widthArr={widthArr1}
                     style={[
                       styles.row,
-                      index % 0 && {backgroundColor: 'white'},
+                      index % 2 === 0 && {backgroundColor: 'white'},
                     ]}
                     textStyle={styles.text}
                   />
-                ))}
+                ))} */}
               </Table>
 
               <View style={{flex: 1, alignItems: 'flex-start', marginTop: 5}}>

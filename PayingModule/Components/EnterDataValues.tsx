@@ -57,6 +57,9 @@ export const usePayinRefs = () => {
 interface Cab {
   Cab: string;
 }
+interface total {
+  [key: string]: string;
+}
 export type FormValues = {
   Record_id: number;
   Number_Of_Entries: string;
@@ -131,8 +134,8 @@ export type FormValues = {
 
   //display table
   nametable: any[];
+  total: total;
   table: any[];
-  total: any[];
   liftingtable: any[];
   deducttable: any[];
   done: boolean;
@@ -215,7 +218,7 @@ export const initialValues = {
   // display report
   nametable: [],
   table: [],
-  total: [],
+  total: {},
   liftingtable: [],
   deducttable: [],
   done: false,

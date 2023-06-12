@@ -10,7 +10,7 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
     case 'REFRESH':
       return {...state, ...refreshValues};
     case 'UPDATE':
-      console.log('action.type UPDATE==', action.payload);
+     // console.log('action.type UPDATE==', action.payload);
       return {...state, ...action.payload};
     case 'ERROR':
       console.error(action.error);
