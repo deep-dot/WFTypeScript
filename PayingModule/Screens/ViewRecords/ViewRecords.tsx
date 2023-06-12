@@ -34,7 +34,7 @@ const ViewRecords = () => {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {state, dispatch} = stateContext;
+  const {state, dispatch, starRating} = stateContext;
 
   let SearchRecord = async (start_date: string, finish_date: string) => {
     // console.log('start date==', start_date);
@@ -117,7 +117,7 @@ const ViewRecords = () => {
     }
     return (
       <View style={{backgroundColor: '#ffffff', padding: 20}}>
-        <View style={[styles.textinputview,{borderColor: '#fff'}]}>
+        <View style={[styles.textinputview, {borderColor: '#fff'}]}>
           <TouchableOpacity
             onPress={() => {
               DeleteRecord(item?.Record_id.toString(), item?.Date);
@@ -257,7 +257,7 @@ const ViewRecords = () => {
           Total Entries = {state.Number_Of_Entries}
         </Text>
 
-        <View style={[styles.textinputview,{borderColor: '#fff'}]}>
+        <View style={[styles.textinputview, {borderColor: '#fff'}]}>
           <Calendar
             value={state.start_date}
             onChange={async (date: string, day: string) => {
@@ -275,7 +275,7 @@ const ViewRecords = () => {
           </Text>
         </View>
 
-        <View style={[styles.textinputview,{borderColor: '#fff'}]}>
+        <View style={[styles.textinputview, {borderColor: '#fff'}]}>
           <Calendar
             value={state.finish_date}
             onChange={async (date: string, day: string) => {
@@ -319,7 +319,10 @@ const ViewRecords = () => {
         <TouchableOpacity onPress={() => navigation.navigate('Enter Data')}>
           <Icon name="enter-outline" size={20} color="#fff" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Display Report')}>
+        <TouchableOpacity
+          onPress={() => {
+            starRating(state, dispatch); navigation.navigate('Display Report');
+          }}>
           <Icon name="print-outline" size={20} color="#fff" />
         </TouchableOpacity>
       </View>

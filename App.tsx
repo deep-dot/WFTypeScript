@@ -79,13 +79,13 @@ export default function App() {
       <StateProvider>
         <Database />
         <RootDrawer.Navigator
-          initialRouteName="Home Screen Stack"
+          initialRouteName="HomeScreenStack"
           screenOptions={{
             headerShown: false,
           }}
           drawerContent={CustomDrawerContent}>
           <RootDrawer.Screen
-            name="Home Screen Stack"
+            name="HomeScreenStack"
             component={HomeScreenStack}
           />
           {/* <RootDrawer.Screen name="Driver App" component={} />

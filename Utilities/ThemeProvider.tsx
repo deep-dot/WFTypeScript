@@ -49,7 +49,7 @@ export default function ThemeProvider({children}: ThemeProviderProps) {
   const theme = isDarkTheme ? CustomDarkTheme : CustomDefaultTheme;
 
   const toggleTheme = () => {
-    setIsDarkTheme(prevIsDarkTheme => !prevIsDarkTheme);
+    setIsDarkTheme(!isDarkTheme);
   };
 
   return (

@@ -1,7 +1,12 @@
 import {Linking, Alert} from 'react-native';
 import RNPrint from 'react-native-print';
+import {FormValues} from '../../Components/EnterDataValues';
+import {Action} from '../../../Utilities/Actions';
 
-export const startRating = () => {
+export const starRating = (
+  state: FormValues,
+  dispatch: React.Dispatch<Action>,
+) => {
   Alert.alert(
     'Please Rate us',
     'Would you like to share your review with us? This will help and motivate us a lot.',
@@ -18,10 +23,10 @@ export const startRating = () => {
       {
         text: 'Done Already!',
         onPress: () => {
-          setDone(true);
+          dispatch({type: 'UPDATE', payload: {done: true}});
           setTimeout(() => {
-            setDone(false);
-            if (!done) {
+            dispatch({type: 'UPDATE', payload: {done: false}});
+            if (!state.done) {
               setTimeout(() => {
                 printHTML();
               }, 1000);
@@ -32,10 +37,10 @@ export const startRating = () => {
       {
         text: 'Remind me later!',
         onPress: () => {
-          setUsingservice(true);
+          dispatch({type: 'UPDATE', payload: {usingservice: true}});
           setTimeout(() => {
-            setUsingservice(false);
-            if (!usingservice) {
+            dispatch({type: 'UPDATE', payload: {usingservice: false}});
+            if (!state.usingservice) {
               setTimeout(() => {
                 printHTML();
               }, 1000);

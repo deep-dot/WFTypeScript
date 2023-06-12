@@ -1,4 +1,3 @@
-import {initialValues} from '../PayingModule/Components/EnterDataValues';
 import {Action} from './Actions';
 import {
   FormValues,

@@ -7,6 +7,7 @@ import {StateContext} from './Context';
 import {NavigationContainer} from '@react-navigation/native';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {ThemeContext} from './ThemeProvider';
+import {starRating} from '../PayingModule/Screens/DisplayReport/Print';
 
 interface Props {
   children: ReactNode;
@@ -22,7 +23,7 @@ export const StateProvider = ({children}: Props) => {
   const {theme} = themeContext;
 
   return (
-    <StateContext.Provider value={{state, dispatch}}>
+    <StateContext.Provider value={{state, dispatch, starRating}}>
       <PaperProvider theme={theme}>
         <NavigationContainer theme={theme}>{children}</NavigationContainer>
       </PaperProvider>

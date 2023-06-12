@@ -4,12 +4,10 @@ import React, {useContext, useState} from 'react';
 import {Text, View, ScrollView, Alert, SafeAreaView} from 'react-native';
 import {Table, Row} from 'react-native-table-component';
 import Mybutton from '../../Components/Mybutton';
-import {startRating} from './Print';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './DisplayReport.style';
 import {ViewRecordsByDate} from '../ViewRecords/Actions';
 import {StateContext} from '../../../Utilities/Context';
-import {FormValues} from '../../Components/EnterDataValues';
 import {insertIntoTotalTable} from './Actions';
 
 export default function DisplayReport(_props) {
@@ -17,14 +15,7 @@ export default function DisplayReport(_props) {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {state, dispatch} = stateContext;
-  const [nametable, setNameTable] = useState<FormValues[]>([]);
-  const [table, setTable] = useState<FormValues[]>([]);
-  const [total, setTotal] = useState<FormValues[]>([]);
-  const [liftingtable, setLiftingtable] = useState<FormValues[]>([]);
-  const [deducttable, setDeducttable] = useState<FormValues[]>([]);
-  const [done, setDone] = useState(false);
-  const [usingservice, setUsingservice] = useState(false);
+  const {state, dispatch, starRating} = stateContext;
 
   const tableHead = [
     'Date',
@@ -86,13 +77,12 @@ export default function DisplayReport(_props) {
         state.start_date,
         state.finish_date,
       );
-      setTable(results);
-      setNameTable(results);
+      dispatch({type: 'UPDATE', payload: {table: results, nametable: results}});
       Total();
     }
   };
 
-  const tableData = table.map(record => [
+  const tableData = state.table.map(record => [
     record.Date,
     record.Day,
     record.Shift,
@@ -115,7 +105,7 @@ export default function DisplayReport(_props) {
     record.CPK,
   ]);
 
-  const tableNameData = nametable.map(record => [
+  const tableNameData = state.nametable.map(record => [
     record.Name,
     record.Week_Ending_Date,
     new Date().toDateString(),
@@ -124,13 +114,13 @@ export default function DisplayReport(_props) {
   let Total = async () => {
     const res = await insertIntoTotalTable();
     console.log('results in display report===', res);
-    //dispatch({type: 'UPDATE', payload: result});
-    setTotal(res);
-    setLiftingtable(res);
-    setDeducttable(res);
+    dispatch({
+      type: 'UPDATE',
+      payload: {total: res, liftingtable: res, deducttable: res},
+    });
   };
 
-  const datatotal = total.map(total => [
+  const datatotal = state.total.map(total => [
     'Total',
     '',
     '',
@@ -153,7 +143,7 @@ export default function DisplayReport(_props) {
     total.CPK,
   ]);
 
-  const liftingdata = liftingtable.map(total => [
+  const liftingdata = state.liftingtable.map(total => [
     total.Total_Lifting_Value,
     total.Number_Of_Chairs,
     total.Number_Of_Manual_Liftings,
@@ -164,9 +154,8 @@ export default function DisplayReport(_props) {
     total.Driver_Share_In_LiftingFee,
   ]);
 
-  const Deductdata = deducttable.map(total => [
+  const Deductdata = state.deducttable.map(total => [
     total.Eftpos,
-    total.Total_Manual_MPTP31_And_MPTP_Values,
     total.Total_Manual_MPTP31_And_MPTP_Values,
     total.M3_Dockets,
     total.Electronic_Account_Payments,
@@ -175,21 +164,15 @@ export default function DisplayReport(_props) {
     total.Net_Payin,
   ]);
 
-  const Rating = () => {
-    startRating();
-  };
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#35363A'}}>
-      <AwesomeAlert show={done} title="Done it!" message="Thank you." />
+      <AwesomeAlert show={state.done} title="Done it!" message="Thank you." />
       <AwesomeAlert
-        show={usingservice}
+        show={state.usingservice}
         title="Thank you for using our service."
       />
 
-      <ScrollView verical={true}>
-        <Mybutton title="Display Data" customClick={Report} />
-
+      <ScrollView>
         <View
           style={{
             display: 'flex',
@@ -285,7 +268,7 @@ export default function DisplayReport(_props) {
                 />
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-                {Deductdata.map((rowData, index) => (
+                {/* {Deductdata.map((rowData, index) => (
                   <Row
                     key={index}
                     data={rowData}
@@ -296,21 +279,12 @@ export default function DisplayReport(_props) {
                     ]}
                     textStyle={styles.text}
                   />
-                ))}
+                ))} */}
               </Table>
             </View>
           </ScrollView>
         </View>
       </ScrollView>
-      <View
-        style={{
-          marginLeft: 60,
-          marginRight: 60,
-          marginBottom: 10,
-          marginTop: -12,
-        }}>
-        <Mybutton title="Print Report" customClick={Rating} />
-      </View>
     </SafeAreaView>
   );
 }

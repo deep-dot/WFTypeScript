@@ -17,16 +17,16 @@ import {
   DrawerItem,
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
-import {StateContext} from './Context';
+import {ThemeContext} from './ThemeProvider';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const DrawerContent = (props: DrawerContentComponentProps) => {
   const paperTheme = useTheme();
-  const stateContext = useContext(StateContext);
-  if (!stateContext) {
+  const themeContext = useContext(ThemeContext);
+  if (!themeContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {toggleTheme} = stateContext;
+  const {toggleTheme} = themeContext;
 
   return (
     <View style={{flex: 1}}>
