@@ -28,7 +28,7 @@ export const starRating = (
             dispatch({type: 'UPDATE', payload: {done: false}});
             if (!state.done) {
               setTimeout(() => {
-                printHTML();
+                printHTML(state, dispatch);
               }, 1000);
             }
           }, 1000);
@@ -42,7 +42,7 @@ export const starRating = (
             dispatch({type: 'UPDATE', payload: {usingservice: false}});
             if (!state.usingservice) {
               setTimeout(() => {
-                printHTML();
+                printHTML(state, dispatch);
               }, 1000);
             }
           }, 1000);
@@ -57,87 +57,77 @@ export const starRating = (
   );
 };
 
-let printHTML = async () => {
+let printHTML = async (state: FormValues, dispatch: React.Dispatch<Action>) => {
   try {
     var td = '';
-    tableData.forEach(le => {
+    state.tableData.forEach(le => {
       console.log('le', le);
-      td += `<th>${le[1]}</th>
-              <tr>
-                <td>${le[0]}</td>
-                <td>${le[2]}</td>
-                <td>${le[3]}</td>
-                <td>${le[4]}</td>
-                <td>${le[5]}</td>
-                <td>$${le[6]}</td>
-                <td>$${le[7]}</td>
-                <td>${le[8]}</td>
-                <td>${le[9]}</td>
-                <td>$${le[10]}</td>
-                <td>$${le[11]}</td>
-                <td>$${le[12]}</td>
-                <td>$${le[13]}</td>
-                <td>$${le[14]}</td>
-                <td>${le[15]}</td>
-                <td>$${le[16]}</td>
-                <td>$${le[17]}</td>
-                <td><span>&#36;</span>${le[18]}</td>                  
-                <td>${le[19]}</td>                  
-                </tr>
-                `;
+      const currencyIndices = new Set([6, 7, 10, 11, 12, 13, 14, 16, 17, 18]);
+      td += le
+        .map((entry, index) => {
+          const formattedEntry = currencyIndices.has(index)
+            ? `$${entry}`
+            : entry;
+          return index === 1
+            ? `<th>${formattedEntry}</th>`
+            : `<td>${formattedEntry}</td>`;
+        })
+        .join('\n');
+      td += '</tr>\n';
     });
+
     var td1 = '';
-    tableNameData.forEach(le => {
+    state.tableNameData.forEach(le => {
       td1 = `<tr>
-                <td style = "width:5%">Name:</td>
-                <td style = "width:20%">${le[0]}</td>
-                <td style = "width:23%">Week Ending Date:</td>
-                <td style = "width:20%"> ${le[1]} </td>
-                <td style = "width:18%">Report making date:</td>
-                <td style = "width:19%"> ${le[2]} </td>
+                <td>Name:</td>
+                <td>${le[0]}</td>
+                <td>Week Ending Date:</td>
+                <td> ${le[1]} </td>
+                <td>Report making date:</td>
+                <td> ${le[2]} </td>
               </tr>`;
     });
-    var total = '';
-    datatotal.forEach(le => {
-      console.log('le', le);
-      total += `
-              <tr>
-                <td style = "font-weight:900">${le[0]}</td>
-                <td style = "font-weight:900">${le[2]}</td>
-                <td style = "font-weight:900">${le[3]}</td>
-                <td style = "font-weight:900">${le[4]}</td>
-                <td style = "font-weight:900">$${le[5]}</td>
-                <td style = "font-weight:900">$${le[6]}</td>
-                <td style = "font-weight:900">$${le[7]}</td>
-                <td style = "font-weight:900">${le[8]}</td>
-                <td style = "font-weight:900">${le[9]}</td>
-                <td style = "font-weight:900">$${le[10]}</td>
-                <td style = "font-weight:900">$${le[11]}</td>
-                <td style = "font-weight:900">$${le[12]}</td>
-                <td style = "font-weight:900">$${le[13]}</td>
-                <td style = "font-weight:900">$${le[14]}</td>               
-                <td style = "font-weight:900">${le[15]}</td>
-                <td style = "font-weight:900">$${le[16]}</td>
-                <td style = "font-weight:900">$${le[17]}</td>                  
-                <td style = "font-weight:900">$${le[18]}</td>                 
-                </tr>`;
-    });
+
+    let total = '';
+    let le = state.datatotal;
+    total += `
+        <tr>
+            <td style = "font-weight:900">${le[0]}</td>
+            <td style = "font-weight:900">${le[2]}</td>
+            <td style = "font-weight:900">${le[3]}</td>
+            <td style = "font-weight:900">${le[4]}</td>
+            <td style = "font-weight:900">$${le[5]}</td>
+            <td style = "font-weight:900">$${le[6]}</td>
+            <td style = "font-weight:900">$${le[7]}</td>
+            <td style = "font-weight:900">${le[8]}</td>
+            <td style = "font-weight:900">${le[9]}</td>
+            <td style = "font-weight:900">$${le[10]}</td>
+            <td style = "font-weight:900">$${le[11]}</td>
+            <td style = "font-weight:900">$${le[12]}</td>
+            <td style = "font-weight:900">$${le[13]}</td>
+            <td style = "font-weight:900">$${le[14]}</td>
+            <td style = "font-weight:900">${le[15]}</td>
+            <td style = "font-weight:900">$${le[16]}</td>
+            <td style = "font-weight:900">$${le[17]}</td>
+            <td style = "font-weight:900">$${le[18]}</td>
+        </tr>`;
+
     var lifting = '';
-    liftingdata.forEach(le => {
+    state.liftingdata.forEach(le => {
       console.log('le', le);
       lifting += `<th>.</th>
               <tr>
-                <td>$${le[0]}</td>                
+                <td>$${le[0]}</td>
                 <td>${le[1]}</td>
                 <td>${le[2]}</td>
-                <td>$${le[3]}</td>                
+                <td>$${le[3]}</td>
                 <td>$${le[4]}</td>
                 <td>$${le[5]}</td>
                 <td>$${le[6]}</td>
                 </tr>`;
     });
-    var deducting = '';
-    Deductdata.forEach(le => {
+    let deducting = '';
+    state.Deductdata.forEach(le => {
       deducting += `<th>.</th>
               <tr>
                 <td>$${le[0]}</td>
@@ -147,7 +137,7 @@ let printHTML = async () => {
                 <td>$${le[4]}</td>
                 <td>$${le[5]}</td>
                 <td>$${le[6]}</td>
-                <td>$${le[7]}</td>  
+                <td>$${le[7]}</td>
                 </tr>`;
     });
     await RNPrint.print({
@@ -243,7 +233,7 @@ let printHTML = async () => {
                 <th> Company portion lifting fee </th>
                 <th> Driver portion lifting fee </th>
               </tr>              
-                ${lifting}
+               ${lifting}
             </table>
                       <hr>
             <table id="th">

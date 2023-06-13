@@ -60,6 +60,9 @@ interface Cab {
 interface total {
   [key: string]: string;
 }
+interface tableData {
+  [key: string]: string;
+}
 export type FormValues = {
   Record_id: number;
   Number_Of_Entries: string;
@@ -136,10 +139,13 @@ export type FormValues = {
   nametable: any[];
   total: total;
   table: any[];
-  liftingtable: any[];
-  deducttable: any[];
+  tableNameData: string[];
+  datatotal: string[];
+  liftingdata: string[];
+  Deductdata: string[];
   done: boolean;
   usingservice: boolean;
+  tableData: tableData[][];
 };
 
 export const initialValues = {
@@ -219,10 +225,13 @@ export const initialValues = {
   nametable: [],
   table: [],
   total: {},
-  liftingtable: [],
-  deducttable: [],
+  tableNameData: [],
+  datatotal: [],
+  liftingdata: [],
+  Deductdata: [],
   done: false,
   usingservice: false,
+  tableData: [],
 };
 
 export const refreshValues = {

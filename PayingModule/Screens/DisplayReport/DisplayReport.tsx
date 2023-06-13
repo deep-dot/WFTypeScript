@@ -8,6 +8,14 @@ import styles from './DisplayReport.style';
 import {ViewRecordsByDate} from '../ViewRecords/Actions';
 import {StateContext} from '../../../Utilities/Context';
 import {insertIntoTotalTable} from './Actions';
+import {
+  tableHead,
+  tableHead1,
+  tableHead2,
+  widthArr,
+  widthArr1,
+  widthArr2,
+} from './tableHeading';
 
 export default function DisplayReport(_props) {
   const stateContext = useContext(StateContext);
@@ -16,66 +24,13 @@ export default function DisplayReport(_props) {
   }
   const {state, dispatch} = stateContext;
 
-  const tableHead = [
-    'Date',
-    'Day',
-    'Shift',
-    'Taxi',
-    'Jobs_Done',
-    'Hours_Worked',
-    'Meter_Start',
-    'Meter_Finish',
-    'Km_Start',
-    'Km_Finish',
-    'Paidkm_Start',
-    'Paidkm_Finish',
-    'Eftpos',
-    'M3_Dockets',
-    'Electronic_Account_Payments',
-    'Total_Manual_MPTP31_And_MPTP_Values',
-    'Number_Of_Manual_Liftings',
-    'Eftpos_Lifting_Value',
-    'Car_Wash',
-    'Misc',
-    'Fuel',
-    'Insurance',
-  ];
-  const widthArr = [
-    80, 80, 60, 70, 50, 60, 80, 60, 60, 80, 80, 100, 80, 80, 80, 80, 60, 60, 80,
-    50,
-  ];
-
-  const tableHead1 = [
-    'Total Lifting Fee Value',
-    'Total No. of Wheelchairs Lifts;',
-    'Total No. of Manual MPTP Lifts:',
-    'Total Manual Lifting Fee Value:',
-    'Total Eftpos Lifting Fee Value:',
-    'Total Company Portion of Lifting Fee:',
-    'Total Driver Portion of Lifting Fee:',
-  ];
-  const widthArr1 = [150, 150, 150, 150, 150, 150, 150];
-
-  const tableHead2 = [
-    'Eftpos',
-    'Gov-Sub Manual',
-    'Gov-Sub Manual31',
-    'Dockets',
-    'Charge Authority',
-    'Misc',
-    'Deductions',
-    'Pay Ins-Cash',
-  ];
-  const widthArr2 = [140, 140, 140, 140, 140, 140, 140, 140];
-
   let Total = useCallback(async () => {
     const res = await insertIntoTotalTable();
-    console.log('results in display report===', res);
+    // console.log('results in display report===', res);
     dispatch({
       type: 'UPDATE',
       payload: {
         total: res,
-        //liftingtable: res, deducttable: res
       },
     });
   }, [dispatch]);
@@ -99,7 +54,7 @@ export default function DisplayReport(_props) {
     Report();
   }, [Total, dispatch, state.finish_date, state.start_date]);
 
-  const tableData = state.table.map(record => [
+  state.tableData = state.table.map(record => [
     record.Date,
     record.Day,
     record.Shift,
@@ -122,7 +77,7 @@ export default function DisplayReport(_props) {
     record.CPK,
   ]);
 
-  const datatotal = [
+  state.datatotal = [
     'Total',
     '',
     '',
@@ -144,27 +99,10 @@ export default function DisplayReport(_props) {
     // state.Net_Payin,
     // state.CPK,
   ];
-  console.log(datatotal);
-  // const liftingdata = [
-  //   state.Total_Lifting_Value,
-  //   state.Number_Of_Chairs,
-  //   state.Number_Of_Manual_Liftings,
-  //   // state.manual_lifting_fee_value,
-  //   state.Total_Manual_MPTP31_And_MPTP_Values,
-  //   state.Eftpos,
-  //   state.Driver_Share_In_LiftingFee,
-  //   state.Driver_Share_In_LiftingFee,
-  // ];
+  console.log(state.datatotal);
+  state.liftingdata = [state.total.Jobs_Done, state.total.Insurance];
 
-  // const Deductdata = [
-  //   state.Eftpos,
-  //   state.Total_Manual_MPTP31_And_MPTP_Values,
-  //   state.M3_Dockets,
-  //   state.Electronic_Account_Payments,
-  //   state.Misc,
-  //   state.Deductions,
-  //   state.Net_Payin,
-  // ];
+  state.Deductdata = [state.total.Jobs_Done, state.total.Insurance];
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#35363A'}}>
@@ -200,7 +138,7 @@ export default function DisplayReport(_props) {
                 />
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-                {tableData.map((rowdata, index) => (
+                {state.tableData.map((rowdata, index) => (
                   <Row
                     key={index}
                     data={rowdata}
@@ -215,7 +153,7 @@ export default function DisplayReport(_props) {
               </Table>
               <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
                 <Row
-                  data={datatotal}
+                  data={state.datatotal}
                   widthArr={widthArr}
                   style={styles.row}
                   textStyle={styles.text}
@@ -236,18 +174,12 @@ export default function DisplayReport(_props) {
                 />
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-                {/* {liftingdata.map((rowData, index) => (
-                  <Row
-                    key={index}
-                    data={rowData}
-                    widthArr={widthArr1}
-                    style={[
-                      styles.row,
-                      index % 2 === 0 && {backgroundColor: 'white'},
-                    ]}
-                    textStyle={styles.text}
-                  />
-                ))} */}
+                <Row
+                  data={state.liftingdata}
+                  widthArr={widthArr}
+                  style={styles.row}
+                  textStyle={styles.text}
+                />
               </Table>
 
               <View style={{flex: 1, alignItems: 'flex-start', marginTop: 5}}>
@@ -264,18 +196,12 @@ export default function DisplayReport(_props) {
                 />
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-                {/* {Deductdata.map((rowData, index) => (
-                  <Row
-                    key={index}
-                    data={rowData}
-                    widthArr={widthArr2}
-                    style={[
-                      styles.row,
-                      index % 0 && {backgroundColor: 'white'},
-                    ]}
-                    textStyle={styles.text}
-                  />
-                ))} */}
+                <Row
+                  data={state.Deductdata}
+                  widthArr={widthArr}
+                  style={styles.row}
+                  textStyle={styles.text}
+                />
               </Table>
             </View>
           </ScrollView>
