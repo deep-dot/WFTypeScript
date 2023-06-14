@@ -321,9 +321,9 @@ const ViewRecords = () => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            starRating(state, dispatch); navigation.navigate('Display Report');
+             navigation.navigate('Display Report');
           }}>
-          <Icon name="print-outline" size={20} color="#fff" />
+          <Icon name="create-outline" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

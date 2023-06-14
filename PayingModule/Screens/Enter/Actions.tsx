@@ -5,7 +5,6 @@ import db from '../../Database/databaseService';
 import {Action} from '../../../Utilities/Actions';
 import {FormValues} from '../../Components/EnterDataValues';
 
-
 export const SelectFromDataTable = (
   dispatch: React.Dispatch<Action>,
 ): Promise<FormValues[]> => {
@@ -17,12 +16,12 @@ export const SelectFromDataTable = (
           [],
           (_tx: Transaction, results: ResultSet) => {
             var len = results.rows.length;
-            // console.log(
-            //   'from datatable in Home actions===',
-            //   results.rows.item(len - 1).Name,
-            //   results.rows.item(len - 1).Week_Ending_Date,
-            //   results.rows.item(len - 1),
-            // );
+            console.log(
+              'from datatable in Home actions===',
+              results.rows.item(len - 1).Name,
+              results.rows.item(len - 1).Week_Ending_Date,
+              results.rows.item(len - 1),
+            );
             dispatch({
               type: 'UPDATE',
               payload: {
@@ -45,14 +44,13 @@ export const SelectFromDataTable = (
   });
 };
 
-
 export function insertIntoCab(rego: string): Promise<ResultSet> {
   //console.log('formValues.rego==', rego);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'INSERT INTO cab (Cab) VALUES (?)',
+          'INSERT INTO datatable (Cab) VALUES (?)',
           [rego],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
@@ -79,7 +77,7 @@ export function deleteIntoCab(rego: string): Promise<ResultSet> {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'DELETE FROM cab where Cab = ?',
+          'DELETE FROM datatable where Cab = ?',
           [rego],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
@@ -105,16 +103,20 @@ export const SelectFromCab = (dispatch: React.Dispatch<Action>) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'SELECT * FROM cab',
+          'SELECT Cab FROM datatable',
           [],
           (_tx: Transaction, results: ResultSet) => {
             var len = results.rows.length;
             if (len > 0) {
-              const temp = [];
+              const temp: any[] = [];
               for (let j = 0; j < len; j++) {
                 temp.push(results.rows.item(j));
               }
               resolve(temp);
+              const filteredRes = temp.filter(item => item.Cab != null);
+              if (filteredRes.length > 0) {
+                dispatch({type: 'UPDATE', payload: {Cab_Data: filteredRes}});
+              }
             } else {
               resolve([]);
             }

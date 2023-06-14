@@ -136,17 +136,21 @@ const EnterData = () => {
     }
   };
 
-  const Refresh = () => {
+  const Refresh = async () => {
     dispatch({type: 'REFRESH', payload: null});
   };
 
   useEffect(() => {
-    const call = async () => {
-      await SelectFromDataTable(dispatch);
-      await SelectFromCab(dispatch);
-      await SelectCountFromDataTable(dispatch);
+    const fetchData = async () => {
+      try {
+        await SelectFromDataTable(dispatch);
+        await SelectFromCab(dispatch);
+        await SelectCountFromDataTable(dispatch);
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
     };
-    call();
+    fetchData();
   }, [dispatch]);
 
   const onChange = (name: string, value: string | boolean) => {
@@ -368,7 +372,7 @@ const EnterData = () => {
                   },
                 });
               }}>
-              <Picker.Item label="Select" key=" " value=" " />
+              <Picker.Item label="Select" key=" " value=" " color="#fff" />
               {state.Cab_Data.map((cab: Cab, i: number) => (
                 <Picker.Item
                   label={cab.Cab}

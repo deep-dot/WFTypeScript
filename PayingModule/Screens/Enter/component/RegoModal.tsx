@@ -8,7 +8,6 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import MyButton from '../../../Components/Mybutton';
 import styles from '../EnterDataScreen.style';
 import {insertIntoCab, deleteIntoCab, SelectFromCab} from '../Actions';
 import {StateContext} from '../../../../Utilities/Context';
@@ -28,19 +27,19 @@ export const RegoModal = () => {
     }
     try {
       await action(state.Rego.toString());
-      // await SelectFromCab(state, dispatch);
+      dispatch({type: 'UPDATE', payload: {Rego_Modal: false}});
     } catch (error) {
       console.log(error);
     }
   };
   let pushcab = async () => {
     handleCabChange(insertIntoCab);
-    await SelectFromCab(dispatch);
+    //await SelectFromCab();
   };
 
   const deletecab = async () => {
     handleCabChange(deleteIntoCab);
-    await SelectFromCab(dispatch);
+    // await SelectFromCab();
   };
   return (
     <Modal

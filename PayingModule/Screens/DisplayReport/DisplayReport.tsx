@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useCallback, useContext, useEffect} from 'react';
-import {Text, View, ScrollView, Alert, SafeAreaView} from 'react-native';
+import {
+  Text,
+  View,
+  ScrollView,
+  Alert,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 import {Table, Row} from 'react-native-table-component';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './DisplayReport.style';
@@ -16,13 +23,19 @@ import {
   widthArr1,
   widthArr2,
 } from './tableHeading';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {NavigationProp} from '@react-navigation/native';
+import {StackParamList} from '../../../App';
+import {useNavigation} from '@react-navigation/core';
 
-export default function DisplayReport(_props) {
+export default function DisplayReport() {
+  const navigation =
+    useNavigation<NavigationProp<StackParamList, 'Display Report'>>();
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {state, dispatch} = stateContext;
+  const {starRating, state, dispatch} = stateContext;
 
   let Total = useCallback(async () => {
     const res = await insertIntoTotalTable();
@@ -207,6 +220,29 @@ export default function DisplayReport(_props) {
           </ScrollView>
         </View>
       </ScrollView>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          backgroundColor: '#444444',
+          paddingHorizontal: 35,
+          paddingVertical: 10,
+          borderTopColor: 'white',
+          borderTopWidth: 2,
+        }}>
+        <TouchableOpacity onPress={() => navigation.navigate('Enter Data')}>
+          <Icon name="enter-outline" size={20} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('View Records')}>
+          <Icon name="eye-outline" size={25} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            starRating(state, dispatch);
+          }}>
+          <Icon name="print-outline" size={20} color="#fff" />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
