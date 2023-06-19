@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import styles from '../EnterDataScreen.style';
-import {insertIntoCab, deleteIntoCab, SelectFromCab} from '../Actions';
+import {insertCab, deleteCab} from '../Actions';
 import {StateContext} from '../../../../Utilities/Context';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -26,20 +26,18 @@ export const RegoModal = () => {
       return;
     }
     try {
-      await action(state.Rego.toString());
+      await action(state.Rego, state.cabCount, dispatch);
       dispatch({type: 'UPDATE', payload: {Rego_Modal: false}});
     } catch (error) {
       console.log(error);
     }
   };
   let pushcab = async () => {
-    handleCabChange(insertIntoCab);
-    //await SelectFromCab();
+    handleCabChange(insertCab);
   };
 
   const deletecab = async () => {
-    handleCabChange(deleteIntoCab);
-    // await SelectFromCab();
+    handleCabChange(deleteCab);
   };
   return (
     <Modal

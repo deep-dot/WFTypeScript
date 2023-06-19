@@ -1,55 +1,26 @@
 import {useRef} from 'react';
-
-export const useLiftingRefs = () => {
-  const refs = {
-    liftingtotal: useRef(null),
-    liftingdriver: useRef(null),
-    levy: useRef(null),
-    drivercommrate: useRef(null),
-  };
-  return refs;
-};
+import {TextInput} from 'react-native';
 
 export const useInputRefs = () => {
   const refs = {
-    Hours_Worked: useRef(null),
-    Insurance: useRef(null),
-    Jobs_Done: useRef(null),
-    Levy: useRef(null),
-    Meter_Start: useRef(null),
-    Meter_Finish: useRef(null),
-    Shift_Total: useRef(null),
-    Km_Start: useRef(null),
-    Km_Finish: useRef(null),
-    Kms: useRef(null),
-    Paidkm_Start: useRef(null),
-    Paidkm_Finish: useRef(null),
-    Paid_Kms: useRef(null),
-    Unpaid_Kms: useRef(null),
-    CPK: useRef(null),
-    Number_Of_Manual_Liftings: useRef(null),
-    Total_Manual_MPTP31_And_MPTP_Values: useRef(null),
-    M3_Dockets: useRef(null),
-    Eftpos: useRef(null),
-    Eftpos_Lifting_Value: useRef(null),
-    Electronic_Account_Payments: useRef(null),
-    Misc: useRef(null),
-    Car_Wash: useRef(null),
-    Fuel: useRef(null),
-  };
-  return refs;
-};
-
-export const usePayinRefs = () => {
-  const refs = {
-    Total_Lifting_Value: useRef(null),
-    Number_Of_Chairs: useRef(null),
-    Driver_Lifting_Value: useRef(null),
-    Commission_Driver: useRef(null),
-    Deductions: useRef(null),
-    Average_Fare: useRef(null),
-    Net_Payin: useRef(null),
-    Net_Driver_Income: useRef(null),
+    Hours_Worked: useRef<TextInput>(null),
+    Insurance: useRef<TextInput>(null),
+    Jobs_Done: useRef<TextInput>(null),
+    Meter_Start: useRef<TextInput>(null),
+    Meter_Finish: useRef<TextInput>(null),
+    Km_Start: useRef<TextInput>(null),
+    Km_Finish: useRef<TextInput>(null),
+    Paidkm_Start: useRef<TextInput>(null),
+    Paidkm_Finish: useRef<TextInput>(null),
+    Number_Of_Manual_Liftings: useRef<TextInput>(null),
+    Total_Manual_MPTP31_And_MPTP_Values: useRef<TextInput>(null),
+    M3_Dockets: useRef<TextInput>(null),
+    Eftpos: useRef<TextInput>(null),
+    Eftpos_Lifting_Value: useRef<TextInput>(null),
+    Electronic_Account_Payments: useRef<TextInput>(null),
+    Misc: useRef<TextInput>(null),
+    Car_Wash: useRef<TextInput>(null),
+    Fuel: useRef<TextInput>(null),
   };
   return refs;
 };
@@ -125,6 +96,7 @@ export type FormValues = {
   Calculator_Modal_Visible: boolean;
   Indicator: boolean;
   Search_Date: string;
+  cabCount: number;
 
   //View Records
   totalrecords: string;
@@ -211,6 +183,7 @@ export const initialValues = {
   Calculator_Modal_Visible: false,
   Indicator: false,
   Search_Date: '',
+  cabCount: 50,
 
   //View Records
   totalrecords: '0',
@@ -347,63 +320,81 @@ export const DdeductionsAdditionalProperties: Property[] = [
 type InputItem = {
   title: string;
   name: Property;
+  placeholder: string;
 };
 export const liftingInputs: InputItem[] = [
   {
     title: 'Lifting Total',
     name: 'Gov_Lifting_Fee',
+    placeholder: '0.00',
   },
-  {title: 'Lifting Driver', name: 'Driver_Share_In_LiftingFee'},
-  {title: 'Levy', name: 'Gov_Levy'},
+  {
+    title: 'Lifting Driver',
+    name: 'Driver_Share_In_LiftingFee',
+    placeholder: '0.00',
+  },
+  {title: 'Levy', name: 'Gov_Levy', placeholder: '0.00'},
   {
     title: 'Driver Commission Rate %',
     name: 'Driver_Comm_Rate',
+    placeholder: '00',
   },
 ];
 
 export const inputs: InputItem[] = [
-  {title: 'Working Hours', name: 'Hours_Worked'},
-  {title: 'Insurance', name: 'Insurance'},
-  {title: 'Jobs Done', name: 'Jobs_Done'},
-  {title: 'Total Levy', name: 'Levy'},
-  {title: 'Meter Start', name: 'Meter_Start'},
-  {title: 'Meter Finish', name: 'Meter_Finish'},
-  {title: 'Total Meter', name: 'Shift_Total'},
-  {title: 'KM Start', name: 'Km_Start'},
-  {title: 'KM Finish', name: 'Km_Finish'},
-  {title: 'Total KMs', name: 'Kms'},
-  {title: 'Paid KM Start', name: 'Paidkm_Start'},
-  {title: 'Paid KM Finish', name: 'Paidkm_Finish'},
-  {title: 'Total Paid KM', name: 'Paid_Kms'},
-  {title: 'Unpaid KM', name: 'Unpaid_Kms'},
-  {title: 'CPK', name: 'CPK'},
+  {title: 'Working Hours', name: 'Hours_Worked', placeholder: '0'},
+  {title: 'Insurance', name: 'Insurance', placeholder: '0.00'},
+  {title: 'Jobs Done', name: 'Jobs_Done', placeholder: '0'},
+  {title: 'Meter Start', name: 'Meter_Start', placeholder: '0.00'},
+  {title: 'Meter Finish', name: 'Meter_Finish', placeholder: '0.00'},
+  {title: 'KM Start', name: 'Km_Start', placeholder: '0.00'},
+  {title: 'KM Finish', name: 'Km_Finish', placeholder: '0.00'},
+  {title: 'Paid KM Start', name: 'Paidkm_Start', placeholder: '0.00'},
+  {title: 'Paid KM Finish', name: 'Paidkm_Finish', placeholder: '0.00'},
   {
-    title: 'Number of MPTP31',
+    title: 'Number of Manual Liftings',
     name: 'Number_Of_Manual_Liftings',
+    placeholder: '0.00',
   },
   {
-    title: 'Total MPTP Value',
+    title: 'Total of MPTP Dockets',
     name: 'Total_Manual_MPTP31_And_MPTP_Values',
+    placeholder: '0.00',
   },
-  {title: 'M3 Dockets', name: 'M3_Dockets'},
-  {title: 'EFTPOS', name: 'Eftpos'},
-  {title: 'EFTPOS Lifting', name: 'Eftpos_Lifting_Value'},
-  {title: 'Electronic Payments', name: 'Electronic_Account_Payments'},
-  {title: 'Misc', name: 'Misc'},
-  {title: 'Car Wash', name: 'Car_Wash'},
-  {title: 'Fuel', name: 'Fuel'},
+  {title: 'M3 Dockets', name: 'M3_Dockets', placeholder: '0.00'},
+  {title: 'EFTPOS', name: 'Eftpos', placeholder: '0.00'},
+  {title: 'EFTPOS Lifting', name: 'Eftpos_Lifting_Value', placeholder: '0.00'},
+  {
+    title: 'Electronic Payments',
+    name: 'Electronic_Account_Payments',
+    placeholder: '0.00',
+  },
+  {title: 'Misc', name: 'Misc', placeholder: '0.00'},
+  {title: 'Car Wash', name: 'Car_Wash', placeholder: '0.00'},
+  {title: 'Fuel', name: 'Fuel', placeholder: '0.00'},
 ];
 
 export const payinInputs: InputItem[] = [
-  {title: 'Total Lifting', name: 'Total_Lifting_Value'},
-  {title: 'Number of Chairs', name: 'Number_Of_Chairs'},
-  {title: 'Driver Lifting Fee', name: 'Driver_Lifting_Value'},
-  {title: 'Commission Driver', name: 'Commission_Driver'},
-  {title: 'Deductions', name: 'Deductions'},
-  {title: 'Average Fare', name: 'Average_Fare'},
-  {title: 'Net Pay-In', name: 'Net_Payin'},
+  {title: 'Total Meter', name: 'Shift_Total', placeholder: '0.00'},
+  {title: 'Levy', name: 'Levy', placeholder: '0.00'},
+  {title: 'Total KMs', name: 'Kms', placeholder: '0.00'},
+  {title: 'Total Paid KM', name: 'Paid_Kms', placeholder: '0.00'},
+  {title: 'Unpaid KM', name: 'Unpaid_Kms', placeholder: '0.00'},
+  {title: 'CPK', name: 'CPK', placeholder: '0.00'},
+  {title: 'Total Lifting', name: 'Total_Lifting_Value', placeholder: '0.00'},
+  {title: 'Number of Chairs', name: 'Number_Of_Chairs', placeholder: '00'},
+  {
+    title: 'Driver Lifting Fee',
+    name: 'Driver_Lifting_Value',
+    placeholder: '0.00',
+  },
+  {title: 'Commission Driver', name: 'Commission_Driver', placeholder: '00'},
+  {title: 'Deductions', name: 'Deductions', placeholder: '0.00'},
+  {title: 'Average Fare', name: 'Average_Fare', placeholder: '0.00'},
+  {title: 'Net Pay-In', name: 'Net_Payin', placeholder: '0.00'},
   {
     title: 'Net Driver Income',
     name: 'Net_Driver_Income',
+    placeholder: '0.00',
   },
 ];

@@ -18,7 +18,7 @@ export const ViewRecordsByDate = (
           [start_date, finish_date],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rows.length > 0) {
-              let res = [];
+              let res: any[] = [];
               for (let i = 0; i < results.rows.length; i++) {
                 res.push(results.rows.item(i));
               }

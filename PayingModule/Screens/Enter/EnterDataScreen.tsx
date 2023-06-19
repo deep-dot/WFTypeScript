@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useContext, RefObject} from 'react';
+import React, {useEffect, useContext} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -16,20 +16,12 @@ import {Calculator} from './component/Calculator';
 import {Calendar} from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
-import {
-  SelectFromCab,
-  SelectCountFromDataTable,
-  InsertData,
-  UpdateDataInTable,
-  SelectFromDataTable,
-} from './Actions';
+import {SelectCab, Insert, Update, Select} from './Actions';
 import {StateContext} from '../../../Utilities/Context';
 import {
   DdeductionsProperties,
   DdeductionsAdditionalProperties,
   useInputRefs,
-  useLiftingRefs,
-  usePayinRefs,
   inputs,
   liftingInputs,
   payinInputs,
@@ -51,10 +43,7 @@ const EnterData = () => {
     throw new Error('Component must be used within a StateProvider');
   }
   const {state, dispatch} = stateContext;
-  const inputRefs: {[key: string]: React.RefObject<TextInput>} = useInputRefs();
-  const liftingRefs: {[key: string]: React.RefObject<TextInput>} =
-    useLiftingRefs();
-  const payinRefs: {[key: string]: React.RefObject<TextInput>} = usePayinRefs();
+  const inputRefs = useInputRefs();
 
   let Save = () => {
     let Cdeductions = DdeductionsProperties.reduce(
@@ -130,9 +119,9 @@ const EnterData = () => {
 
   const executeSqlQuery = async () => {
     if (state.Search_Date !== undefined && state.Search_Date !== '') {
-      await UpdateDataInTable(state, dispatch);
+      await Update(state, dispatch);
     } else {
-      await InsertData(state, dispatch);
+      await Insert(state, dispatch);
     }
   };
 
@@ -141,31 +130,27 @@ const EnterData = () => {
   };
 
   useEffect(() => {
+    // console.log('state.cabcount==', state.cabCount);
     const fetchData = async () => {
       try {
-        await SelectFromDataTable(dispatch);
-        await SelectFromCab(dispatch);
-        await SelectCountFromDataTable(dispatch);
+        await SelectCab(dispatch);
+        await Select(dispatch);
       } catch (error) {
         console.error('An error occurred:', error);
       }
     };
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, state.cabCount]);
 
   const onChange = (name: string, value: string | boolean) => {
     //console.log('onchange in enter data ==', name, 'and', value);
     dispatch({type: 'UPDATE', payload: {[name]: value}});
   };
 
-  const SubmitEditing = (
-    name: string,
-    value: string,
-    nextInputRef: React.RefObject<TextInput>,
-  ) => {
+  const SubmitEditing = (name: string, value: string) => {
     if (!isNaN(Number(value))) {
       let updatedValues = {...state, [name]: value};
-      // console.log(`name ${name} and value ${value}`);
+      console.log(`name ${name} and value ${value}`);
       if (name === 'Jobs_Done') {
         const val1 = Number(updatedValues.Jobs_Done || 0);
         const val2 = Number(updatedValues.Gov_Levy || 0);
@@ -225,7 +210,6 @@ const EnterData = () => {
         ).toFixed(2);
       }
       dispatch({type: 'UPDATE', payload: updatedValues});
-      nextInputRef.current?.focus();
     } else {
       Alert.alert('Please input a correct number');
       let updatedValues = {...state, [name]: ''};
@@ -255,7 +239,7 @@ const EnterData = () => {
             Total Entries: {state.Number_Of_Entries}
           </Text>
         </View>
-        {liftingInputs.map((input, index) => (
+        {liftingInputs.map(input => (
           <View key={input.name} style={styles.textinputview}>
             <Text style={[styles.titleText, {color: '#55a8fa'}]}>
               {input.title}
@@ -266,40 +250,19 @@ const EnterData = () => {
               style={[styles.textInput, {color: '#55a8fa'}]}
               returnKeyType="next"
               keyboardType="numeric"
-              // onChangeText={(value: string) => onChange(input.name, value)}
               value={state[input.name]}
-              ref={(ref: RefObject<TextInput>) => {
-                if (ref) {
-                  liftingRefs[input.name] = ref;
-                }
-              }}
-              onSubmitEditing={
-                input.name
-                  ? () =>
-                      SubmitEditing(
-                        input.name,
-                        state[input.name].toString(),
-                        liftingRefs[inputs[index + 1]?.name],
-                      )
-                  : () => {}
-              }
             />
           </View>
         ))}
         <TouchableOpacity
           style={styles.button}
-          onPress={
-            () =>
-              dispatch({
-                type: 'UPDATE',
-                payload: {
-                  Lifting_Modal_Visible: !state.Lifting_Modal_Visible,
-                },
-              })
-            // setstate(prevValue => ({
-            //   ...prevValue,
-            //   Lifting_Modal_Visible: !prevValue.Lifting_Modal_Visible,
-            // }))
+          onPress={() =>
+            dispatch({
+              type: 'UPDATE',
+              payload: {
+                Lifting_Modal_Visible: !state.Lifting_Modal_Visible,
+              },
+            })
           }>
           <Text style={styles.buttontext}>Update above Items if needed</Text>
         </TouchableOpacity>
@@ -424,28 +387,24 @@ const EnterData = () => {
                 {input.title}
               </Text>
               <TextInput
-                placeholder="0.00"
+                placeholder={input.placeholder}
                 placeholderTextColor="#fff"
                 style={[styles.textInput, {color: '#fff'}]}
                 returnKeyType="next"
                 // keyboardType="numeric"
                 onChangeText={(value: string) => onChange(input.name, value)}
                 value={String(state[input.name])}
-                ref={(ref: RefObject<TextInput>) => {
-                  if (ref) {
-                    inputRefs[input.name] = ref;
+                ref={inputRefs[input.name]}
+                onSubmitEditing={() => {
+                  if (input.name) {
+                    SubmitEditing(input.name, state[input.name].toString());
+                    if (index < inputs.length - 1) {
+                      // Check if it's not the last input
+                      const nextInputRef = inputRefs[inputs[index + 1].name];
+                      nextInputRef.current?.focus();
+                    }
                   }
                 }}
-                onSubmitEditing={
-                  input.name
-                    ? () =>
-                        SubmitEditing(
-                          input.name,
-                          state[input.name].toString(),
-                          inputRefs[inputs[index + 1]?.name],
-                        )
-                    : () => {}
-                }
               />
             </View>
           ))}
@@ -515,34 +474,18 @@ const EnterData = () => {
             }}>
             Payin Details
           </Text>
-          {payinInputs.map((input, index) => (
+          {payinInputs.map(input => (
             <View key={input.name} style={styles.textinputview}>
               <Text style={[styles.titleText, {color: '#55a8fa'}]}>
                 {input.title}
               </Text>
               <TextInput
-                placeholder="0.0"
+                placeholder={input.placeholder}
                 placeholderTextColor="#55a8fa"
                 style={[styles.textInput, {color: '#55a8fa'}]}
                 returnKeyType="next"
                 keyboardType="numeric"
-                // onChangeText={(value: string) => onChange(input.name, value)}
                 value={state[input.name]}
-                ref={(ref: RefObject<TextInput>) => {
-                  if (ref) {
-                    inputRefs[input.name] = ref;
-                  }
-                }}
-                onSubmitEditing={
-                  input.name
-                    ? () =>
-                        SubmitEditing(
-                          input.name,
-                          state[input.name].toString(),
-                          payinRefs[inputs[index + 1]?.name],
-                        )
-                    : () => {}
-                }
               />
             </View>
           ))}

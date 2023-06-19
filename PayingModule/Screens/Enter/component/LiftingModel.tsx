@@ -11,8 +11,7 @@ import {
   Modal,
   TouchableOpacity,
 } from 'react-native';
-import Mybutton from '../../../Components/Mybutton';
-import {UpdateDataInTable} from '../Actions';
+import {Update} from '../Actions';
 import {StateContext} from '../../../../Utilities/Context';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -29,7 +28,7 @@ export const LiftingModel = () => {
         type: 'UPDATE',
         payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
       });
-      UpdateDataInTable(state, dispatch);
+      Update(state, dispatch);
     } catch (error) {
       console.error(error);
     }

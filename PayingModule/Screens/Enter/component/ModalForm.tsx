@@ -12,16 +12,10 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {Calendar} from '../../../Components/Calendar';
 import styles from '../EnterDataScreen.style';
 import {StateContext} from '../../../../Utilities/Context';
-import {InsertData} from '../Actions';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {StackParamList} from '../../../../App';
+import {Insert} from '../Actions';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-interface Props {
-  navigation: StackNavigationProp<StackParamList>;
-}
-
-const ModalForm = ({navigation}: Props) => {
+const ModalForm = () => {
   const stateContext = React.useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
@@ -29,7 +23,7 @@ const ModalForm = ({navigation}: Props) => {
   const {state, dispatch} = stateContext;
 
   let register = () => {
-    InsertData(state, dispatch);
+    Insert(state, dispatch);
   };
 
   const inCloud = () => {};
@@ -59,7 +53,7 @@ const ModalForm = ({navigation}: Props) => {
             placeholder="Enter Your Name"
             placeholderTextColor="#000"
             style={{
-              color: '#fff',
+              color: '#000',
               marginTop: 20,
               fontSize: 15,
               alignSelf: 'center',

@@ -5,7 +5,7 @@ import db from '../../Database/databaseService';
 import {Action} from '../../../Utilities/Actions';
 import {FormValues} from '../../Components/EnterDataValues';
 
-export const SelectFromDataTable = (
+export const Select = (
   dispatch: React.Dispatch<Action>,
 ): Promise<FormValues[]> => {
   return new Promise((resolve, reject) => {
@@ -16,12 +16,12 @@ export const SelectFromDataTable = (
           [],
           (_tx: Transaction, results: ResultSet) => {
             var len = results.rows.length;
-            console.log(
-              'from datatable in Home actions===',
-              results.rows.item(len - 1).Name,
-              results.rows.item(len - 1).Week_Ending_Date,
-              results.rows.item(len - 1),
-            );
+            // console.log(
+            //   'from datatable in Home actions===',
+            //   results.rows.item(len - 1).Name,
+            //   results.rows.item(len - 1).Week_Ending_Date,
+            //   results.rows.item(len - 1),
+            // );
             dispatch({
               type: 'UPDATE',
               payload: {
@@ -44,179 +44,7 @@ export const SelectFromDataTable = (
   });
 };
 
-export function insertIntoCab(rego: string): Promise<ResultSet> {
-  //console.log('formValues.rego==', rego);
-  return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'INSERT INTO datatable (Cab) VALUES (?)',
-          [rego],
-          (_tx: Transaction, results: ResultSet) => {
-            if (results.rowsAffected > 0) {
-              resolve(results);
-              Alert.alert('Added successfully');
-            } else {
-              reject(new Error('Insert operation failed'));
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
-      });
-    } else {
-      reject(new Error('db is undefined'));
-    }
-  });
-}
-
-export function deleteIntoCab(rego: string): Promise<ResultSet> {
-  //console.log('formValues.rego==', rego);
-  return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'DELETE FROM datatable where Cab = ?',
-          [rego],
-          (_tx: Transaction, results: ResultSet) => {
-            if (results.rowsAffected > 0) {
-              resolve(results);
-              Alert.alert('Deleted successfully');
-            } else {
-              reject(new Error('Delete operation failed'));
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
-      });
-    } else {
-      reject(new Error('db is undefined'));
-    }
-  });
-}
-
-export const SelectFromCab = (dispatch: React.Dispatch<Action>) => {
-  return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'SELECT Cab FROM datatable',
-          [],
-          (_tx: Transaction, results: ResultSet) => {
-            var len = results.rows.length;
-            if (len > 0) {
-              const temp: any[] = [];
-              for (let j = 0; j < len; j++) {
-                temp.push(results.rows.item(j));
-              }
-              resolve(temp);
-              const filteredRes = temp.filter(item => item.Cab != null);
-              if (filteredRes.length > 0) {
-                dispatch({type: 'UPDATE', payload: {Cab_Data: filteredRes}});
-              }
-            } else {
-              resolve([]);
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
-      });
-    } else {
-      reject(new Error('db is undefined'));
-    }
-  });
-};
-
-interface liftingModalItems {
-  Gov_Lifting_Fee: string;
-  Driver_Share_In_LiftingFee: string;
-  Gov_Levy: string;
-  Driver_Comm_Rate: string;
-  Company_Comm_Rate: string;
-}
-export const SelectFromUpdateItems = (
-  dispatch: React.Dispatch<Action>,
-): Promise<liftingModalItems> => {
-  return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          // 'SELECT GovLFee, DriverLFee, Levy, Driver_Comm_Rate FROM UpdateItems',
-          'SELECT Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate FROM datatable',
-          [],
-          (_tx: Transaction, results: ResultSet) => {
-            var len = results.rows.length;
-            if (len > 0) {
-              let res = results.rows.item(0);
-              dispatch({type: 'UPDATE', payload: res});
-              resolve(res);
-            } else {
-              resolve({
-                Gov_Lifting_Fee: '',
-                Driver_Share_In_LiftingFee: '',
-                Gov_Levy: '',
-                Driver_Comm_Rate: '',
-                Company_Comm_Rate: '',
-              });
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
-      });
-    } else {
-      reject(new Error('db is undefined'));
-    }
-  });
-};
-
-export const SelectCountFromDataTable = (
-  dispatch: React.Dispatch<Action>,
-): Promise<FormValues[]> => {
-  return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'SELECT * from datatable',
-          [],
-          (_tx: Transaction, results: ResultSet) => {
-            var Number_Of_Entries = results.rows.length;
-            if (Number_Of_Entries > 0) {
-              const temp = [];
-              for (let j = 0; j < Number_Of_Entries; j++) {
-                temp.push(results.rows.item(j));
-              }
-              //resolve({len, temp});
-              resolve(temp);
-              dispatch({type: 'UPDATE', payload: Number_Of_Entries});
-            } else {
-              Alert.alert('Data does not exist');
-            }
-          },
-          (_t, error) => {
-            console.log(error);
-            reject(error);
-            return true;
-          },
-        );
-      });
-    } else {
-      console.log('db is undefined');
-      reject('db is undefined');
-    }
-  });
-};
-
-export const InsertData = (
-  state: FormValues,
-  dispatch: React.Dispatch<Action>,
-) => {
+export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
   let Company_Comm_Rate = (100 - Number(state.Driver_Comm_Rate)).toFixed(0);
   return new Promise((resolve, reject) => {
     if (db) {
@@ -310,7 +138,7 @@ export const InsertData = (
   });
 };
 
-export function UpdateDataInTable(
+export function Update(
   state: FormValues,
   dispatch: React.Dispatch<Action>,
 ): Promise<ResultSet> {
@@ -405,60 +233,31 @@ export function UpdateDataInTable(
   });
 }
 
-export const InsertLiftingModalItems = (state: FormValues) => {
-  let Company_Comm_Rate = (100 - Number(state.Driver_Comm_Rate)).toFixed(0);
-  return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'INSERT INTO datatable (Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate) VALUES(?,?,?,?,?)',
-          [
-            state.Gov_Lifting_Fee,
-            state.Driver_Share_In_LiftingFee,
-            state.Gov_Levy,
-            state.Driver_Comm_Rate,
-            Company_Comm_Rate,
-          ],
-          (transaction: Transaction, result: ResultSet) => {
-            if (result.rowsAffected > 0) {
-              console.log('insertLiftingModalItems ===', result.rows.item(0));
-              resolve('Inserted');
-            } else {
-              reject(new Error('Insert operation failed'));
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
-      });
-    } else {
-      console.log('db is undefined');
-    }
-  });
-};
+// Cab
 
-//lifting modal
-export function UpdateLiftingModalItems(state: FormValues): Promise<ResultSet> {
+export function insertCab(
+  rego: string,
+  cabCount: number,
+  dispatch: React.Dispatch<Action>,
+): Promise<ResultSet> {
+  console.log('formValues.rego==', cabCount);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          `UPDATE datatable 
-           SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ?`,
-          [
-            state.Gov_Lifting_Fee,
-            state.Driver_Share_In_LiftingFee,
-            state.Gov_Levy,
-            state.Driver_Comm_Rate,
-            100 - Number(state.Driver_Comm_Rate),
-          ],
-          (_tx: Transaction, results: ResultSet) => {
+          'INSERT INTO cab (Cab) VALUES (?)',
+          [rego],
+          async (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
               resolve(results);
-              Alert.alert('Update operation successful');
+              Alert.alert('Added successfully');
+              dispatch({
+                type: 'UPDATE',
+                payload: {cabCount: cabCount + 1},
+              });
+              await SelectCab(dispatch);
             } else {
-              reject(new Error('Update operation failed'));
+              reject(new Error('Insert operation failed'));
             }
           },
           (error: any) => {
@@ -471,3 +270,74 @@ export function UpdateLiftingModalItems(state: FormValues): Promise<ResultSet> {
     }
   });
 }
+
+export function deleteCab(
+  rego: string,
+  cabCount: number,
+  dispatch: React.Dispatch<Action>,
+): Promise<ResultSet> {
+  console.log('deleteCab==', cabCount);
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'DELETE FROM cab where Cab = ?',
+          [rego],
+          async (_tx: Transaction, results: ResultSet) => {
+            if (results.rowsAffected > 0) {
+              resolve(results);
+              Alert.alert('Deleted successfully');
+              dispatch({
+                type: 'UPDATE',
+                payload: cabCount,
+              });
+              await SelectCab(dispatch);
+            } else {
+              reject(new Error('Delete operation failed'));
+            }
+          },
+          (error: any) => {
+            reject(error);
+          },
+        );
+      });
+    } else {
+      reject(new Error('db is undefined'));
+    }
+  });
+}
+
+export const SelectCab = (dispatch: React.Dispatch<Action>) => {
+  return new Promise((resolve, reject) => {
+    if (db) {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
+          'SELECT Cab FROM cab',
+          [],
+          (_tx: Transaction, results: ResultSet) => {
+            var len = results.rows.length;
+            if (len > 0) {
+              const temp: any[] = [];
+              for (let j = 0; j < len; j++) {
+                temp.push(results.rows.item(j));
+              }
+              //console.log('temp', temp);
+              resolve(temp);
+              const filteredRes = temp.filter(item => item.Cab != null);
+              if (filteredRes.length > 0) {
+                dispatch({type: 'UPDATE', payload: {Cab_Data: filteredRes}});
+              }
+            } else {
+              resolve([]);
+            }
+          },
+          (error: any) => {
+            reject(error);
+          },
+        );
+      });
+    } else {
+      reject(new Error('db is undefined'));
+    }
+  });
+};

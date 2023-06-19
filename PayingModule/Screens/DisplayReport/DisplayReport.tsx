@@ -14,7 +14,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './DisplayReport.style';
 import {ViewRecordsByDate} from '../ViewRecords/Actions';
 import {StateContext} from '../../../Utilities/Context';
-import {insertIntoTotalTable} from './Actions';
+import {totalTable} from './Actions';
 import {
   tableHead,
   tableHead1,
@@ -37,17 +37,6 @@ export default function DisplayReport() {
   }
   const {starRating, state, dispatch} = stateContext;
 
-  let Total = useCallback(async () => {
-    const res = await insertIntoTotalTable();
-    // console.log('results in display report===', res);
-    dispatch({
-      type: 'UPDATE',
-      payload: {
-        total: res,
-      },
-    });
-  }, [dispatch]);
-
   useEffect(() => {
     let Report = async () => {
       if (!state.start_date || !state.finish_date) {
@@ -61,11 +50,11 @@ export default function DisplayReport() {
           type: 'UPDATE',
           payload: {table: results, nametable: results},
         });
-        Total();
+        await totalTable(dispatch);
       }
     };
     Report();
-  }, [Total, dispatch, state.finish_date, state.start_date]);
+  }, [dispatch, state.finish_date, state.start_date]);
 
   state.tableData = state.table.map(record => [
     record.Date,
