@@ -150,63 +150,66 @@ const EnterData = () => {
   const SubmitEditing = (name: string, value: string) => {
     if (!isNaN(Number(value))) {
       let updatedValues = {...state, [name]: value};
-      console.log(`name ${name} and value ${value}`);
+      // console.log(`name ${name} and value ${value}`);
+      let Gov_Lifting_Fee = Number(updatedValues.Gov_Lifting_Fee) || 0;
+      let Driver_Share_In_LiftingFee =
+        Number(updatedValues.Driver_Share_In_LiftingFee) || 0;
+      let Number_Of_Chairs = Number(updatedValues.Number_Of_Chairs) || 0;
+      let Jobs_Done = Number(updatedValues.Jobs_Done) || 0;
+      let Gov_Levy = Number(updatedValues.Gov_Levy) || 0;
+      let Meter_Start = Number(updatedValues.Meter_Start) || 0;
+      let Meter_Finish = Number(updatedValues.Meter_Finish) || 0;
+      let Driver_Comm_Rate = Number(updatedValues.Driver_Comm_Rate) || 0;
+      let Hours_Worked = Number(updatedValues.Hours_Worked) || 0;
+      let Km_Start = Number(updatedValues.Km_Start) || 0;
+      let Km_Finish = Number(updatedValues.Km_Finish) || 0;
+      let Paidkm_Start = Number(updatedValues.Paidkm_Start) || 0;
+      let Paidkm_Finish = Number(updatedValues.Paidkm_Finish) || 0;
+      let Number_Of_Manual_Liftings =
+        Number(updatedValues.Number_Of_Manual_Liftings) || 0;
+      let Eftpos_Lifting_Value =
+        Number(updatedValues.Eftpos_Lifting_Value) || 0;
+      // let Driver_Lifting_Value =
+      //   Number(updatedValues.Driver_Lifting_Value) || 0;
       if (name === 'Jobs_Done') {
-        const val1 = Number(updatedValues.Jobs_Done || 0);
-        const val2 = Number(updatedValues.Gov_Levy || 0);
-        updatedValues.Levy = (val1 * val2).toFixed(2);
+        updatedValues.Levy = (Jobs_Done * Gov_Levy).toFixed(2);
       }
       if (name === 'Meter_Finish') {
-        const val1 = Number(updatedValues.Meter_Start || 0);
-        const val2 = Number(updatedValues.Meter_Finish || 0);
-        const val3 = Number(updatedValues.Levy || 0);
-        const val4 = Number(updatedValues.Driver_Comm_Rate || 0);
-        const val6 = Number(updatedValues.Hours_Worked || 0);
-        const val7 = Number(updatedValues.Driver_Lifting_Value || 0);
-        updatedValues.Shift_Total = (val2 - val1 - val3).toFixed(2);
+        updatedValues.Shift_Total = (
+          Meter_Finish -
+          Meter_Start -
+          Number(updatedValues.Levy)
+        ).toFixed(2);
         updatedValues.Commission_Driver = (
-          Number(updatedValues.Shift_Total) *
-          (val4 / 100)
+          (Number(updatedValues.Shift_Total) * Driver_Comm_Rate) /
+          100
         ).toFixed(2);
         updatedValues.Average_Fare = (
-          Number(updatedValues.Shift_Total) / val6
-        ).toFixed(2);
-        updatedValues.Net_Driver_Income = (
-          val7 + Number(updatedValues.Commission_Driver)
+          Number(updatedValues.Shift_Total) / Hours_Worked
         ).toFixed(2);
       }
       if (name === 'Km_Finish') {
-        const val1 = Number(updatedValues.Km_Start || 0);
-        const val2 = Number(updatedValues.Km_Finish || 0);
-        updatedValues.Kms = (val2 - val1).toFixed(2);
+        updatedValues.Kms = (Km_Finish - Km_Start).toFixed(2);
         updatedValues.CPK = (
           Number(updatedValues.Shift_Total) / Number(updatedValues.Kms)
         ).toFixed(2);
       }
       if (name === 'Paidkm_Finish') {
-        const val1 = Number(updatedValues.Paidkm_Start || 0);
-        const val2 = Number(updatedValues.Paidkm_Finish || 0);
-        updatedValues.Paid_Kms = (val2 - val1).toFixed(2);
+        updatedValues.Paid_Kms = (Paidkm_Finish - Paidkm_Start).toFixed(2);
         updatedValues.Unpaid_Kms = (
           Number(updatedValues.Kms) - Number(updatedValues.Paid_Kms)
         ).toFixed(2);
       }
-      if (name === 'Number_Of_Manual_Liftings') {
-        const val1 = Number(updatedValues.Number_Of_Manual_Liftings || 0);
-        const val2 = Number(updatedValues.Total_Lifting_Value || 0);
-        updatedValues.Manual_Lifting_Value = (val2 * val1).toFixed(2);
-      }
       if (name === 'Eftpos_Lifting_Value') {
-        const val1 = Number(updatedValues.Number_Of_Manual_Liftings || 0);
-        const val2 = Number(updatedValues.Total_Lifting_Value || 0);
-        const val3 = Number(updatedValues.Eftpos_Lifting_Value || 0);
-        const val5 = Number(updatedValues.Driver_Lifting_Value || 0);
-        updatedValues.Total_Lifting_Value = (val2 * val1 + val3).toFixed(2);
-        updatedValues.Number_Of_Manual_Liftings = (val1 + val3 / val2).toFixed(
-          2,
-        );
+        updatedValues.Total_Lifting_Value = (
+          Gov_Lifting_Fee * Number_Of_Manual_Liftings +
+          Eftpos_Lifting_Value
+        ).toFixed(2);
+        updatedValues.Number_Of_Chairs = (
+          Number(updatedValues.Total_Lifting_Value) / Gov_Lifting_Fee
+        ).toFixed(0);
         updatedValues.Driver_Lifting_Value = (
-          Number(updatedValues.Number_Of_Manual_Liftings) * val5
+          Number(updatedValues.Number_Of_Chairs) * Driver_Share_In_LiftingFee
         ).toFixed(2);
       }
       dispatch({type: 'UPDATE', payload: updatedValues});

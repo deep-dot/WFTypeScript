@@ -45,16 +45,16 @@ export type FormValues = {
   Week_Ending_Day: string;
 
   //Lifting Modal
+  Lifting_Modal_Visible: boolean;
   Gov_Lifting_Fee: string;
   Driver_Share_In_LiftingFee: string;
   Gov_Levy: string;
   Driver_Comm_Rate: string;
   Company_Comm_Rate: string;
 
-  Cab_Data: Cab[];
-  Lifting_Modal_Visible: boolean;
   Shift: string;
   Taxi: string;
+  Cab_Data: Cab[];
   Rego: string;
   Rego_Modal: boolean;
   Current_Date: string;
@@ -63,20 +63,13 @@ export type FormValues = {
   Hours_Worked: string;
   Insurance: string;
   Jobs_Done: string;
-  Levy: string;
   Meter_Start: string;
   Meter_Finish: string;
-  Shift_Total: string;
   Km_Start: string;
   Km_Finish: string;
-  Kms: string;
   Paidkm_Start: string;
   Paidkm_Finish: string;
-  Paid_Kms: string;
-  Unpaid_Kms: string;
-  CPK: string;
   Number_Of_Manual_Liftings: string;
-  Manual_Lifting_Value: string;
   Total_Manual_MPTP31_And_MPTP_Values: string;
   M3_Dockets: string;
   Eftpos: string;
@@ -85,6 +78,13 @@ export type FormValues = {
   Misc: string;
   Car_Wash: string;
   Fuel: string;
+
+  Shift_Total: string;
+  Levy: string;
+  Kms: string;
+  Paid_Kms: string;
+  Unpaid_Kms: string;
+  CPK: string;
   Total_Lifting_Value: string;
   Number_Of_Chairs: string;
   Driver_Lifting_Value: string;
@@ -354,7 +354,7 @@ export const inputs: InputItem[] = [
   {
     title: 'Number of Manual Liftings',
     name: 'Number_Of_Manual_Liftings',
-    placeholder: '0.00',
+    placeholder: '00',
   },
   {
     title: 'Total of MPTP Dockets',
@@ -381,8 +381,11 @@ export const payinInputs: InputItem[] = [
   {title: 'Total Paid KM', name: 'Paid_Kms', placeholder: '0.00'},
   {title: 'Unpaid KM', name: 'Unpaid_Kms', placeholder: '0.00'},
   {title: 'CPK', name: 'CPK', placeholder: '0.00'},
-  {title: 'Total Lifting', name: 'Total_Lifting_Value', placeholder: '0.00'},
-  {title: 'Number of Chairs', name: 'Number_Of_Chairs', placeholder: '00'},
+  {
+    title: 'Total Number of Liftings',
+    name: 'Number_Of_Chairs',
+    placeholder: '00',
+  },
   {
     title: 'Driver Lifting Fee',
     name: 'Driver_Lifting_Value',
