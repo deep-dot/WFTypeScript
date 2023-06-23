@@ -72,7 +72,7 @@ export const Calculator = () => {
     }
   };
 
-  let rows = [];
+  let rows: JSX.Element[] = [];
   let nums = [
     [1, 2, 3],
     [4, 5, 6],
@@ -81,7 +81,8 @@ export const Calculator = () => {
   ];
 
   for (let i = 0; i < 4; i++) {
-    let row = [];
+    let row: JSX.Element[] = [];
+
     for (let j = 0; j < 3; j++) {
       row.push(
         <TouchableOpacity
@@ -99,7 +100,7 @@ export const Calculator = () => {
     );
   }
 
-  let ops = [];
+  let ops: JSX.Element[] = [];
   for (let i = 0; i < 5; i++) {
     ops.push(
       <TouchableOpacity

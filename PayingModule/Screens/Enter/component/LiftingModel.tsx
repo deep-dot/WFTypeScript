@@ -56,9 +56,16 @@ export const LiftingModel = () => {
                 placeholderTextColor="#000"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={state.Gov_Lifting_Fee}
+                value={
+                  state.Gov_Lifting_Fee === 0
+                    ? ''
+                    : String(state.Gov_Lifting_Fee)
+                }
                 onChangeText={(value: string) => {
-                  dispatch({type: 'UPDATE', payload: {Gov_Lifting_Fee: value}});
+                  dispatch({
+                    type: 'UPDATE',
+                    payload: {Gov_Lifting_Fee: value},
+                  });
                 }}
                 onSubmitEditing={() => {}}
               />
@@ -71,7 +78,11 @@ export const LiftingModel = () => {
                 placeholderTextColor="#000"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={state.Driver_Share_In_LiftingFee}
+                value={
+                  state.Driver_Share_In_LiftingFee === 0
+                    ? ''
+                    : String(state.Driver_Share_In_LiftingFee)
+                }
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',
@@ -89,7 +100,7 @@ export const LiftingModel = () => {
                 placeholderTextColor="#000"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={state.Gov_Levy}
+                value={state.Gov_Levy === 0 ? '' : String(state.Gov_Levy)}
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',
@@ -109,7 +120,11 @@ export const LiftingModel = () => {
                 placeholderTextColor="#000"
                 style={styles.textInput}
                 keyboardType="numeric"
-                value={state.Driver_Comm_Rate}
+                value={
+                  state.Driver_Comm_Rate === 0
+                    ? ''
+                    : String(state.Driver_Comm_Rate)
+                }
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',

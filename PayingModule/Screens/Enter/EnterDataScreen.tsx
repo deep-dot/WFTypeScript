@@ -47,21 +47,17 @@ const EnterData = () => {
 
   let Save = () => {
     let Cdeductions = DdeductionsProperties.reduce(
-      (acc, curr) => acc + Number(state[curr]),
+      (acc, curr) => acc + state[curr],
       0,
     );
     let Ddeductions = [
       ...DdeductionsProperties,
       ...DdeductionsAdditionalProperties,
-    ].reduce((acc, curr) => acc + Number(state[curr]), 0);
+    ].reduce((acc, curr) => acc + state[curr], 0);
 
-    let Cnetpayin = Number(state.Commission_Driver) - Cdeductions;
-    let Dnetpayin = Number(state.Commission_Driver) - Ddeductions;
-    if (
-      DdeductionsAdditionalProperties.some(
-        property => Number(state[property]) > 0,
-      )
-    ) {
+    let Cnetpayin = state.Commission_Driver - Cdeductions;
+    let Dnetpayin = state.Commission_Driver - Ddeductions;
+    if (DdeductionsAdditionalProperties.some(property => state[property] > 0)) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
         '',
@@ -92,8 +88,8 @@ const EnterData = () => {
 
   const handleDeduction = (deductions: number, netpayin: number) => {
     let result = {
-      Deductions: deductions.toFixed(2),
-      Net_Paying: netpayin.toFixed(2),
+      Deductions: deductions,
+      Net_Paying: netpayin,
     };
     dispatch({type: 'UPDATE', payload: result});
     alertConfirm('Wish to Save?', () => executeSqlQuery());
@@ -142,75 +138,57 @@ const EnterData = () => {
     fetchData();
   }, [dispatch, state.cabCount]);
 
-  const onChange = (name: string, value: string | boolean) => {
+  const onChange = (name: string, value: number | boolean) => {
     //console.log('onchange in enter data ==', name, 'and', value);
     dispatch({type: 'UPDATE', payload: {[name]: value}});
   };
 
-  const SubmitEditing = (name: string, value: string) => {
-    if (!isNaN(Number(value))) {
+  const SubmitEditing = (name: string, value: number) => {
+    if (!isNaN(value)) {
       let updatedValues = {...state, [name]: value};
       // console.log(`name ${name} and value ${value}`);
-      let Gov_Lifting_Fee = Number(updatedValues.Gov_Lifting_Fee) || 0;
+      let Gov_Lifting_Fee = updatedValues.Gov_Lifting_Fee || 0;
       let Driver_Share_In_LiftingFee =
-        Number(updatedValues.Driver_Share_In_LiftingFee) || 0;
-      let Number_Of_Chairs = Number(updatedValues.Number_Of_Chairs) || 0;
-      let Jobs_Done = Number(updatedValues.Jobs_Done) || 0;
-      let Gov_Levy = Number(updatedValues.Gov_Levy) || 0;
-      let Meter_Start = Number(updatedValues.Meter_Start) || 0;
-      let Meter_Finish = Number(updatedValues.Meter_Finish) || 0;
-      let Driver_Comm_Rate = Number(updatedValues.Driver_Comm_Rate) || 0;
-      let Hours_Worked = Number(updatedValues.Hours_Worked) || 0;
-      let Km_Start = Number(updatedValues.Km_Start) || 0;
-      let Km_Finish = Number(updatedValues.Km_Finish) || 0;
-      let Paidkm_Start = Number(updatedValues.Paidkm_Start) || 0;
-      let Paidkm_Finish = Number(updatedValues.Paidkm_Finish) || 0;
+        updatedValues.Driver_Share_In_LiftingFee || 0;
+      let Number_Of_Chairs = updatedValues.Number_Of_Chairs || 0;
+      let Jobs_Done = updatedValues.Jobs_Done || 0;
+      let Gov_Levy = updatedValues.Gov_Levy || 0;
+      let Meter_Start = updatedValues.Meter_Start || 0;
+      let Meter_Finish = updatedValues.Meter_Finish || 0;
+      let Driver_Comm_Rate = updatedValues.Driver_Comm_Rate || 0;
+      let Hours_Worked = updatedValues.Hours_Worked || 0;
+      let Km_Start = updatedValues.Km_Start || 0;
+      let Km_Finish = updatedValues.Km_Finish || 0;
+      let Paidkm_Start = updatedValues.Paidkm_Start || 0;
+      let Paidkm_Finish = updatedValues.Paidkm_Finish || 0;
       let Number_Of_Manual_Liftings =
-        Number(updatedValues.Number_Of_Manual_Liftings) || 0;
-      let Eftpos_Lifting_Value =
-        Number(updatedValues.Eftpos_Lifting_Value) || 0;
+        updatedValues.Number_Of_Manual_Liftings || 0;
+      let Eftpos_Liftings = updatedValues.Eftpos_Liftings || 0;
       // let Driver_Lifting_Value =
       //   Number(updatedValues.Driver_Lifting_Value) || 0;
       if (name === 'Jobs_Done') {
-        updatedValues.Levy = (Jobs_Done * Gov_Levy).toFixed(2);
+        updatedValues.Levy = Jobs_Done * Gov_Levy;
       }
       if (name === 'Meter_Finish') {
-        updatedValues.Shift_Total = (
-          Meter_Finish -
-          Meter_Start -
-          Number(updatedValues.Levy)
-        ).toFixed(2);
-        updatedValues.Commission_Driver = (
-          (Number(updatedValues.Shift_Total) * Driver_Comm_Rate) /
-          100
-        ).toFixed(2);
-        updatedValues.Average_Fare = (
-          Number(updatedValues.Shift_Total) / Hours_Worked
-        ).toFixed(2);
+        updatedValues.Shift_Total =
+          Meter_Finish - Meter_Start - updatedValues.Levy;
+        updatedValues.Commission_Driver =
+          (updatedValues.Shift_Total * Driver_Comm_Rate) / 100;
       }
       if (name === 'Km_Finish') {
-        updatedValues.Kms = (Km_Finish - Km_Start).toFixed(2);
-        updatedValues.CPK = (
-          Number(updatedValues.Shift_Total) / Number(updatedValues.Kms)
-        ).toFixed(2);
+        updatedValues.Kms = Km_Finish - Km_Start;
+        updatedValues.CPK = updatedValues.Shift_Total / updatedValues.Kms;
       }
       if (name === 'Paidkm_Finish') {
-        updatedValues.Paid_Kms = (Paidkm_Finish - Paidkm_Start).toFixed(2);
-        updatedValues.Unpaid_Kms = (
-          Number(updatedValues.Kms) - Number(updatedValues.Paid_Kms)
-        ).toFixed(2);
+        updatedValues.Paid_Kms = Paidkm_Finish - Paidkm_Start;
+        updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
       }
-      if (name === 'Eftpos_Lifting_Value') {
-        updatedValues.Total_Lifting_Value = (
-          Gov_Lifting_Fee * Number_Of_Manual_Liftings +
-          Eftpos_Lifting_Value
-        ).toFixed(2);
-        updatedValues.Number_Of_Chairs = (
-          Number(updatedValues.Total_Lifting_Value) / Gov_Lifting_Fee
-        ).toFixed(0);
-        updatedValues.Driver_Lifting_Value = (
-          Number(updatedValues.Number_Of_Chairs) * Driver_Share_In_LiftingFee
-        ).toFixed(2);
+      if (name === 'Number_Of_Manual_Liftings') {
+        updatedValues.Number_Of_Chairs =
+          Eftpos_Liftings + Number_Of_Manual_Liftings;
+
+        updatedValues.Driver_Lifting_Value =
+          updatedValues.Number_Of_Chairs * Driver_Share_In_LiftingFee;
       }
       dispatch({type: 'UPDATE', payload: updatedValues});
     } else {
@@ -253,7 +231,7 @@ const EnterData = () => {
               style={[styles.textInput, {color: '#55a8fa'}]}
               returnKeyType="next"
               keyboardType="numeric"
-              value={state[input.name]}
+              value={state[input.name] === 0 ? '' : String(state[input.name])}
             />
           </View>
         ))}
@@ -395,12 +373,14 @@ const EnterData = () => {
                 style={[styles.textInput, {color: '#fff'}]}
                 returnKeyType="next"
                 // keyboardType="numeric"
-                onChangeText={(value: string) => onChange(input.name, value)}
-                value={String(state[input.name])}
+                onChangeText={(value: string) =>
+                  onChange(input.name, Number(value))
+                }
+                value={state[input.name] === 0 ? '' : String(state[input.name])}
                 ref={inputRefs[input.name]}
                 onSubmitEditing={() => {
                   if (input.name) {
-                    SubmitEditing(input.name, state[input.name].toString());
+                    SubmitEditing(input.name, state[input.name]);
                     if (index < inputs.length - 1) {
                       // Check if it's not the last input
                       const nextInputRef = inputRefs[inputs[index + 1].name];
@@ -425,48 +405,6 @@ const EnterData = () => {
           </TouchableOpacity>
         </View>
 
-        {/*<View style={styles.textinputview}>
-          <Text style={[styles.titleText, {color: '#fff'}]}>Finish Meter</Text>
-          <TextInput
-            placeholder="0.0"
-            placeholderTextColor="#fff"
-            style={[styles.textInput, {color: '#fff'}]}
-            returnKeyType="next"
-            keyboardType="numeric"
-            OnChange={(meter2: string) =>
-              setstate(prevValues => ({...prevValues, meter2}))
-            }
-            // value={state.meter2}
-            ref={inputRefs.meter2}
-            onSubmitEditing={() =>
-              onSubmitEditing(
-                state.meter2.toString(),
-                inputRefs.Shift_Total,
-              )
-            }
-          />
-        </View>
-        <View style={styles.textinputview}>
-          <Text style={[styles.titleText, {color: '#fff'}]}>Total Meter</Text>
-          <TextInput
-            placeholder="0.0"
-            placeholderTextColor="#fff"
-            style={[styles.textInput, {color: '#fff'}]}
-            returnKeyType="next"
-            keyboardType="numeric"
-            OnChange={(Shift_Total: string) =>
-              setstate(prevValues => ({...prevValues, Shift_Total}))
-            }
-            ref={inputRefs.Shift_Total}
-            onSubmitEditing={() =>
-              onSubmitEditing(
-                state.Shift_Total.toString(),
-                inputRefs.insurancefee,
-              )
-            }
-          />
-        </View> */}
-
         <View style={{marginTop: 20}}>
           <Text
             style={{
@@ -488,7 +426,11 @@ const EnterData = () => {
                 style={[styles.textInput, {color: '#55a8fa'}]}
                 returnKeyType="next"
                 keyboardType="numeric"
-                value={state[input.name]}
+                value={
+                  state[input.name] === 0
+                    ? ''
+                    : Number(state[input.name]).toFixed(2)
+                }
               />
             </View>
           ))}

@@ -45,7 +45,7 @@ export const Select = (
 };
 
 export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
-  let Company_Comm_Rate = (100 - Number(state.Driver_Comm_Rate)).toFixed(0);
+  let Company_Comm_Rate = 100 - state.Driver_Comm_Rate;
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -142,7 +142,7 @@ export function Update(
   state: FormValues,
   dispatch: React.Dispatch<Action>,
 ): Promise<ResultSet> {
-  let Company_Comm_Rate = (100 - Number(state.Driver_Comm_Rate)).toFixed(0);
+  let Company_Comm_Rate = 100 - state.Driver_Comm_Rate;
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {

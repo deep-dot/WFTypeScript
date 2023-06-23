@@ -52,7 +52,7 @@ export const SelectCountFromDataTable = (
           (_tx: Transaction, results: ResultSet) => {
             var Number_Of_Entries = results.rows.length;
             if (Number_Of_Entries > 0) {
-              const temp = [];
+              const temp: any[] = [];
               for (let j = 0; j < Number_Of_Entries; j++) {
                 temp.push(results.rows.item(j));
               }
