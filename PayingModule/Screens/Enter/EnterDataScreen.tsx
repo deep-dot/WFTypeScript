@@ -19,8 +19,6 @@ import styles from './EnterDataScreen.style';
 import {SelectCab, Insert, Update, Select} from './Actions';
 import {StateContext} from '../../../Utilities/Context';
 import {
-  DdeductionsProperties,
-  DdeductionsAdditionalProperties,
   useInputRefs,
   inputs,
   liftingInputs,
@@ -46,18 +44,20 @@ const EnterData = () => {
   const inputRefs = useInputRefs();
 
   let Save = () => {
-    let Cdeductions = DdeductionsProperties.reduce(
-      (acc, curr) => acc + state[curr],
-      0,
-    );
-    let Ddeductions = [
-      ...DdeductionsProperties,
-      ...DdeductionsAdditionalProperties,
-    ].reduce((acc, curr) => acc + state[curr], 0);
+    let eftpos_without_lifting =
+      state.Eftpos - state.Number_Of_Chairs * state.Gov_Lifting_Fee;
+    let Cdeductions =
+      state.Driver_Lifting_Value +
+      state.M3_Dockets +
+      state.Electronic_Account_Payments +
+      state.Total_Manual_MPTP31_And_MPTP_Values +
+      eftpos_without_lifting;
+
+    let Ddeductions = Cdeductions + state.Misc + state.Car_Wash + state.Fuel;
 
     let Cnetpayin = state.Commission_Driver - Cdeductions;
     let Dnetpayin = state.Commission_Driver - Ddeductions;
-    if (DdeductionsAdditionalProperties.some(property => state[property] > 0)) {
+    if (state.Car_Wash > 0 || state.Misc > 0 || state.Fuel > 0) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
         '',
@@ -89,7 +89,7 @@ const EnterData = () => {
   const handleDeduction = (deductions: number, netpayin: number) => {
     let result = {
       Deductions: deductions,
-      Net_Paying: netpayin,
+      Net_Payin: netpayin,
     };
     dispatch({type: 'UPDATE', payload: result});
     alertConfirm('Wish to Save?', () => executeSqlQuery());
@@ -147,48 +147,40 @@ const EnterData = () => {
     if (!isNaN(value)) {
       let updatedValues = {...state, [name]: value};
       // console.log(`name ${name} and value ${value}`);
-      let Gov_Lifting_Fee = updatedValues.Gov_Lifting_Fee || 0;
-      let Driver_Share_In_LiftingFee =
-        updatedValues.Driver_Share_In_LiftingFee || 0;
-      let Number_Of_Chairs = updatedValues.Number_Of_Chairs || 0;
-      let Jobs_Done = updatedValues.Jobs_Done || 0;
-      let Gov_Levy = updatedValues.Gov_Levy || 0;
-      let Meter_Start = updatedValues.Meter_Start || 0;
-      let Meter_Finish = updatedValues.Meter_Finish || 0;
-      let Driver_Comm_Rate = updatedValues.Driver_Comm_Rate || 0;
-      let Hours_Worked = updatedValues.Hours_Worked || 0;
-      let Km_Start = updatedValues.Km_Start || 0;
-      let Km_Finish = updatedValues.Km_Finish || 0;
-      let Paidkm_Start = updatedValues.Paidkm_Start || 0;
-      let Paidkm_Finish = updatedValues.Paidkm_Finish || 0;
-      let Number_Of_Manual_Liftings =
-        updatedValues.Number_Of_Manual_Liftings || 0;
-      let Eftpos_Liftings = updatedValues.Eftpos_Liftings || 0;
-      // let Driver_Lifting_Value =
-      //   Number(updatedValues.Driver_Lifting_Value) || 0;
       if (name === 'Jobs_Done') {
-        updatedValues.Levy = Jobs_Done * Gov_Levy;
+        updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
       }
       if (name === 'Meter_Finish') {
         updatedValues.Shift_Total =
-          Meter_Finish - Meter_Start - updatedValues.Levy;
-        updatedValues.Commission_Driver =
-          (updatedValues.Shift_Total * Driver_Comm_Rate) / 100;
+          updatedValues.Meter_Finish -
+          updatedValues.Meter_Start -
+          updatedValues.Levy;
       }
       if (name === 'Km_Finish') {
-        updatedValues.Kms = Km_Finish - Km_Start;
-        updatedValues.CPK = updatedValues.Shift_Total / updatedValues.Kms;
+        updatedValues.Kms = updatedValues.Km_Finish - updatedValues.Km_Start;
       }
       if (name === 'Paidkm_Finish') {
-        updatedValues.Paid_Kms = Paidkm_Finish - Paidkm_Start;
-        updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
+        updatedValues.Paid_Kms =
+          updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
       }
-      if (name === 'Number_Of_Manual_Liftings') {
+      if (name === 'Fuel') {
         updatedValues.Number_Of_Chairs =
-          Eftpos_Liftings + Number_Of_Manual_Liftings;
+          updatedValues.Eftpos_Liftings +
+          updatedValues.Number_Of_Manual_Liftings;
 
         updatedValues.Driver_Lifting_Value =
-          updatedValues.Number_Of_Chairs * Driver_Share_In_LiftingFee;
+          updatedValues.Number_Of_Chairs *
+          updatedValues.Driver_Share_In_LiftingFee;
+
+        updatedValues.Commission_Driver =
+          (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
+
+        updatedValues.CPK =
+          updatedValues.Kms > 0
+            ? updatedValues.Shift_Total / updatedValues.Kms
+            : 0;
+
+        updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
       }
       dispatch({type: 'UPDATE', payload: updatedValues});
     } else {

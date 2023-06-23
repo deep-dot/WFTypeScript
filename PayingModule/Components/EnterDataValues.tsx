@@ -302,21 +302,6 @@ export type Property =
   | 'Net_Payin'
   | 'Net_Driver_Income';
 
-export const DdeductionsProperties: Property[] = [
-  'Eftpos',
-  'Eftpos_Liftings',
-  'Total_Manual_MPTP31_And_MPTP_Values',
-  'M3_Dockets',
-  'Electronic_Account_Payments',
-  'Driver_Lifting_Value',
-];
-
-export const DdeductionsAdditionalProperties: Property[] = [
-  'Car_Wash',
-  'Fuel',
-  'Misc',
-];
-
 type InputItem = {
   title: string;
   name: Property;
@@ -364,7 +349,6 @@ export const inputs: InputItem[] = [
     placeholder: '0.00',
   },
   {title: 'M3 Dockets', name: 'M3_Dockets', placeholder: '0.00'},
-  
   {
     title: 'Electronic Payments',
     name: 'Electronic_Account_Payments',
@@ -396,9 +380,9 @@ export const payinInputs: InputItem[] = [
   {title: 'Deductions', name: 'Deductions', placeholder: '0.00'},
   // {title: 'Average Fare', name: 'Average_Fare', placeholder: '0.00'},
   {title: 'Net Pay-In', name: 'Net_Payin', placeholder: '0.00'},
-  {
-    title: 'Net Driver Income',
-    name: 'Net_Driver_Income',
-    placeholder: '0.00',
-  },
+  // {
+  //   title: 'Net Driver Income',
+  //   name: 'Net_Driver_Income',
+  //   placeholder: '0.00',
+  // },
 ];

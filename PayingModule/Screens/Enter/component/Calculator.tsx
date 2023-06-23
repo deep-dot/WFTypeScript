@@ -222,7 +222,7 @@ export const Calculator = () => {
                   color: '#ffffff',
                   fontSize: 12,
                 }}>
-                Charge Authority Calculation{' '}
+                Electronic payments{' '}
               </Text>
             </TouchableHighlight>
 
@@ -232,7 +232,7 @@ export const Calculator = () => {
                   color: '#ffffff',
                   fontSize: 12,
                 }}>
-                Dockets Calculation
+                Dockets
               </Text>
             </TouchableHighlight>
             <TouchableHighlight
