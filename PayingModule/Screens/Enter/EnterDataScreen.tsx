@@ -87,11 +87,13 @@ const EnterData = () => {
   };
 
   const handleDeduction = (deductions: number, netpayin: number) => {
-    let result = {
-      Deductions: deductions,
-      Net_Payin: netpayin,
-    };
-    dispatch({type: 'UPDATE', payload: result});
+    dispatch({
+      type: 'UPDATE',
+      payload: {
+        Deductions: deductions,
+        Net_Payin: netpayin,
+      },
+    });
     alertConfirm('Wish to Save?', () => executeSqlQuery());
   };
 
@@ -143,9 +145,9 @@ const EnterData = () => {
     dispatch({type: 'UPDATE', payload: {[name]: value}});
   };
 
-  const SubmitEditing = (name: string, value: number) => {
-    if (!isNaN(value)) {
-      let updatedValues = {...state, [name]: value};
+  const SubmitEditing = (name: string, value: string) => {
+    if (!isNaN(Number(value))) {
+      let updatedValues = {...state, [name]: Number(value)};
       // console.log(`name ${name} and value ${value}`);
       if (name === 'Jobs_Done') {
         updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
@@ -163,7 +165,11 @@ const EnterData = () => {
         updatedValues.Paid_Kms =
           updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
       }
-      if (name === 'Fuel') {
+      if (
+        name === 'Fuel' ||
+        name === 'Electronic_Account_Payments' ||
+        name === 'M3_Dockets'
+      ) {
         updatedValues.Number_Of_Chairs =
           updatedValues.Eftpos_Liftings +
           updatedValues.Number_Of_Manual_Liftings;
@@ -365,9 +371,7 @@ const EnterData = () => {
                 style={[styles.textInput, {color: '#fff'}]}
                 returnKeyType="next"
                 // keyboardType="numeric"
-                onChangeText={(value: string) =>
-                  onChange(input.name, Number(value))
-                }
+                onChangeText={(value: string) => onChange(input.name, value)}
                 value={state[input.name] === 0 ? '' : String(state[input.name])}
                 ref={inputRefs[input.name]}
                 onSubmitEditing={() => {

@@ -40,7 +40,7 @@ export const ViewRecordsByDate = (
   });
 };
 
-export const SelectCountFromDataTable = (
+export const SelectFromDataTable = (
   dispatch: React.Dispatch<Action>,
 ): Promise<FormValues[]> => {
   return new Promise((resolve, reject) => {

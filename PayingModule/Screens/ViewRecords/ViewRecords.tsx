@@ -14,7 +14,7 @@ import {
 import {
   ViewRecordsByDate,
   UpdateData,
-  SelectCountFromDataTable,
+  SelectFromDataTable,
   deleteDataInTable,
 } from './Actions';
 import {Calendar} from '../../Components/Calendar';
@@ -34,7 +34,7 @@ const ViewRecords = () => {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {state, dispatch, starRating} = stateContext;
+  const {state, dispatch} = stateContext;
 
   let SearchRecord = async (start_date: string, finish_date: string) => {
     // console.log('start date==', start_date);
@@ -64,7 +64,7 @@ const ViewRecords = () => {
   const Delete = async (id: string, date: string) => {
     const res = await deleteDataInTable(id, date);
     if (res === 'Deleted successfully') {
-      SelectCountFromDataTable(dispatch)
+      SelectFromDataTable(dispatch)
         .then(temp => {
           setFlatListItems(temp);
         })
@@ -105,7 +105,6 @@ const ViewRecords = () => {
       await UpdateData(searchDate, dispatch);
       navigation.navigate('Enter Data');
     } catch (error) {
-      // handle error
       console.error(error);
     }
   };
@@ -157,12 +156,12 @@ const ViewRecords = () => {
         </View>
 
         <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Number Of Jobs</Text>
+          <Text style={styles.titletext}>Jobs done</Text>
           <Text style={styles.titletext}>{item?.Jobs_Done}</Text>
         </View>
 
         <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Insurancefee</Text>
+          <Text style={styles.titletext}>Insurance</Text>
           <Text style={styles.titletext}>{item?.Insurance}</Text>
         </View>
 
@@ -172,8 +171,8 @@ const ViewRecords = () => {
         </View>
 
         <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Eftpos Lifting</Text>
-          <Text style={styles.titletext}>{item?.Eftpos_Lifting_Value}</Text>
+          <Text style={styles.titletext}>Eftpos Liftings</Text>
+          <Text style={styles.titletext}>{item?.Eftpos_Liftings}</Text>
         </View>
 
         <View style={styles.textinputview}>
@@ -182,21 +181,21 @@ const ViewRecords = () => {
         </View>
 
         <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Charge Authority</Text>
+          <Text style={styles.titletext}>Electronic payments</Text>
           <Text style={styles.titletext}>
             {item?.Electronic_Account_Payments}
           </Text>
         </View>
 
         <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Gov Sub Manual</Text>
+          <Text style={styles.titletext}>Manuals Value</Text>
           <Text style={styles.titletext}>
             {item?.Total_Manual_MPTP31_And_MPTP_Values}
           </Text>
         </View>
 
         <View style={styles.textinputview}>
-          <Text style={styles.titletext}>Number Of Manual Lifts</Text>
+          <Text style={styles.titletext}>Manuals</Text>
           <Text style={styles.titletext}>
             {item?.Number_Of_Manual_Liftings}
           </Text>
@@ -210,6 +209,63 @@ const ViewRecords = () => {
         <View style={styles.textinputview}>
           <Text style={styles.titletext}>Fuel</Text>
           <Text style={styles.titletext}>{item?.Fuel}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Shift Total</Text>
+          <Text style={styles.titletext}>{item?.Shift_Total}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Levy</Text>
+          <Text style={styles.titletext}>{item?.Levy}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Kms</Text>
+          <Text style={styles.titletext}>{item?.Kms}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Paid Kms</Text>
+          <Text style={styles.titletext}>{item?.Paid_Kms}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Unpaid Kms</Text>
+          <Text style={styles.titletext}>{item?.Unpaid_Kms}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>CPK</Text>
+          <Text style={styles.titletext}>{item?.CPK ? (item.CPK).toFixed(2) : ''}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Total Liftings</Text>
+          <Text style={styles.titletext}>{item?.Number_Of_Chairs}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Driver Lifting</Text>
+          <Text style={styles.titletext}>
+            {item?.Driver_Lifting_Value ? item.Driver_Lifting_Value.toFixed(2) : ''}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Commission Driver</Text>
+          <Text style={styles.titletext}>{item?.Commission_Driver}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Deductions</Text>
+          <Text style={styles.titletext}>{item?.Deductions}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Net Payin</Text>
+          <Text style={styles.titletext}>{item?.Net_Payin}</Text>
         </View>
       </View>
     );
@@ -321,7 +377,7 @@ const ViewRecords = () => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-             navigation.navigate('Display Report');
+            navigation.navigate('Display Report');
           }}>
           <Icon name="create-outline" size={20} color="#fff" />
         </TouchableOpacity>

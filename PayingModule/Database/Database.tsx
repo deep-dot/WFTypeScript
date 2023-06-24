@@ -57,7 +57,18 @@ const Database = () => {
         Electronic_Account_Payments NUMERIC,                   
         Car_Wash NUMERIC,
         Misc NUMERIC,
-        Fuel NUMERIC,        
+        Fuel NUMERIC,  
+        Shift_Total NUMERIC,
+        Levy NUMERIC,
+        Kms NUMERIC,
+        Paid_Kms NUMERIC,
+        Unpaid_Kms NUMERIC,
+        CPK NUMERIC,
+        Number_Of_Chairs NUMERIC,
+        Driver_Lifting_Value NUMERIC,
+        Commission_Driver NUMERIC,
+        Deductions NUMERIC,
+        Net_Payin NUMERIC
     )`,
     );
   }, []);
