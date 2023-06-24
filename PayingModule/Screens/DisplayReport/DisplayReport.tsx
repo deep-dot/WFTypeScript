@@ -68,7 +68,7 @@ export default function DisplayReport() {
     record.Kms,
     record.Paid_Kms,
     record.Eftpos,
-    record.Eftpos_Lifting_Value,
+    record.Eftpos_Liftings,
     record.M3_Dockets,
     record.Electronic_Account_Payments,
     record.Total_Manual_MPTP31_And_MPTP_Values,

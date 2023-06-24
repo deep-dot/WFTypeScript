@@ -58,7 +58,6 @@ const ViewRecords = () => {
         type: 'UPDATE',
         payload: {totalrecords: res.length.toString()},
       });
-      // console.log(res[0].Record_id);
       setFlatListItems(res);
       if (res.length === 0) {
         dispatch({
@@ -105,6 +104,12 @@ const ViewRecords = () => {
     );
   };
 
+  let listViewItemSeparator = () => {
+    return (
+      <View style={{height: 10, width: '100%', backgroundColor: '#000'}} />
+    );
+  };
+
   const handleRefresh = async (searchDate: string) => {
     try {
       await UpdateData(searchDate, dispatch);
@@ -114,31 +119,195 @@ const ViewRecords = () => {
     }
   };
 
-  const tableData = flatListItems.map(record => ({
-    Date: record.Date,
-    Day: record.Day,
-    Shift: record.Shift,
-    Taxi: record.Taxi,
-    Jobs_Done: record.Jobs_Done,
-    Insurance: record.Insurance,
-    Shift_Total: record.Shift_Total,
-    Company_Comm_Rate: record.Company_Comm_Rate,
-    Kms: record.Kms,
-    Paid_Kms: record.Paid_Kms,
-    Eftpos: record.Eftpos,
-    Eftpos_Liftings: record.Eftpos_Liftings,
-    M3_Dockets: record.M3_Dockets,
-    Electronic_Account_Payments: record.Electronic_Account_Payments,
-    Total_Manual_MPTP31_And_MPTP_Values:
-      record.Total_Manual_MPTP31_And_MPTP_Values,
-    Number_Of_Manual_Liftings: record.Number_Of_Manual_Liftings,
-    Misc: record.Misc,
-    Fuel: record.Fuel,
-    Net_Payin: record.Net_Payin,
-    CPK: record.CPK.toFixed(2),
-  }));
+  const tableData = flatListItems.map(record => [
+    record.Date,
+    record.Day,
+    record.Shift,
+    record.Taxi,
+    record.Jobs_Done,
+    record.Insurance,
+    record.Shift_Total,
+    record.Company_Comm_Rate,
+    record.Kms,
+    record.Paid_Kms,
+    record.Eftpos,
+    record.Eftpos_Liftings,
+    record.M3_Dockets,
+    record.Electronic_Account_Payments,
+    record.Total_Manual_MPTP31_And_MPTP_Values,
+    record.Number_Of_Manual_Liftings,
+    record.Misc,
+    record.Fuel,
+    record.Net_Payin,
+    record.CPK,
+  ]);
 
-  //console.log('table data===', tableData);
+  let listItemView = (item: FormValues) => {
+    console.log('item in flatlist==', rowdata?.Day);
+    if (item == null || item === undefined) {
+      return null;
+    }
+    return (
+      <View style={{backgroundColor: '#ffffff', padding: 20}}>
+        <View style={[styles.textinputview, {borderColor: '#fff'}]}>
+          <TouchableOpacity
+            onPress={() => {
+              DeleteRecord(item?.Record_id.toString(), item?.Date);
+            }}>
+            <Icon name="trash-outline" size={20} color="tomato" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              handleRefresh(item?.Date);
+            }}>
+            <Icon name="create-outline" size={20} color="#000" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Record Id</Text>
+          <Text style={styles.titletext}>{item?.Record_id}</Text>
+        </View>
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Day</Text>
+          <Text style={styles.titletext}>{item?.Day}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Date</Text>
+          <Text style={styles.titletext}>{item?.Date}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Shift Worked</Text>
+          <Text style={styles.titletext}>{item?.Shift}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Taxi Number</Text>
+          <Text style={styles.titletext}>{item?.Taxi}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Jobs done</Text>
+          <Text style={styles.titletext}>{item?.Jobs_Done}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Insurance</Text>
+          <Text style={styles.titletext}>{item?.Insurance}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Eftpos</Text>
+          <Text style={styles.titletext}>{item?.Eftpos}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Eftpos Liftings</Text>
+          <Text style={styles.titletext}>{item?.Eftpos_Liftings}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Dockets</Text>
+          <Text style={styles.titletext}>{item?.M3_Dockets}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Electronic payments</Text>
+          <Text style={styles.titletext}>
+            {item?.Electronic_Account_Payments}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Manuals Value</Text>
+          <Text style={styles.titletext}>
+            {item?.Total_Manual_MPTP31_And_MPTP_Values}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Manuals</Text>
+          <Text style={styles.titletext}>
+            {item?.Number_Of_Manual_Liftings}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Misc</Text>
+          <Text style={styles.titletext}>{item?.Misc}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Fuel</Text>
+          <Text style={styles.titletext}>{item?.Fuel}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Shift Total</Text>
+          <Text style={styles.titletext}>{item?.Shift_Total}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Levy</Text>
+          <Text style={styles.titletext}>{item?.Levy}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Kms</Text>
+          <Text style={styles.titletext}>{item?.Kms}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Paid Kms</Text>
+          <Text style={styles.titletext}>{item?.Paid_Kms}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Unpaid Kms</Text>
+          <Text style={styles.titletext}>{item?.Unpaid_Kms}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>CPK</Text>
+          <Text style={styles.titletext}>
+            {item?.CPK ? item.CPK.toFixed(2) : ''}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Total Liftings</Text>
+          <Text style={styles.titletext}>{item?.Number_Of_Chairs}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Driver Lifting</Text>
+          <Text style={styles.titletext}>
+            {item?.Driver_Lifting_Value
+              ? item.Driver_Lifting_Value.toFixed(2)
+              : ''}
+          </Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Commission Driver</Text>
+          <Text style={styles.titletext}>{item?.Commission_Driver}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Deductions</Text>
+          <Text style={styles.titletext}>{item?.Deductions}</Text>
+        </View>
+
+        <View style={styles.textinputview}>
+          <Text style={styles.titletext}>Net Payin</Text>
+          <Text style={styles.titletext}>{item?.Net_Payin}</Text>
+        </View>
+      </View>
+    );
+  };
+
   const HideAlert = () => {
     dispatch({type: 'UPDATE', payload: {sorryAlert: false, show2Alert: false}});
   };
@@ -242,8 +411,8 @@ const ViewRecords = () => {
                     <TouchableOpacity
                       onPress={() => {
                         DeleteRecord(
-                          rowdata[index].Record_id.toString(),
-                          rowdata[index].Date,
+                          rowdata.Record_id.toString(),
+                          rowdata.Date,
                         );
                       }}>
                       <Icon name="trash-outline" size={20} color="tomato" />
@@ -255,26 +424,7 @@ const ViewRecords = () => {
                       <Icon name="create-outline" size={20} color="#000" />
                     </TouchableOpacity>
                   </View>,
-                  rowdata.Date,
-                  rowdata.Day,
-                  rowdata.Shift,
-                  rowdata.Taxi,
-                  rowdata.Jobs_Done,
-                  rowdata.Insurance,
-                  rowdata.Shift_Total,
-                  rowdata.Company_Comm_Rate,
-                  rowdata.Kms,
-                  rowdata.Paid_Kms,
-                  rowdata.Eftpos,
-                  rowdata.Eftpos_Liftings,
-                  rowdata.M3_Dockets,
-                  rowdata.Electronic_Account_Payments,
-                  rowdata.Total_Manual_MPTP31_And_MPTP_Values,
-                  rowdata.Number_Of_Manual_Liftings,
-                  rowdata.Misc,
-                  rowdata.Fuel,
-                  rowdata.Net_Payin,
-                  rowdata.CPK,
+                  ...rowdata,
                 ]}
                 widthArr={widthArr}
                 style={{
@@ -287,6 +437,13 @@ const ViewRecords = () => {
           </Table>
         </View>
       </ScrollView>
+
+      {/* <FlatList
+        data={flatListItems}
+        ItemSeparatorComponent={listViewItemSeparator}
+        keyExtractor={(item: FormValues, index: number) => index.toString()}
+        renderItem={({item}: {item: FormValues}) => listItemView(item)}
+      /> */}
 
       <View
         style={{
