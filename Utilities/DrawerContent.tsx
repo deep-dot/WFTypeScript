@@ -50,7 +50,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
 
           <Drawer.Section style={styles.drawerSection}>
             <DrawerItem
-              label="Enter Data"
+              label="Payin App"
               icon={({color, size}) => (
                 <Icon name="enter-outline" color={color} size={size} />
               )}

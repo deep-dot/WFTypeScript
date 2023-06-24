@@ -57,11 +57,11 @@ export const starRating = (
   );
 };
 
-let printHTML = async (state: FormValues, dispatch: React.Dispatch<Action>) => {
+let printHTML = async (state: FormValues) => {
   try {
     var td = '';
     state.tableData.forEach(le => {
-      console.log('le', le);
+      // console.log('le', le);
       const currencyIndices = new Set([6, 7, 10, 11, 12, 13, 14, 16, 17, 18]);
       td += le
         .map((entry, index) => {
@@ -91,24 +91,32 @@ let printHTML = async (state: FormValues, dispatch: React.Dispatch<Action>) => {
     let total = '';
     let le = state.datatotal;
     total += `
-        <tr>
+        <tr> 27
             <td style = "font-weight:900">${le[0]}</td>
             <td style = "font-weight:900">${le[2]}</td>
             <td style = "font-weight:900">${le[3]}</td>
             <td style = "font-weight:900">${le[4]}</td>
-            <td style = "font-weight:900">$${le[5]}</td>
+            <td style = "font-weight:900">${le[5]}</td>
             <td style = "font-weight:900">$${le[6]}</td>
-            <td style = "font-weight:900">$${le[7]}</td>
+            <td style = "font-weight:900">${le[7]}</td>
             <td style = "font-weight:900">${le[8]}</td>
             <td style = "font-weight:900">${le[9]}</td>
             <td style = "font-weight:900">$${le[10]}</td>
-            <td style = "font-weight:900">$${le[11]}</td>
-            <td style = "font-weight:900">$${le[12]}</td>
-            <td style = "font-weight:900">$${le[13]}</td>
-            <td style = "font-weight:900">$${le[14]}</td>
+            <td style = "font-weight:900">${le[11]}</td>
+            <td style = "font-weight:900">${le[12]}</td>
+            <td style = "font-weight:900">${le[13]}</td>
+            <td style = "font-weight:900">${le[14]}</td>
             <td style = "font-weight:900">${le[15]}</td>
-            <td style = "font-weight:900">$${le[16]}</td>
+            <td style = "font-weight:900">${le[16]}</td>
             <td style = "font-weight:900">$${le[17]}</td>
+            <td style = "font-weight:900">${le[18]}</td>
+            <td style = "font-weight:900">$${le[19]}</td>
+            <td style = "font-weight:900">$${le[18]}</td>
+            <td style = "font-weight:900">$${le[18]}</td>
+            <td style = "font-weight:900">$${le[18]}</td>
+            <td style = "font-weight:900">$${le[18]}</td>
+            <td style = "font-weight:900">$${le[18]}</td>
+            <td style = "font-weight:900">${le[18]}</td>
             <td style = "font-weight:900">$${le[18]}</td>
         </tr>`;
 
@@ -121,9 +129,6 @@ let printHTML = async (state: FormValues, dispatch: React.Dispatch<Action>) => {
                 <td>${le[1]}</td>
                 <td>${le[2]}</td>
                 <td>$${le[3]}</td>
-                <td>$${le[4]}</td>
-                <td>$${le[5]}</td>
-                <td>$${le[6]}</td>
                 </tr>`;
     });
     let deducting = '';
@@ -132,12 +137,6 @@ let printHTML = async (state: FormValues, dispatch: React.Dispatch<Action>) => {
               <tr>
                 <td>$${le[0]}</td>
                 <td>$${le[1]}</td>
-                <td>$${le[2]}</td>
-                <td>$${le[3]}</td>
-                <td>$${le[4]}</td>
-                <td>$${le[5]}</td>
-                <td>$${le[6]}</td>
-                <td>$${le[7]}</td>
                 </tr>`;
     });
     await RNPrint.print({
@@ -196,24 +195,25 @@ let printHTML = async (state: FormValues, dispatch: React.Dispatch<Action>) => {
               <table id="dataheading" style = "width:100%">
                 <tr>
                 <th> Date </th>
+                <th> Day </th>
                 <th> Shift </th>
                 <th> Taxi </th>
                 <th> Jobs </th>
                 <th> Ins </th>
+                <th> Hours Worked </th>
                 <th> Shift <br> Total </th>
-                <th> Com <br> Company </th>
                 <th> Kms </th>
                 <th> Paid <br> Kms </th>
                 <th> Eftpos <br> Total </th>
-                <th> Eftpos <br> Lfting-Fee </th>
+                <th> Manuals </th>
+                <th> Manuals $ </th>
                 <th> Dockets </th>
-                <th> Charge <br> Authority </th>
-                <th> Manual-Mptp <br> Total </th>
-                <th> No-of-Manual <br> Lifts </th>
+                <th> Electronic <br> Payments </th>
+                <th> Car Wash </th>
                 <th> Misc </th>
-                <th> Acc <br> Fuel </th>
-                <th> Net-Payin </th>
+                <th> Fuel </th>
                 <th> Cpk </th>
+                <th> Net-Payin </th>                
                 </tr>    
                 ${td}            
                 <th>-----------</th>
@@ -225,11 +225,8 @@ let printHTML = async (state: FormValues, dispatch: React.Dispatch<Action>) => {
               </table>
             <table id="th" style = "width:100%">
               <tr>
-                <th> Total Lifting Fee Value </th>
-                <th> Total No. of wheelchair lifts </th>
-                <th>( Total No of Manual Lifts </th>
-                <th> Total Manual lifting fee value )</th>                
-                <th> Total Eftpos LFee </th>
+                <th> Total Lifting Fee </th>                             
+                <th> Total Liftings </th>
                 <th> Company portion lifting fee </th>
                 <th> Driver portion lifting fee </th>
               </tr>              
@@ -241,12 +238,6 @@ let printHTML = async (state: FormValues, dispatch: React.Dispatch<Action>) => {
             </table>
               <table id="th" style = "width:100%">
                 <tr>
-                  <th> Total Eftpos </th>
-                  <th> Gov Sub-Manual </th>
-                  <th> Gov Sub-Manual31 </th>
-                  <th> Dockets </th>
-                  <th> Charge Authority </th>
-                  <th> Misc </th>
                   <th> Deductions </th>
                   <th> Pay Ins-Cash </th>
                 </tr>
@@ -254,7 +245,7 @@ let printHTML = async (state: FormValues, dispatch: React.Dispatch<Action>) => {
               </table>
               <footer id = "copyright">
               <p>
-                Report produced by "Wage Figurer" Copyright &#169 Dee Dhillon 2021-2022
+                Report produced by "Wage Figurer" Copyright &#169 Dee Dhillon 2021-2023
               </p>
             </footer>  
             </body>              
