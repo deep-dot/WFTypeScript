@@ -30,7 +30,8 @@ interface SQLiteDatabase {
 }
 let db: SQLiteDatabase | undefined;
 db = (SQLite.openDatabase as any)(
-  {name: 'database.db', createFromLocation: 1},
+  //{name: 'database.db', createFromLocation: 1},
+  {name: 'database.db'},
   () => {},
   (error: any) => {
     console.log('ERROR:' + error);

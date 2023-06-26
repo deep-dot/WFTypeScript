@@ -29,6 +29,7 @@ import {StackParamList} from '../../../App';
 import {useNavigation} from '@react-navigation/core';
 import ModalForm from './component/ModalForm';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {Platform} from 'react-native';
 
 interface Cab {
   Cab: string;
@@ -140,7 +141,7 @@ const EnterData = () => {
     fetchData();
   }, [dispatch, state.cabCount]);
 
-  const onChange = (name: string, value: number | boolean) => {
+  const onChange = (name: string, value: string) => {
     //console.log('onchange in enter data ==', name, 'and', value);
     dispatch({type: 'UPDATE', payload: {[name]: value}});
   };
@@ -234,7 +235,7 @@ const EnterData = () => {
           </View>
         ))}
         <TouchableOpacity
-          style={styles.button}
+          //style={styles.button}
           onPress={() =>
             dispatch({
               type: 'UPDATE',
@@ -243,7 +244,7 @@ const EnterData = () => {
               },
             })
           }>
-          <Text style={styles.buttontext}>Update above Items if needed</Text>
+          <Text style={styles.buttontext}>Update above fields</Text>
         </TouchableOpacity>
 
         <View
@@ -278,10 +279,26 @@ const EnterData = () => {
                 },
               });
             }}>
-            <Picker.Item label="Select" value="  " color="#fff" />
-            <Picker.Item label="Day" value="Day" color="#fff" />
-            <Picker.Item label="Night" value="Night" color="#fff" />
-            <Picker.Item label="Evening" value="Evening" color="#fff" />
+            <Picker.Item
+              label="Select"
+              value="Select"
+              color={Platform.OS === 'ios' ? '#fff' : '#fff'}
+            />
+            <Picker.Item
+              label="Day"
+              value="Day"
+              color={Platform.OS === 'ios' ? '#fff' : '#000'}
+            />
+            <Picker.Item
+              label="Night"
+              value="Night"
+              color={Platform.OS === 'ios' ? '#fff' : '#000'}
+            />
+            <Picker.Item
+              label="Evening"
+              value="Evening"
+              color={Platform.OS === 'ios' ? '#fff' : '#000'}
+            />
           </Picker>
         </View>
 
@@ -314,19 +331,24 @@ const EnterData = () => {
                   },
                 });
               }}>
-              <Picker.Item label="Select" key=" " value=" " color="#fff" />
+              <Picker.Item
+                label="Select"
+                key=" "
+                value="Select "
+                color={Platform.OS === 'ios' ? '#fff' : '#fff'}
+              />
               {state.Cab_Data.map((cab: Cab, i: number) => (
                 <Picker.Item
                   label={cab.Cab}
                   key={i}
                   value={cab.Cab}
-                  color="#fff"
+                  color={Platform.OS === 'ios' ? '#fff' : '#000'}
                 />
               ))}
             </Picker>
           </View>
           <TouchableOpacity
-            style={styles.button}
+            // style={styles.button}
             onPress={() => {
               dispatch({
                 type: 'UPDATE',
@@ -440,15 +462,19 @@ const EnterData = () => {
           padding: 5,
         }}>
         <TouchableOpacity
-          style={styles.button}
+          // style={styles.button}
           onPress={() => navigation.navigate('View Records')}>
           <Icon name="eye-outline" size={25} color="#fff" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={Save}>
+        <TouchableOpacity
+          // style={styles.button}
+          onPress={Save}>
           <Icon name="save-outline" size={25} color="#fff" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={Refresh}>
+        <TouchableOpacity
+          // style={styles.button}
+          onPress={Refresh}>
           <Icon name="refresh" size={25} color="#fff" />
         </TouchableOpacity>
       </View>

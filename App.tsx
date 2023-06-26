@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import * as React from 'react';
-import {Image} from 'react-native';
+import {Image, StatusBar, Platform} from 'react-native';
 import ThemeProvider from './Utilities/ThemeProvider';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
 import DrawerContent from './Utilities/DrawerContent';
@@ -29,36 +29,39 @@ const RootStack = createStackNavigator<StackParamList>();
 const HomeScreenStack = () => {
   const navigation = useNavigation<DrawerNavigationProp<StackParamList>>();
   return (
-    <RootStack.Navigator
-      initialRouteName="Enter Data"
-      screenOptions={{
-        headerShown: true,
-        headerLeft: () => (
-          <Ionicons
-            name="menu-outline"
-            size={30}
-            color="#fff"
-            backgroundColor="transparent"
-            onPress={() => navigation.toggleDrawer()}
-          />
-        ),
-        headerRight: () => (
-          <Image
-            style={{
-              width: 40,
-              height: 40,
-              margin: 10,
-              borderRadius: 50,
-            }}
-            source={require('./PayingModule/Components/Images/WFLogo.png')}
-          />
-        ),
-      }}>
-      {/* <RootStack.Screen name="Home" component={HomeScreen} /> */}
-      <RootStack.Screen name="Enter Data" component={EnterData} />
-      <RootStack.Screen name="View Records" component={ViewRecords} />
-      <RootStack.Screen name="Display Report" component={DisplayReport} />
-    </RootStack.Navigator>
+    <>
+      {Platform.OS === 'android' && <StatusBar hidden />}
+      <RootStack.Navigator
+        initialRouteName="Enter Data"
+        screenOptions={{
+          headerShown: true,
+          headerLeft: () => (
+            <Ionicons
+              name="menu-outline"
+              size={30}
+              color="#fff"
+              backgroundColor="transparent"
+              onPress={() => navigation.toggleDrawer()}
+            />
+          ),
+          headerRight: () => (
+            <Image
+              style={{
+                width: 40,
+                height: 40,
+                margin: 10,
+                borderRadius: 50,
+              }}
+              source={require('./PayingModule/Components/Images/WFLogo.png')}
+            />
+          ),
+        }}>
+        {/* <RootStack.Screen name="Home" component={HomeScreen} /> */}
+        <RootStack.Screen name="Enter Data" component={EnterData} />
+        <RootStack.Screen name="View Records" component={ViewRecords} />
+        <RootStack.Screen name="Display Report" component={DisplayReport} />
+      </RootStack.Navigator>
+    </>
   );
 };
 
