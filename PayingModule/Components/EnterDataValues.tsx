@@ -35,6 +35,13 @@ interface tableData {
   [key: string]: string;
 }
 export type FormValues = {
+  //subscription
+  purchased: boolean;
+  products: {};
+  checking: boolean;
+  ShowAlert: boolean;
+
+  //main
   Record_id: number;
   Number_Of_Entries: number;
   //Home Screen Modal
@@ -121,6 +128,13 @@ export type FormValues = {
 };
 
 export const initialValues = {
+  //subscription
+  purchased: false,
+  products: {},
+  checking: false,
+  ShowAlert: false,
+
+  //main
   Record_id: 0,
   Number_Of_Entries: 0,
 

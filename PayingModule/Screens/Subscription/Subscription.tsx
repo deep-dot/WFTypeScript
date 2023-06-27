@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable eqeqeq */
 /* eslint-disable dot-notation */
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useContext} from 'react';
 import {
   Text,
   Alert,
@@ -19,6 +19,8 @@ import styles from './Subscription.style';
 import IAP from 'react-native-iap';
 import SplashScreen from 'react-native-splash-screen';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import {validate} from './Actions';
+import {StateContext} from '../../../Utilities/Context';
 
 const items = Platform.select({
   //ios: [],
@@ -29,43 +31,11 @@ export default function App() {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
-
-  const [purchased, setPurchased] = useState(true); //make it false after done
-  const [products, setProducts] = useState({});
-  const [checking, setChecking] = useState(true);
-  const [showAlert, setShowAlert] = useState(false);
-
-  const validate = async receipt => {
-    const receiptBody = {
-      productId: JSON.parse(receipt)['productId'],
-      purchaseToken: JSON.parse(receipt)['purchaseToken'],
-    };
-    console.log('reciept body=======', receiptBody);
-
-    try {
-      await fetch(
-        'https://australia-southeast1-pc-api-7263938244868821830-612.cloudfunctions.net/receipt',
-        {
-          headers: {'Content-Type': 'application/json'},
-          method: 'POST',
-          body: JSON.stringify({data: receiptBody}),
-        },
-      ).then(res => {
-        res.json().then(r => {
-          setChecking(false);
-          if (r.result.error == -1) {
-            Alert.alert('Oops!', 'There is something wrong with your purchase');
-          } else if (r.result.isActiveSubscription) {
-            setPurchased(true);
-          } else {
-            setShowAlert(true);
-          }
-        });
-      });
-    } catch (error) {
-      // Alert.alert("Error!", error.message);
-    }
-  };
+  const stateContext = useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {state, dispatch} = stateContext;
 
   useEffect(() => {
     let purchaseUpdateSubscription: EmitterSubscription | null = null;
@@ -77,7 +47,10 @@ export default function App() {
 
         if (items) {
           const subscriptions = await IAP.getSubscriptions({skus: items});
-          setProducts(subscriptions || products);
+          dispatch({
+            type: 'UPDATE',
+            payload: {products: subscriptions || state.products},
+          });
 
           if (!subscriptions || subscriptions.length === 0) {
             Alert.alert('Please check your internet access.');
@@ -88,7 +61,7 @@ export default function App() {
           try {
             const receipt = history[history.length - 1].transactionReceipt;
             if (receipt) {
-              validate(receipt);
+              validate(receipt, dispatch);
             }
           } catch (error) {
             console.log('Error getting the receipt:', error);
@@ -114,7 +87,7 @@ export default function App() {
         const receipt = purchase.transactionReceipt;
         try {
           if (receipt) {
-            validate(receipt);
+            validate(receipt, dispatch);
             IAP.finishTransaction({purchase: purchase});
           }
         } catch (e) {
@@ -138,11 +111,11 @@ export default function App() {
         console.log('Error ending connection:', error);
       }
     };
-  }, [products]);
+  }, [dispatch, state.products]);
 
   //end useeffect
 
-  if (checking) {
+  if (state.checking) {
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#35363A" />
@@ -150,20 +123,20 @@ export default function App() {
       </View>
     );
   } else {
-    if (purchased) {
+    if (state.purchased) {
       return null;
     }
 
     try {
-      if (products) {
+      if (state.products) {
         const HideAlert = () => {
-          setShowAlert(false);
+          dispatch({type: 'UPDATE', payload: {ShowAlert: false}});
         };
         return (
           <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor="#35363A" />
             <AwesomeAlert
-              show={showAlert}
+              show={state.showAlert}
               showProgress={false}
               title="Expired !"
               message="Your subscription has expired. Please subscribe. ?"
@@ -184,7 +157,7 @@ export default function App() {
               </Text>
 
               <Text style={styles.Title}>
-                {products[0]['localizedPrice']} /{'Month'}
+                {state.products[0]['localizedPrice']} /{'Month'}
               </Text>
               <View
                 style={{
@@ -200,7 +173,7 @@ export default function App() {
                 {'\u2B24'} Ad-free access to the entire App.
               </Text>
 
-              {Object.entries(products).map(p => (
+              {Object.entries(state.products).map(p => (
                 <Button
                   key={p['productId']}
                   title={`Purchase ${p['title']}`}
