@@ -3,6 +3,7 @@
 import * as React from 'react';
 import {Image, StatusBar, Platform} from 'react-native';
 import ThemeProvider from './Utilities/ThemeProvider';
+import Subscription from './PayingModule/Screens/Enter/SubscriptionScreen';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
 import DrawerContent from './Utilities/DrawerContent';
 //import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
@@ -21,6 +22,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Database from './PayingModule/Database/Database';
 
 export type StackParamList = {
+  Subscription: undefined;
   'Enter Data': undefined;
   'View Records': undefined;
   'Display Report': undefined;
@@ -32,7 +34,7 @@ const HomeScreenStack = () => {
     <>
       {Platform.OS === 'android' && <StatusBar hidden />}
       <RootStack.Navigator
-        initialRouteName="Enter Data"
+        initialRouteName="Subscription"
         screenOptions={{
           headerShown: true,
           headerLeft: () => (
@@ -56,7 +58,7 @@ const HomeScreenStack = () => {
             />
           ),
         }}>
-        {/* <RootStack.Screen name="Home" component={HomeScreen} /> */}
+        <RootStack.Screen name="Subscription" component={Subscription} />
         <RootStack.Screen name="Enter Data" component={EnterData} />
         <RootStack.Screen name="View Records" component={ViewRecords} />
         <RootStack.Screen name="Display Report" component={DisplayReport} />
