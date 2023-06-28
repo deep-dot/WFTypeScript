@@ -23,7 +23,7 @@ import {StateProvider} from './Utilities/StateProvider';
 import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
 import DisplayReport from './PayingModule/Screens/DisplayReport/DisplayReport';
 import SplashScreen from 'react-native-splash-screen';
-import IAP from 'react-native-iap';
+import * as IAP from 'react-native-iap';
 import {StateContext} from './Utilities/Context';
 //import {validate} from './PayingModule/Screens/Subscription/Actions';
 import styles from './PayingModule/Screens/Subscription//Subscription.style';
@@ -102,10 +102,42 @@ export default function App() {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
-  const [purchased, setPurchased] = useState(true); //make it false after done
+  const [purchased, setPurchased] = useState(false); //make it false after done
   const [products, setProducts] = useState({});
   const [checking, setChecking] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
+
+  const validate = async receipt => {
+    const receiptBody = {
+      productId: JSON.parse(receipt).productId,
+      purchaseToken: JSON.parse(receipt).purchaseToken,
+    };
+    console.log('reciept body=======', receiptBody);
+
+    try {
+      await fetch(
+        'https://australia-southeast1-pc-api-7263938244868821830-612.cloudfunctions.net/receipt',
+        {
+          headers: {'Content-Type': 'application/json'},
+          method: 'POST',
+          body: JSON.stringify({data: receiptBody}),
+        },
+      ).then(res => {
+        res.json().then(r => {
+          if (r.result.error === -1) {
+            setChecking(false);
+            Alert.alert('Oops!', 'There is something wrong with your purchase');
+          } else if (r.result.isActiveSubscription) {
+            setPurchased(true);
+          } else {
+            setShowAlert(true);
+          }
+        });
+      });
+    } catch (error) {
+      console.log('Error!', error.message);
+    }
+  };
 
   useEffect(() => {
     let purchaseUpdateSubscription: EmitterSubscription | null = null;
@@ -117,11 +149,7 @@ export default function App() {
 
         if (items) {
           const subscriptions = await IAP.getSubscriptions({skus: items});
-          dispatch({
-            type: 'UPDATE',
-            payload: {products: subscriptions || state.products},
-          });
-
+          setProducts(subscriptions || products);
           if (!subscriptions || subscriptions.length === 0) {
             Alert.alert('Please check your internet access.');
           }
@@ -131,7 +159,7 @@ export default function App() {
           try {
             const receipt = history[history.length - 1].transactionReceipt;
             if (receipt) {
-              validate(receipt, dispatch);
+              validate(receipt);
             }
           } catch (error) {
             console.log('Error getting the receipt:', error);
@@ -144,43 +172,47 @@ export default function App() {
       }
     };
 
-    //init();
+    init();
 
-    // purchaseErrorSubscription = IAP.purchaseErrorListener(error => {
-    //   if (!(error.responseCode?.toString() === '2')) {
-    //     Alert.alert('Oops!', 'There is something wrong with your purchase');
-    //   }
-    // });
+    try {
+      purchaseErrorSubscription = IAP.purchaseErrorListener(error => {
+        if (!(error.responseCode?.toString() === '2')) {
+          Alert.alert('Oops!', 'There is something wrong with your purchase');
+        }
+      });
 
-    // setTimeout(() => {
-    //   purchaseUpdateSubscription = IAP.purchaseUpdatedListener(purchase => {
-    //     const receipt = purchase.transactionReceipt;
-    //     try {
-    //       if (receipt) {
-    //         validate(receipt, dispatch);
-    //         IAP.finishTransaction({purchase: purchase});
-    //       }
-    //     } catch (e) {
-    //       console.log(e);
-    //     }
-    //   });
-    // }, 3000);
+      setTimeout(() => {
+        purchaseUpdateSubscription = IAP.purchaseUpdatedListener(purchase => {
+          const receipt = purchase.transactionReceipt;
+          try {
+            if (receipt) {
+              validate(receipt);
+              IAP.finishTransaction({purchase: purchase});
+            }
+          } catch (e) {
+            console.log(e);
+          }
+        });
+      }, 3000);
+    } catch (error) {
+      console.log(error);
+    }
 
-    // return () => {
-    //   if (purchaseUpdateSubscription) {
-    //     purchaseUpdateSubscription.remove();
-    //     purchaseUpdateSubscription = null;
-    //   }
-    //   if (purchaseErrorSubscription) {
-    //     purchaseErrorSubscription.remove();
-    //     purchaseErrorSubscription = null;
-    //   }
-    //   try {
-    //     IAP.endConnection();
-    //   } catch (error) {
-    //     console.log('Error ending connection:', error);
-    //   }
-    // };
+    return () => {
+      if (purchaseUpdateSubscription) {
+        purchaseUpdateSubscription.remove();
+        purchaseUpdateSubscription = null;
+      }
+      if (purchaseErrorSubscription) {
+        purchaseErrorSubscription.remove();
+        purchaseErrorSubscription = null;
+      }
+      try {
+        IAP.endConnection();
+      } catch (error) {
+        console.log('Error ending connection:', error);
+      }
+    };
   }, [products]);
 
   //end useeffect
@@ -188,7 +220,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <StateProvider>
-        {checking ? (
+        {!checking ? (
           <>
             <View style={styles.container}>
               <StatusBar backgroundColor="#35363A" />
@@ -215,24 +247,24 @@ export default function App() {
             </RootDrawer.Navigator>
           </>
         ) : null}
+        <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title="Expired !"
+          message="Your subscription has expired. Please subscribe. ?"
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          //showCancelButton={true}
+          showConfirmButton={true}
+          // cancelText="No, Thanks"
+          confirmText="OK"
+          confirmButtonColor="#54cb77"
+          //onCancelPressed={HideAlert1}
+          onConfirmPressed={() => setShowAlert(false)}
+        />
         {products ? (
           <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor="#35363A" />
-            <AwesomeAlert
-              show={showAlert}
-              showProgress={false}
-              title="Expired !"
-              message="Your subscription has expired. Please subscribe. ?"
-              closeOnTouchOutside={false}
-              closeOnHardwareBackPress={false}
-              //showCancelButton={true}
-              showConfirmButton={true}
-              // cancelText="No, Thanks"
-              confirmText="OK"
-              confirmButtonColor="#54cb77"
-              //onCancelPressed={HideAlert1}
-              onConfirmPressed={() => setShowAlert(false)}
-            />
             <ScrollView>
               <Text style={styles.title}>Welcome to WageFigurer !</Text>
               <Text style={styles.Title}>
@@ -240,7 +272,7 @@ export default function App() {
               </Text>
 
               {/* <Text style={styles.Title}>
-                {state.products[0].localizedPrice} /{'Month'}
+                {products[0].localizedPrice} /{'Month'}
               </Text> */}
               <View
                 style={{

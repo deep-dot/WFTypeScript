@@ -2,7 +2,7 @@ import React from 'react';
 import {Alert} from 'react-native';
 import {Action} from '../../../Utilities/Actions';
 
-export const validate = async (receipt, dispatch: React.Dispatch<Action>) => {
+export const validate = async receipt => {
   const receiptBody = {
     productId: JSON.parse(receipt).productId,
     purchaseToken: JSON.parse(receipt).purchaseToken,
