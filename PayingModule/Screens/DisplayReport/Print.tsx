@@ -28,7 +28,7 @@ export const starRating = (
             dispatch({type: 'UPDATE', payload: {done: false}});
             if (!state.done) {
               setTimeout(() => {
-                printHTML(state, dispatch);
+                printHTML(state);
               }, 1000);
             }
           }, 1000);
@@ -42,7 +42,7 @@ export const starRating = (
             dispatch({type: 'UPDATE', payload: {usingservice: false}});
             if (!state.usingservice) {
               setTimeout(() => {
-                printHTML(state, dispatch);
+                printHTML(state);
               }, 1000);
             }
           }, 1000);

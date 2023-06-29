@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useContext, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -18,14 +18,11 @@ import {
 import ThemeProvider from './Utilities/ThemeProvider';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
 import DrawerContent from './Utilities/DrawerContent';
-//import HomeScreen from './PayingModule/Screens/Home/HomeScreen';
 import {StateProvider} from './Utilities/StateProvider';
 import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
 import DisplayReport from './PayingModule/Screens/DisplayReport/DisplayReport';
 import SplashScreen from 'react-native-splash-screen';
 import * as IAP from 'react-native-iap';
-import {StateContext} from './Utilities/Context';
-//import {validate} from './PayingModule/Screens/Subscription/Actions';
 import styles from './PayingModule/Screens/Subscription//Subscription.style';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
@@ -102,8 +99,15 @@ export default function App() {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
-  const [purchased, setPurchased] = useState(false); //make it false after done
-  const [products, setProducts] = useState({});
+
+  type Product = {
+    productId: string;
+    title: string;
+    localizedPrice: string;
+    // include other properties as necessary
+  };
+  const [purchased, setPurchased] = useState(true); //make it false after done
+  const [products, setProducts] = useState<Product[]>([]);
   const [checking, setChecking] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
 
@@ -149,7 +153,12 @@ export default function App() {
 
         if (items) {
           const subscriptions = await IAP.getSubscriptions({skus: items});
-          setProducts(subscriptions || products);
+          let productsArray: Product[] = subscriptions.map(sub => ({
+            productId: sub.productId,
+            title: sub.title,
+            localizedPrice: '1.99$',
+          }));
+          setProducts(productsArray);
           if (!subscriptions || subscriptions.length === 0) {
             Alert.alert('Please check your internet access.');
           }
@@ -220,15 +229,15 @@ export default function App() {
   return (
     <ThemeProvider>
       <StateProvider>
-        {!checking ? (
-          <>
-            <View style={styles.container}>
-              <StatusBar backgroundColor="#35363A" />
-              <Text style={styles.Title}>
-                Checking for previous purchase...
-              </Text>
-            </View>
-          </>
+        {products.length === 0 ? (
+          <View style={styles.container}>
+            <Text style={styles.Title}>Fetching products please wait...</Text>
+          </View>
+        ) : checking ? (
+          <View style={styles.container}>
+            <StatusBar backgroundColor="#35363A" />
+            <Text style={styles.Title}>Checking for previous purchase...</Text>
+          </View>
         ) : purchased ? (
           <>
             <Database />
@@ -243,26 +252,10 @@ export default function App() {
                 component={HomeScreenStack}
               />
               {/* <RootDrawer.Screen name="Driver App" component={} />
-            <RootDrawer.Screen name="View Records" component={ViewRecords} /> */}
+              <RootDrawer.Screen name="View Records" component={ViewRecords} /> */}
             </RootDrawer.Navigator>
           </>
-        ) : null}
-        <AwesomeAlert
-          show={showAlert}
-          showProgress={false}
-          title="Expired !"
-          message="Your subscription has expired. Please subscribe. ?"
-          closeOnTouchOutside={false}
-          closeOnHardwareBackPress={false}
-          //showCancelButton={true}
-          showConfirmButton={true}
-          // cancelText="No, Thanks"
-          confirmText="OK"
-          confirmButtonColor="#54cb77"
-          //onCancelPressed={HideAlert1}
-          onConfirmPressed={() => setShowAlert(false)}
-        />
-        {products ? (
+        ) : (
           <SafeAreaView style={styles.container}>
             <StatusBar backgroundColor="#35363A" />
             <ScrollView>
@@ -271,9 +264,9 @@ export default function App() {
                 This app requires a subscription to use.
               </Text>
 
-              {/* <Text style={styles.Title}>
+              <Text style={styles.Title}>
                 {products[0].localizedPrice} /{'Month'}
-              </Text> */}
+              </Text>
               <View
                 style={{
                   height: 4,
@@ -288,7 +281,7 @@ export default function App() {
                 {'\u2B24'} Ad-free access to the entire App.
               </Text>
 
-              {/* {Object.entries(state.products).map((p: any[]) => (
+              {products.map(p => (
                 <Button
                   key={p.productId}
                   title={`Purchase ${p.title}`}
@@ -300,7 +293,7 @@ export default function App() {
                       .then(() => {});
                   }}
                 />
-              ))} */}
+              ))}
               <View
                 style={{
                   justifyContent: 'space-between',
@@ -337,11 +330,22 @@ export default function App() {
               </TouchableOpacity>
             </ScrollView>
           </SafeAreaView>
-        ) : (
-          <View style={styles.container}>
-            <Text style={styles.Title}>Fetching products please wait...</Text>
-          </View>
         )}
+        <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title="Expired !"
+          message="Your subscription has expired. Please subscribe. ?"
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={false}
+          //showCancelButton={true}
+          showConfirmButton={true}
+          // cancelText="No, Thanks"
+          confirmText="OK"
+          confirmButtonColor="#54cb77"
+          //onCancelPressed={HideAlert1}
+          onConfirmPressed={() => setShowAlert(false)}
+        />
       </StateProvider>
     </ThemeProvider>
   );
