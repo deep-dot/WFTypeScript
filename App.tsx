@@ -22,7 +22,7 @@ import {StateProvider} from './Utilities/StateProvider';
 import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
 import DisplayReport from './PayingModule/Screens/DisplayReport/DisplayReport';
 import SplashScreen from 'react-native-splash-screen';
-import * as IAP from 'react-native-iap';
+//import * as IAP from 'react-native-iap';
 import styles from './PayingModule/Screens/Subscription//Subscription.style';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
@@ -35,6 +35,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Database from './PayingModule/Database/Database';
+import {SANDTEST_URL} from '@env';
 
 const items = Platform.select({
   //ios: [],
@@ -97,7 +98,10 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
 export default function App() {
   useEffect(() => {
-    SplashScreen.hide();
+    console.log('api key==', SANDTEST_URL);
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 1000);
   }, []);
 
   type Product = {
@@ -110,13 +114,20 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [checking, setChecking] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
+  type Receipt = {
+    productId: string;
+    purchaseToken: string;
+  };
 
-  const validate = async receipt => {
+  const validate = async (receipt: string) => {
+    const parsedReceipt: Receipt = JSON.parse(receipt);
+
     const receiptBody = {
-      productId: JSON.parse(receipt).productId,
-      purchaseToken: JSON.parse(receipt).purchaseToken,
+      productId: parsedReceipt.productId,
+      purchaseToken: parsedReceipt.purchaseToken,
     };
-    console.log('reciept body=======', receiptBody);
+
+    console.log('receipt body=======', receiptBody);
 
     try {
       await fetch(
@@ -139,7 +150,12 @@ export default function App() {
         });
       });
     } catch (error) {
-      console.log('Error!', error.message);
+      if (error instanceof Error) {
+        console.log('error connecting to store...', error.message);
+      } else {
+        // handle other potential types of errors if necessary
+        console.log('error connecting to store...', error);
+      }
     }
   };
 
@@ -177,18 +193,27 @@ export default function App() {
           console.log('items is undefined');
         }
       } catch (error) {
-        console.log('error connecting to store...', error.message);
+        if (error instanceof Error) {
+          console.log('error connecting to store...', error.message);
+        } else {
+          // handle other potential types of errors if necessary
+          console.log('error connecting to store...', error);
+        }
       }
     };
 
     init();
 
     try {
-      purchaseErrorSubscription = IAP.purchaseErrorListener(error => {
-        if (!(error.responseCode?.toString() === '2')) {
-          Alert.alert('Oops!', 'There is something wrong with your purchase');
-        }
-      });
+      type PurchaseError = Error & {responseCode?: number | string};
+
+      purchaseErrorSubscription = IAP.purchaseErrorListener(
+        (error: PurchaseError) => {
+          if (!(error.responseCode?.toString() === '2')) {
+            Alert.alert('Oops!', 'There is something wrong with your purchase');
+          }
+        },
+      );
 
       setTimeout(() => {
         purchaseUpdateSubscription = IAP.purchaseUpdatedListener(purchase => {
