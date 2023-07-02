@@ -13,7 +13,7 @@
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
 
-  [RNSplashScreen show];
+  // [RNSplashScreen show];
   
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
@@ -34,6 +34,7 @@
 /// @return: `true` if the `concurrentRoot` feature is enabled. Otherwise, it returns `false`.
 - (BOOL)concurrentRootEnabled
 {
+  [RNSplashScreen show];
   return true;
 }
 
