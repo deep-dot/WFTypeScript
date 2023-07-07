@@ -23,6 +23,7 @@ import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
 import DisplayReport from './PayingModule/Screens/DisplayReport/DisplayReport';
 import SplashScreen from 'react-native-splash-screen';
 import * as IAP from 'react-native-iap';
+//import * as RNIap from 'react-native-iap';
 import styles from './PayingModule/Screens/Subscription//Subscription.style';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
@@ -165,95 +166,106 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    let purchaseUpdateSubscription: EmitterSubscription | null = null;
-    let purchaseErrorSubscription: EmitterSubscription | null = null;
+  IAP.initConnection()
+    .then(() => {
+      // Retrieve the products details
+      return IAP.getProducts({skus: items || []});
+    })
+    .then(product => {
+      console.log(product);
+    })
+    .catch(error => {
+      console.log(error.message);
+    });
 
-    const init = async () => {
-      try {
-        await IAP.initConnection();
+  // useEffect(() => {
+  //   let purchaseUpdateSubscription: EmitterSubscription | null = null;
+  //   let purchaseErrorSubscription: EmitterSubscription | null = null;
 
-        if (items) {
-          const subscriptions = await IAP.getSubscriptions({skus: items});
-          let productsArray: Product[] = subscriptions.map(sub => ({
-            productId: sub.productId,
-            title: sub.title,
-            localizedPrice: '1.99$',
-          }));
-          setProducts(productsArray);
-          if (!subscriptions || subscriptions.length === 0) {
-            Alert.alert('Please check your internet access.');
-          }
+  //   const init = async () => {
+  //     try {
+  //       await IAP.initConnection();
+  //       if (items) {
+  //         const subscriptions = await IAP.getSubscriptions({skus: items});
+  //         let productsArray: Product[] = subscriptions.map(sub => ({
+  //           productId: sub.productId,
+  //           title: sub.title,
+  //           localizedPrice: '1.99$',
+  //         }));
+  //         setProducts(productsArray);
+  //         if (!subscriptions || subscriptions.length === 0) {
+  //           Alert.alert('Please check your internet access.');
+  //         }
 
-          const history = await IAP.getPurchaseHistory();
+  //         const history = await IAP.getPurchaseHistory();
 
-          try {
-            const receipt = history[history.length - 1].transactionReceipt;
-            if (receipt) {
-              validate(receipt);
-            }
-          } catch (error) {
-            console.log('Error getting the receipt:', error);
-          }
-        } else {
-          console.log('items is undefined');
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log('error connecting to store...', error.message);
-        } else {
-          // handle other potential types of errors if necessary
-          console.log('error connecting to store...', error);
-        }
-      }
-    };
+  //         try {
+  //           const receipt = history[history.length - 1].transactionReceipt;
+  //           if (receipt) {
+  //             validate(receipt);
+  //           }
+  //         } catch (error) {
+  //           console.log('Error getting the receipt:', error);
+  //         }
+  //       } else {
+  //         console.log('items is undefined');
+  //       }
+  //     } catch (error) {
+  //       if (error instanceof Error) {
+  //         console.log('error connecting to store...', error.message);
+  //       } else {
+  //         // handle other potential types of errors if necessary
+  //         console.log('error connecting to store...', error);
+  //       }
+  //     }
+  //   };
 
-    init();
+  //   init();
 
-    try {
-      type PurchaseError = Error & {responseCode?: number | string};
+  //   try {
+  //     type PurchaseError = Error & {responseCode?: number | string};
 
-      purchaseErrorSubscription = IAP.purchaseErrorListener(
-        (error: PurchaseError) => {
-          if (!(error.responseCode?.toString() === '2')) {
-            Alert.alert('Oops!', 'There is something wrong with your purchase');
-          }
-        },
-      );
+  //     purchaseErrorSubscription = IAP.purchaseErrorListener(
+  //       (error: PurchaseError) => {
+  //         if (!(error.responseCode?.toString() === '2')) {
+  //           Alert.alert('Oops!', 'There is something wrong with your purchase');
+  //         }
+  //       },
+  //     );
 
-      setTimeout(() => {
-        purchaseUpdateSubscription = IAP.purchaseUpdatedListener(purchase => {
-          const receipt = purchase.transactionReceipt;
-          try {
-            if (receipt) {
-              validate(receipt);
-              IAP.finishTransaction({purchase: purchase});
-            }
-          } catch (e) {
-            console.log(e);
-          }
-        });
-      }, 3000);
-    } catch (error) {
-      console.log(error);
-    }
+  //     setTimeout(() => {
+  //       purchaseUpdateSubscription = IAP.purchaseUpdatedListener(purchase => {
+  //         const receipt = purchase.transactionReceipt;
+  //         try {
+  //           if (receipt) {
+  //             validate(receipt);
+  //             IAP.finishTransaction({purchase: purchase});
+  //           }
+  //         } catch (e) {
+  //           console.log(e);
+  //         }
+  //       });
+  //     }, 3000);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
 
-    return () => {
-      if (purchaseUpdateSubscription) {
-        purchaseUpdateSubscription.remove();
-        purchaseUpdateSubscription = null;
-      }
-      if (purchaseErrorSubscription) {
-        purchaseErrorSubscription.remove();
-        purchaseErrorSubscription = null;
-      }
-      try {
-        IAP.endConnection();
-      } catch (error) {
-        console.log('Error ending connection:', error);
-      }
-    };
-  }, [products]);
+  //   return () => {
+  //     if (purchaseUpdateSubscription) {
+  //       purchaseUpdateSubscription.remove();
+  //       purchaseUpdateSubscription = null;
+  //     }
+  //     if (purchaseErrorSubscription) {
+  //       purchaseErrorSubscription.remove();
+  //       purchaseErrorSubscription = null;
+  //     }
+  //     try {
+  //       IAP.endConnection();
+  //     } catch (error) {
+  //       console.log('Error ending connection:', error);
+  //     }
+  //   };
+  // }, [products]);
 
   //end useeffect
 
