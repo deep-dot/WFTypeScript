@@ -35,15 +35,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Database from './PayingModule/Database/Database';
-import {
-  SANDTEST_URL,
-  RECIEPT_VALIDATE_URL,
-  IN_APP_PURCHASE_KEY,
-  IN_APP_PURCHASE_PASSWORD,
-  PRIVACY_POLICY,
-  TERMS_AND_CONDITIONS,
-  MESSENGER_URL
-} from '@env';
+import {SANDTEST_URL} from '@env';
 
 // const instructions = Platform.select({
 //   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
