@@ -118,14 +118,6 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-         release {
-            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
-                storeFile file('wfuploadkey.jks')
-                storePassword 'programming1'
-                keyAlias 'wf'
-                keyPassword 'programming1'
-            }
-        }
     }
     buildTypes {
         debug {
@@ -137,7 +129,6 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            signingConfig signingConfigs.release
         }
     }
 
@@ -159,6 +150,10 @@ android {
 }
 
 dependencies {
+    //billing library
+    // def billing_version = "6.0.1"
+    // implementation "com.android.billingclient:billing:$billing_version"
+
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
