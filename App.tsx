@@ -105,7 +105,6 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
 export default function App() {
   useEffect(() => {
-    console.log('api key==', SANDTEST_URL);
     setTimeout(() => {
       SplashScreen.hide();
     }, 1000);
@@ -134,43 +133,37 @@ export default function App() {
       purchaseToken: parsedReceipt.purchaseToken,
     };
 
-    console.log('receipt body=======', receiptBody);
+    console.log('receipt body=======', receiptBody, SANDTEST_URL);
 
     try {
-      await fetch(
+      const response = await fetch(
         'https://australia-southeast1-pc-api-7263938244868821830-612.cloudfunctions.net/receipt',
         {
           headers: {'Content-Type': 'application/json'},
           method: 'POST',
           body: JSON.stringify({data: receiptBody}),
         },
-      ).then(res => {
-        console.log('Response status:', res.status);
-       // console.log('Response headers:', res.headers.map);
+      );
 
-        if (res.ok) {
-          return res.json();
-        } else {
-          throw new Error('Server response was not ok.');
-        }
-        // res.json().then(r => {
-        //   if (r.result.error === -1) {
-        //     setChecking(false);
-        //     Alert.alert('Oops!', 'There is something wrong with your purchase');
-        //   } else if (r.result.isActiveSubscription) {
-        //     setPurchased(true);
-        //   } else {
-        //     setShowAlert(true);
-        //   }
-        // });
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log('error connecting to store...', error.message);
-      } else {
-        // handle other potential types of errors if necessary
-        console.log('error connecting to store...', error);
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`);
       }
+
+      const result = await response.json();
+      if (result.error === -1) {
+        setChecking(false);
+        Alert.alert('Oops!', 'There is something wrong with your purchase');
+      } else if (result.isActiveSubscription) {
+        setPurchased(true);
+      } else {
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('Error during receipt validation:', error);
+      Alert.alert(
+        'Error',
+        'Could not connect to the store. Please try again later.',
+      );
     }
   };
 
@@ -276,7 +269,7 @@ export default function App() {
         console.log('Error ending connection:', error);
       }
     };
-  }, [products]);
+  }, []);
 
   //end useeffect
 

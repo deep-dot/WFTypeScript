@@ -3,7 +3,7 @@
 import * as React from 'react';
 import {Image, StatusBar, Platform} from 'react-native';
 import ThemeProvider from './Utilities/ThemeProvider';
-import Subscription from './PayingModule/Screens/Enter/SubscriptionScreen';
+import Subscription from './PayingModule/Screens/Subscription/Subscription';
 import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
 import DrawerContent from './Utilities/DrawerContent';
 //import HomeScreen from './PayingModule/Screens/Home/HomeScreen';

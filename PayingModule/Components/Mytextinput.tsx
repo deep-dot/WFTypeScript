@@ -50,7 +50,7 @@ const MyTextInput = ({
         numberOfLines={numberOfLines}
         multiline={multiline}
         onSubmitEditing={onSubmitEditing}
-        style={{style, color: color}}
+        style={{ style, color: color }}
         blurOnSubmit={false}
         value={value}
       />

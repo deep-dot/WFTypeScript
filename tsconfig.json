@@ -4,5 +4,16 @@
     "declarations.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ]
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "jsx": "react-native",
+    // ...additional options...
+  }
 }
