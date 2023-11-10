@@ -37,8 +37,10 @@ import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Database from './PayingModule/Database/Database';
 import {
+  IN_APP_PURCHASE_KEY,
   SANDTEST_URL,
   RECIEPT_VALIDATE_URL,
+  ANDROID_PRODUCT_ID,
   MESSENGER_URL,
   PRIVACY_POLICY,
   TERMS_AND_CONDITIONS,
@@ -51,8 +53,8 @@ import {
 //     'Shake or press menu button for dev menu',
 // });
 const items = Platform.select({
-  ios: [],
-  android: ['com.wagefigurer.21042021'],
+  ios: [IN_APP_PURCHASE_KEY],
+  android: [ANDROID_PRODUCT_ID],
 });
 export type StackParamList = {
   'Enter Data': undefined;
@@ -142,7 +144,8 @@ export default function App() {
     console.log('receipt body=======', receiptBody, SANDTEST_URL);
 
     try {
-      const response = await fetch(RECIEPT_VALIDATE_URL, {
+      // const response = await fetch(RECIEPT_VALIDATE_URL, {
+      const response = await fetch(SANDTEST_URL, {
         headers: {'Content-Type': 'application/json'},
         method: 'POST',
         body: JSON.stringify({data: receiptBody}),
@@ -220,7 +223,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <StateProvider>
-        {products.length === 0 ? (
+        {products.length !== 0 ? (
           <View style={styles.container}>
             <Text style={styles.Title}>Fetching products please wait...</Text>
           </View>
