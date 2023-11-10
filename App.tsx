@@ -36,7 +36,13 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Database from './PayingModule/Database/Database';
-import {SANDTEST_URL} from '@env';
+import {
+  SANDTEST_URL,
+  RECIEPT_VALIDATE_URL,
+  MESSENGER_URL,
+  PRIVACY_POLICY,
+  TERMS_AND_CONDITIONS,
+} from '@env';
 
 // const instructions = Platform.select({
 //   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -136,14 +142,11 @@ export default function App() {
     console.log('receipt body=======', receiptBody, SANDTEST_URL);
 
     try {
-      const response = await fetch(
-        'https://australia-southeast1-pc-api-7263938244868821830-612.cloudfunctions.net/receipt',
-        {
-          headers: {'Content-Type': 'application/json'},
-          method: 'POST',
-          body: JSON.stringify({data: receiptBody}),
-        },
-      );
+      const response = await fetch(RECIEPT_VALIDATE_URL, {
+        headers: {'Content-Type': 'application/json'},
+        method: 'POST',
+        body: JSON.stringify({data: receiptBody}),
+      });
 
       if (!response.ok) {
         throw new Error(`Server responded with status ${response.status}`);
@@ -166,43 +169,28 @@ export default function App() {
       );
     }
   };
-
-  // useEffect(() => {
-  //   IAP.initConnection()
-  //     .then(() => {
-  //       // Retrieve the products details
-  //       return IAP.getProducts({skus: items || []});
-  //     })
-  //     .then(product => {
-  //       console.log(product);
-  //     })
-  //     .catch(error => {
-  //       console.log(error.message);
-  //     });
-  // }, []);
-
   useEffect(() => {
-    let purchaseUpdateSubscription: EmitterSubscription | null = null;
-    let purchaseErrorSubscription: EmitterSubscription | null = null;
+    let isMounted = true; // Flag to handle async operation in case the component is unmounted
 
-    const init = async () => {
+    const initializeIAP = async () => {
       try {
-        console.log(items);
         await IAP.initConnection();
-        if (items) {
-          const subscriptions = await IAP.getSubscriptions({skus: items});
-          let productsArray: Product[] = subscriptions.map(sub => ({
-            productId: sub.productId,
-            title: sub.title,
-            localizedPrice: '1.99$',
-          }));
-          setProducts(productsArray);
+        if (isMounted) {
+          console.log('Connection to the IAP store was successful');
+          const subscriptions = await IAP.getSubscriptions({skus: items || []});
           if (!subscriptions || subscriptions.length === 0) {
-            Alert.alert('Please check your internet access.');
+            return Alert.alert('Please check your internet access.');
+          } else {
+            const productsArray = subscriptions.map(sub => ({
+              productId: sub.productId,
+              title: sub.title,
+              localizedPrice: '1.99$', // Assuming 'localizedPrice' exists
+            }));
+            setProducts(productsArray);
+            console.log('Products received:', products[0], products.length);
           }
 
           const history = await IAP.getPurchaseHistory();
-
           try {
             const receipt = history[history.length - 1].transactionReceipt;
             if (receipt) {
@@ -211,67 +199,23 @@ export default function App() {
           } catch (error) {
             console.log('Error getting the receipt:', error);
           }
-        } else {
-          console.log('items is undefined');
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.log('error connecting to store...', error.message);
-        } else {
-          // handle other potential types of errors if necessary
-          console.log('error connecting to store...', error);
+        if (isMounted) {
+          console.log(
+            'Error initializing IAP connection or fetching products:',
+          );
         }
       }
     };
 
-    init();
-
-    try {
-      type PurchaseError = Error & {responseCode?: number | string};
-
-      purchaseErrorSubscription = IAP.purchaseErrorListener(
-        (error: PurchaseError) => {
-          if (!(error.responseCode?.toString() === '2')) {
-            Alert.alert('Oops!', 'There is something wrong with your purchase');
-          }
-        },
-      );
-
-      setTimeout(() => {
-        purchaseUpdateSubscription = IAP.purchaseUpdatedListener(purchase => {
-          const receipt = purchase.transactionReceipt;
-          try {
-            if (receipt) {
-              validate(receipt);
-              IAP.finishTransaction({purchase: purchase});
-            }
-          } catch (e) {
-            console.log(e);
-          }
-        });
-      }, 3000);
-    } catch (error) {
-      console.log(error);
-    }
+    initializeIAP();
 
     return () => {
-      if (purchaseUpdateSubscription) {
-        purchaseUpdateSubscription.remove();
-        purchaseUpdateSubscription = null;
-      }
-      if (purchaseErrorSubscription) {
-        purchaseErrorSubscription.remove();
-        purchaseErrorSubscription = null;
-      }
-      try {
-        IAP.endConnection();
-      } catch (error) {
-        console.log('Error ending connection:', error);
-      }
+      isMounted = false;
+      IAP.endConnection?.(); // Clean up the IAP connection when the component unmounts
     };
   }, []);
-
-  //end useeffect
 
   return (
     <ThemeProvider>
@@ -333,7 +277,7 @@ export default function App() {
                   key={p.productId}
                   title={`Purchase ${p.title}`}
                   onPress={() => {
-                    IAP.requestSubscription(p.productId)
+                    IAP.requestSubscription(p.productId as any)
                       .catch(error => {
                         console.log(error.message);
                       })
@@ -350,9 +294,7 @@ export default function App() {
                 }}>
                 <TouchableOpacity
                   onPress={() => {
-                    Linking.openURL(
-                      'https://www.privacypolicies.com/live/aedcda52-a940-4709-a1cd-c06d70e58b46',
-                    );
+                    Linking.openURL(PRIVACY_POLICY);
                   }}>
                   <Text style={styles.Title}> Privacy Policy</Text>
                 </TouchableOpacity>
@@ -360,18 +302,14 @@ export default function App() {
                 <Text style={styles.Title}> | </Text>
                 <TouchableOpacity
                   onPress={() => {
-                    Linking.openURL(
-                      'https://www.privacypolicies.com/live/8467e6de-e7f6-4a70-8b79-c50bcddaadfc',
-                    );
+                    Linking.openURL(TERMS_AND_CONDITIONS);
                   }}>
                   <Text style={styles.Title}> Terms & Conditions</Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  Linking.openURL(
-                    'https://www.messenger.com/t/106587868210718',
-                  );
+                  Linking.openURL(MESSENGER_URL);
                 }}>
                 <Text style={styles.Title}> Contact</Text>
               </TouchableOpacity>
@@ -382,7 +320,7 @@ export default function App() {
           show={showAlert}
           showProgress={false}
           title="Expired !"
-          message="Your subscription has expired. Please subscribe. ?"
+          message="Your subscription is expired. Please subscribe."
           closeOnTouchOutside={false}
           closeOnHardwareBackPress={false}
           //showCancelButton={true}
