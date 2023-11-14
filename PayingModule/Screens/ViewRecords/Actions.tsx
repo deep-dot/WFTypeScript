@@ -23,7 +23,7 @@ export const ViewRecordsByDate = (
                 res.push(results.rows.item(i));
               }
               resolve(res);
-              Alert.alert('Search successfully');
+              //Alert.alert('Search successfully');
             } else {
               Alert.alert('No record exist on this date');
               reject(new Error('Search operation failed'));
@@ -90,12 +90,10 @@ export const UpdateData = (
           (_tx: Transaction, results: ResultSet) => {
             if (results.rows.length > 0) {
               let res = results.rows.item(0);
-              // console.log('res in updateData in dbUtility', res);
-              resolve(res);
               dispatch({type: 'UPDATE', payload: {...res, Search_Date}});
-              Alert.alert('Search successfully');
+              resolve(res);
             } else {
-              reject(new Error('Search operation failed'));
+              reject();
             }
           },
           (error: any) => {
@@ -109,14 +107,14 @@ export const UpdateData = (
   });
 };
 
-export const deleteDataInTable = (id: string, date: string) => {
+export const deleteDataInTable = (date: string) => {
   // console.log('data in db Utility==', id, date);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'DELETE FROM datatable WHERE Record_id = ? AND Date = ?',
-          [id, date],
+          'DELETE FROM datatable WHERE Date = ?',
+          [date],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
               resolve('Deleted successfully');

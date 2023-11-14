@@ -271,7 +271,6 @@ export const refreshValues = {
 
 export type Property =
   | 'Eftpos'
-  | 'Eftpos_Lifting_Value'
   | 'Total_Manual_MPTP31_And_MPTP_Values'
   | 'M3_Dockets'
   | 'Electronic_Account_Payments'

@@ -52,27 +52,28 @@ const ViewRecords = () => {
     const endDate = finish_date ? finish_date : current_date;
     try {
       const res = await ViewRecordsByDate(startDate, endDate);
-      // console.log('res===', res);
-      dispatch({
-        type: 'UPDATE',
-        payload: {totalrecords: res.length.toString()},
-      });
-      // console.log(res[0].Record_id);
-      setFlatListItems(res);
+      // console.log('res===', res);      
       if (res.length === 0) {
         dispatch({
           type: 'UPDATE',
           payload: {sorryAlert: true},
         });
         setFlatListItems([]);
-      }
+      } else {
+      dispatch({
+        type: 'UPDATE',
+        payload: {totalrecords: res.length.toString()},
+      });
+      setFlatListItems(res);
+    }
+      // console.log(res[0].Record_id);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const Delete = async (id: string, date: string) => {
-    const res = await deleteDataInTable(id, date);
+  const Delete = async (date: string) => {
+    const res = await deleteDataInTable(date);
     if (res === 'Deleted successfully') {
       SelectFromDataTable(dispatch)
         .then(temp => {
@@ -84,7 +85,7 @@ const ViewRecords = () => {
     }
   };
 
-  const DeleteRecord = (id: string, date: string) => {
+  const DeleteRecord = (date: string) => {
     Alert.alert(
       'Please confirm!',
       'Do you wish to delete the record?',
@@ -92,7 +93,7 @@ const ViewRecords = () => {
         {
           text: 'Yes',
           onPress: () => {
-            Delete(id, date);
+            Delete(date);
           },
         },
         {
@@ -104,12 +105,13 @@ const ViewRecords = () => {
     );
   };
 
-  const handleRefresh = async (searchDate: string) => {
+  const edit = async (searchDate: string) => {
     try {
       await UpdateData(searchDate, dispatch);
       navigation.navigate('Enter Data');
     } catch (error) {
-      console.error(error);
+      Alert.alert('Record does not exist');
+      //console.error(error);
     }
   };
 
@@ -235,27 +237,21 @@ const ViewRecords = () => {
               data={tableHead}
               widthArr={widthArr}
               style={styles.header}
-              textStyle={styles.text}
             />
-          </Table>
-          <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-            {tableData.map((rowdata, index) => (
+            {tableData && tableData.map((rowdata, index) => (
               <Row
                 key={index}
                 data={[
                   <View style={styles.rowButtons}>
                     <TouchableOpacity
                       onPress={() => {
-                        DeleteRecord(
-                          rowdata[index].Record_id.toString(),
-                          rowdata[index].Date,
-                        );
+                        DeleteRecord(rowdata.Date);
                       }}>
                       <Icon name="trash-outline" size={20} color="tomato" />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
-                        handleRefresh(rowdata.Date);
+                        edit(rowdata.Date);
                       }}>
                       <Icon name="create-outline" size={20} color="#000" />
                     </TouchableOpacity>
@@ -292,7 +288,6 @@ const ViewRecords = () => {
                   ...styles.row,
                   ...(index % 2 === 0 ? {backgroundColor: 'white'} : {}),
                 }}
-                textStyle={styles.text}
               />
             ))}
           </Table>

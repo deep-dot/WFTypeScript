@@ -146,53 +146,83 @@ const EnterData = () => {
     dispatch({type: 'UPDATE', payload: {[name]: value}});
   };
 
-  const SubmitEditing = (name: string, value: string) => {
+  const SubmitEditing = (text: string, value: string) => {
     if (!isNaN(Number(value))) {
-      let updatedValues = {...state, [name]: Number(value)};
-      // console.log(`name ${name} and value ${value}`);
-      if (name === 'Jobs_Done') {
-        updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
-      }
-      if (name === 'Meter_Finish') {
-        updatedValues.Shift_Total =
-          updatedValues.Meter_Finish -
-          updatedValues.Meter_Start -
-          updatedValues.Levy;
-      }
-      if (name === 'Km_Finish') {
-        updatedValues.Kms = updatedValues.Km_Finish - updatedValues.Km_Start;
-      }
-      if (name === 'Paidkm_Finish') {
-        updatedValues.Paid_Kms =
-          updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
-      }
-      if (
-        name === 'Fuel' ||
-        name === 'Electronic_Account_Payments' ||
-        name === 'M3_Dockets'
-      ) {
-        updatedValues.Number_Of_Chairs =
-          updatedValues.Eftpos_Liftings +
-          updatedValues.Number_Of_Manual_Liftings;
+      let updatedValues = {...state, [text]: Number(value)};
+      // console.log(`text ${text} and value ${value}`);
+      // if (text === 'Jobs_Done') {
+      //   updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
+      // }
+      // if (text === 'Meter_Finish') {
+      //   updatedValues.Shift_Total =
+      //     updatedValues.Meter_Finish -
+      //     updatedValues.Meter_Start -
+      //     updatedValues.Levy;
+      // }
+      // if (text === 'Km_Finish') {
+      //   updatedValues.Kms = updatedValues.Km_Finish - updatedValues.Km_Start;
+      // }
+      // if (text === 'Paidkm_Finish') {
+      //   updatedValues.Paid_Kms =
+      //     updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
+      // }
+      // if (
+      //   text === 'Fuel' ||
+      //   text === 'Electronic_Account_Payments' ||
+      //   text === 'M3_Dockets'
+      // ) {
+      //   updatedValues.Number_Of_Chairs =
+      //     updatedValues.Eftpos_Liftings +
+      //     updatedValues.Number_Of_Manual_Liftings;
 
-        updatedValues.Driver_Lifting_Value =
-          updatedValues.Number_Of_Chairs *
-          updatedValues.Driver_Share_In_LiftingFee;
+      //   updatedValues.Driver_Lifting_Value =
+      //     updatedValues.Number_Of_Chairs *
+      //     updatedValues.Driver_Share_In_LiftingFee;
 
-        updatedValues.Commission_Driver =
-          (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
+      //   updatedValues.Commission_Driver =
+      //     (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
 
-        updatedValues.CPK =
-          updatedValues.Kms > 0
-            ? updatedValues.Shift_Total / updatedValues.Kms
-            : 0;
+      //   updatedValues.CPK =
+      //     updatedValues.Kms > 0
+      //       ? updatedValues.Shift_Total / updatedValues.Kms
+      //       : 0;
 
-        updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
-      }
+      //   updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
+      // }
+
+      updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
+
+      updatedValues.Shift_Total =
+        updatedValues.Meter_Finish -
+        updatedValues.Meter_Start -
+        updatedValues.Levy;
+
+      updatedValues.Kms = updatedValues.Km_Finish - updatedValues.Km_Start;
+
+      updatedValues.Paid_Kms =
+        updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
+
+      updatedValues.Number_Of_Chairs =
+        updatedValues.Eftpos_Liftings + updatedValues.Number_Of_Manual_Liftings;
+
+      updatedValues.Driver_Lifting_Value =
+        updatedValues.Number_Of_Chairs *
+        updatedValues.Driver_Share_In_LiftingFee;
+
+      updatedValues.Commission_Driver =
+        (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
+
+      updatedValues.CPK =
+        updatedValues.Kms > 0
+          ? updatedValues.Shift_Total / updatedValues.Kms
+          : 0;
+
+      updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
+
       dispatch({type: 'UPDATE', payload: updatedValues});
     } else {
       Alert.alert('Please input a correct number');
-      let updatedValues = {...state, [name]: ''};
+      let updatedValues = {...state, [text]: ''};
       dispatch({type: 'UPDATE', payload: updatedValues});
     }
   };
