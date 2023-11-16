@@ -258,9 +258,9 @@ export function Update(
                 console.log(result);
                 dispatch({type: 'UPDATE', payload: result});
                 resolve(result);
-                Alert.alert('Update operation successful');
+                //Alert.alert('Update operation successful');
               } else {
-                reject(new Error('Update operation failed'));
+                reject();
               }
             },
             (error: any) => {

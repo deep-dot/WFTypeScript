@@ -1,28 +1,29 @@
 import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
+  header: {height: 30, backgroundColor: '#ffffff'},
+  text: {textAlign: 'center', fontWeight: 'bold', padding: 0, fontSize: 12},
+  row: {height: 30, backgroundColor: '#ffffff'},
+  rowButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
   textinputview: {
     flexDirection: 'row',
+    borderColor: '#000',
     borderBottomWidth: 0.5,
-    marginRight: 5,
+    marginRight: 10,
     marginTop: 20,
-    marginLeft: 5,
+    marginLeft: 10,
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   titletext: {
-    color: '#000000',
-    fontSize: 15,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  titleText: {
-    color: '#ffffff',
-    fontSize: 15,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: '#000',
+    fontSize: 14,
   },
   textInput: {
-    height: 30,
+    height: 45,
     padding: 0,
     color: '#ffffff',
   },

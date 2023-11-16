@@ -269,58 +269,17 @@ export const refreshValues = {
   Search_Date: '',
 };
 
-export type Property =
-  | 'Eftpos'
-  | 'Total_Manual_MPTP31_And_MPTP_Values'
-  | 'M3_Dockets'
-  | 'Electronic_Account_Payments'
-  | 'Driver_Lifting_Value'
-  | 'Car_Wash'
-  | 'Fuel'
-  | 'Misc'
+export type Property1 =
   | 'Gov_Lifting_Fee'
   | 'Driver_Share_In_LiftingFee'
   | 'Gov_Levy'
-  | 'Driver_Comm_Rate'
-  | 'Hours_Worked'
-  | 'Insurance'
-  | 'Jobs_Done'
-  | 'Levy'
-  | 'Meter_Start'
-  | 'Meter_Finish'
-  | 'Shift_Total'
-  | 'Km_Start'
-  | 'Km_Finish'
-  | 'Kms'
-  | 'Paidkm_Start'
-  | 'Paidkm_Finish'
-  | 'Paid_Kms'
-  | 'Unpaid_Kms'
-  | 'CPK'
-  | 'Eftpos'
-  | 'Eftpos_Liftings'
-  | 'Number_Of_Manual_Liftings'
-  | 'Total_Manual_MPTP31_And_MPTP_Values'
-  | 'M3_Dockets'
-  | 'Electronic_Account_Payments'
-  | 'Misc'
-  | 'Car_Wash'
-  | 'Fuel'
-  | 'Total_Lifting_Value'
-  | 'Number_Of_Chairs'
-  | 'Driver_Lifting_Value'
-  | 'Commission_Driver'
-  | 'Deductions'
-  | 'Average_Fare'
-  | 'Net_Payin'
-  | 'Net_Driver_Income';
-
-type InputItem = {
+  | 'Driver_Comm_Rate';
+type Input1 = {
   title: string;
-  name: Property;
+  name: Property1;
   placeholder: string;
 };
-export const liftingInputs: InputItem[] = [
+export const liftingInputs: Input1[] = [
   {
     title: 'Lifting Total',
     name: 'Gov_Lifting_Fee',
@@ -339,7 +298,38 @@ export const liftingInputs: InputItem[] = [
   },
 ];
 
-export const inputs: InputItem[] = [
+export type Property2 =
+  | 'Eftpos'
+  | 'Total_Manual_MPTP31_And_MPTP_Values'
+  | 'M3_Dockets'
+  | 'Electronic_Account_Payments'
+  | 'Car_Wash'
+  | 'Fuel'
+  | 'Misc'
+  | 'Hours_Worked'
+  | 'Insurance'
+  | 'Jobs_Done'
+  | 'Meter_Start'
+  | 'Meter_Finish'
+  | 'Km_Start'
+  | 'Km_Finish'
+  | 'Paidkm_Start'
+  | 'Paidkm_Finish'
+  | 'Eftpos'
+  | 'Eftpos_Liftings'
+  | 'Number_Of_Manual_Liftings'
+  | 'Total_Manual_MPTP31_And_MPTP_Values'
+  | 'M3_Dockets'
+  | 'Electronic_Account_Payments'
+  | 'Misc'
+  | 'Car_Wash'
+  | 'Fuel';
+type Input2 = {
+  title: string;
+  name: Property2;
+  placeholder: string;
+};
+export const inputs: Input2[] = [
   {title: 'Working Hours', name: 'Hours_Worked', placeholder: '0'},
   {title: 'Insurance', name: 'Insurance', placeholder: '0.00'},
   {title: 'Jobs Done', name: 'Jobs_Done', placeholder: '0'},
@@ -372,7 +362,25 @@ export const inputs: InputItem[] = [
   {title: 'Fuel', name: 'Fuel', placeholder: '0.00'},
 ];
 
-export const payinInputs: InputItem[] = [
+export type Property3 =
+  | 'Shift_Total'
+  | 'Levy'
+  | 'Kms'
+  | 'Paid_Kms'
+  | 'Unpaid_Kms'
+  | 'CPK'
+  | 'Number_Of_Chairs'
+  | 'Driver_Lifting_Value'
+  | 'Commission_Driver'
+  | 'Deductions'
+  | 'Net_Payin';
+
+type Input3 = {
+  title: string;
+  name: Property3;
+  placeholder: string;
+};
+export const payinInputs: Input3[] = [
   {title: 'Total Meter', name: 'Shift_Total', placeholder: '0.00'},
   {title: 'Levy', name: 'Levy', placeholder: '0.00'},
   {title: 'Total KMs', name: 'Kms', placeholder: '0.00'},
@@ -391,11 +399,5 @@ export const payinInputs: InputItem[] = [
   },
   {title: 'Commission Driver', name: 'Commission_Driver', placeholder: '00'},
   {title: 'Deductions', name: 'Deductions', placeholder: '0.00'},
-  // {title: 'Average Fare', name: 'Average_Fare', placeholder: '0.00'},
   {title: 'Net Pay-In', name: 'Net_Payin', placeholder: '0.00'},
-  // {
-  //   title: 'Net Driver Income',
-  //   name: 'Net_Driver_Income',
-  //   placeholder: '0.00',
-  // },
 ];

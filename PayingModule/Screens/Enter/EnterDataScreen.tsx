@@ -117,7 +117,7 @@ const EnterData = () => {
   };
 
   const executeSqlQuery = async () => {
-    if (state.Search_Date !== undefined && state.Search_Date !== '') {
+    if (state.Search_Date) {
       await Update(state, dispatch);
     } else {
       await Insert(state, dispatch);
@@ -147,6 +147,7 @@ const EnterData = () => {
   };
 
   const SubmitEditing = (text: string, value: string) => {
+    console.log('click......');
     if (!isNaN(Number(value))) {
       let updatedValues = {...state, [text]: Number(value)};
       // console.log(`text ${text} and value ${value}`);
@@ -428,7 +429,7 @@ const EnterData = () => {
                 ref={inputRefs[input.name]}
                 onSubmitEditing={() => {
                   if (input.name) {
-                    SubmitEditing(input.name, state[input.name]);
+                    SubmitEditing(input.name, String(state[input.name]));
                     if (index < inputs.length - 1) {
                       // Check if it's not the last input
                       const nextInputRef = inputRefs[inputs[index + 1].name];
