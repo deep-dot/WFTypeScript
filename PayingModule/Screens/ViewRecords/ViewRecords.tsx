@@ -4,7 +4,6 @@
 import React, {useState, useContext} from 'react';
 import {
   TouchableOpacity,
-  StyleSheet,
   Text,
   View,
   SafeAreaView,
@@ -27,12 +26,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {Table, Row} from 'react-native-table-component';
 import {
   tableHead,
-  tableHead1,
-  tableHead2,
   widthArr,
-  widthArr1,
-  widthArr2,
 } from '../DisplayReport/tableHeading';
+console.log(tableHead); console.log(widthArr)
 import {ScrollView} from 'react-native-gesture-handler';
 import styles from './ViewRecords.style';
 
@@ -53,7 +49,7 @@ const ViewRecords = () => {
     const endDate = finish_date ? finish_date : current_date;
     try {
       const res = await ViewRecordsByDate(startDate, endDate);
-      // console.log('res===', res);      
+      // console.log('res===', res);
       if (res.length === 0) {
         dispatch({
           type: 'UPDATE',

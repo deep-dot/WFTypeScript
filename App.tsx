@@ -38,7 +38,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Database from './PayingModule/Database/Database';
 import {
   IN_APP_PURCHASE_KEY,
-  SANDTEST_URL,
+  IOS_SANDTEST_URL,
   RECIEPT_VALIDATE_URL,
   ANDROID_PRODUCT_ID,
   MESSENGER_URL,
@@ -122,11 +122,10 @@ export default function App() {
     productId: string;
     title: string;
     localizedPrice: string;
-    // include other properties as necessary
   };
   const [purchased, setPurchased] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [checking, setChecking] = useState(true);
+  const [checking, setChecking] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   type Receipt = {
     productId: string;
@@ -141,11 +140,16 @@ export default function App() {
       purchaseToken: parsedReceipt.purchaseToken,
     };
 
-    console.log('receipt body=======', receiptBody, SANDTEST_URL);
+    console.log(
+      'receipt body=======',
+      receiptBody,
+      //IOS_SANDTEST_URL,
+      RECIEPT_VALIDATE_URL,
+    );
 
     try {
-      // const response = await fetch(RECIEPT_VALIDATE_URL, {
-      const response = await fetch(SANDTEST_URL, {
+      const response = await fetch(RECIEPT_VALIDATE_URL, {
+      //const response = await fetch(IOS_SANDTEST_URL, {
         headers: {'Content-Type': 'application/json'},
         method: 'POST',
         body: JSON.stringify({data: receiptBody}),
@@ -157,8 +161,8 @@ export default function App() {
 
       const result = await response.json();
       if (result.error === -1) {
-        setChecking(false);
-        Alert.alert('Oops!', 'There is something wrong with your purchase');
+        setChecking(true);
+        //Alert.alert('Oops!', 'There is something wrong with your purchase');
       } else if (result.isActiveSubscription) {
         setPurchased(true);
       } else {
@@ -179,7 +183,7 @@ export default function App() {
       try {
         await IAP.initConnection();
         if (isMounted) {
-          console.log('Connection to the IAP store was successful');
+          //console.log('Connection to the IAP store was successful');
           const subscriptions = await IAP.getSubscriptions({skus: items || []});
           if (!subscriptions || subscriptions.length === 0) {
             return Alert.alert('Please check your internet access.');
@@ -187,7 +191,8 @@ export default function App() {
             const productsArray = subscriptions.map(sub => ({
               productId: sub.productId,
               title: sub.title,
-              localizedPrice: '1.99$', // Assuming 'localizedPrice' exists
+              localizedPrice: '$0.99', // Assuming 'localizedPrice' exists
+              //localizedPrice: sub.localizedPrice, // Assuming 'localizedPrice' exists
             }));
             setProducts(productsArray);
             console.log('Products received:', products[0], products.length);
@@ -223,14 +228,14 @@ export default function App() {
   return (
     <ThemeProvider>
       <StateProvider>
-        {products.length !== 0 ? (
+        {checking ? (
           <View style={styles.container}>
-            <Text style={styles.Title}>Fetching products please wait...</Text>
+            <Text style={styles.Title}>Checking for previous purchase...</Text>
           </View>
-        ) : !checking ? (
+        ) : products.length === 0 ? (
           <View style={styles.container}>
             <StatusBar backgroundColor="#35363A" />
-            <Text style={styles.Title}>Checking for previous purchase...</Text>
+            <Text style={styles.Title}>Fetching products please wait...</Text>
           </View>
         ) : !purchased ? (
           <>
@@ -259,7 +264,7 @@ export default function App() {
               </Text>
 
               <Text style={styles.Title}>
-                {products[0].localizedPrice} /{'Month'}
+                {products[0].localizedPrice} / {'Month'}
               </Text>
               <View
                 style={{
@@ -310,12 +315,12 @@ export default function App() {
                   <Text style={styles.Title}> Terms & Conditions</Text>
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => {
                   Linking.openURL(MESSENGER_URL);
                 }}>
                 <Text style={styles.Title}> Contact</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </ScrollView>
           </SafeAreaView>
         )}
