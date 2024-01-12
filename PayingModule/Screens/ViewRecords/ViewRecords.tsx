@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, {useState, useContext} from 'react';
+import React, { useState, useContext } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -15,22 +15,27 @@ import {
   SelectFromDataTable,
   deleteDataInTable,
 } from './Actions';
-import {Calendar} from '../../Components/Calendar';
+import { Calendar } from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import {NavigationProp} from '@react-navigation/native';
-import {StackParamList} from '../../../App';
-import {useNavigation} from '@react-navigation/core';
-import {FormValues} from '../../Components/EnterDataValues';
-import {StateContext} from '../../../Utilities/Context';
+import { NavigationProp } from '@react-navigation/native';
+import { StackParamList } from '../../../App';
+import { useNavigation } from '@react-navigation/core';
+import { FormValues } from '../../Components/EnterDataValues';
+import { StateContext } from '../../../Utilities/Context';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Table, Row} from 'react-native-table-component';
+import { Table, Row } from 'react-native-table-component';
 import {
   tableHead,
   widthArr,
 } from '../DisplayReport/tableHeading';
-console.log(tableHead); console.log(widthArr)
-import {ScrollView} from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import styles from './ViewRecords.style';
+import moment from 'moment';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.']);
+
+
 
 const ViewRecords = () => {
   const navigation =
@@ -40,11 +45,11 @@ const ViewRecords = () => {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {state, dispatch} = stateContext;
+  const { state, dispatch } = stateContext;
 
   let SearchRecord = async (start_date: string, finish_date: string) => {
-    // console.log('start date==', start_date);
-    const current_date = new Date().toLocaleDateString();
+    console.log('start date==', start_date, finish_date);
+    const current_date = moment(new Date()).format('YYYY/MM/DD');
     const startDate = start_date ? start_date : current_date;
     const endDate = finish_date ? finish_date : current_date;
     try {
@@ -53,17 +58,17 @@ const ViewRecords = () => {
       if (res.length === 0) {
         dispatch({
           type: 'UPDATE',
-          payload: {sorryAlert: true},
+          payload: { sorryAlert: true },
         });
         setFlatListItems([]);
       } else {
-      dispatch({
-        type: 'UPDATE',
-        payload: {totalrecords: res.length.toString()},
-      });
-      setFlatListItems(res);
-    }
-      // console.log(res[0].Record_id);
+        dispatch({
+          type: 'UPDATE',
+          payload: { totalrecords: res.length.toString() },
+        });
+        setFlatListItems(res);
+        //console.log(flatListItems);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -72,14 +77,18 @@ const ViewRecords = () => {
   const Delete = async (date: string) => {
     const res = await deleteDataInTable(date);
     if (res === 'Deleted successfully') {
-      SelectFromDataTable(dispatch)
-        .then(temp => {
-          setFlatListItems(temp);
-        })
-        .catch(error => {
-          console.error(error);
-        });
+      dispatch({
+        type: 'UPDATE',
+        payload: { totalrecords: state.totalrecords - 1 },
+      });
     }
+    SelectFromDataTable(dispatch)
+      .then(temp => {
+        setFlatListItems(temp);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   const DeleteRecord = (date: string) => {
@@ -98,7 +107,7 @@ const ViewRecords = () => {
           style: 'cancel',
         },
       ],
-      {cancelable: true},
+      { cancelable: true },
     );
   };
 
@@ -138,18 +147,18 @@ const ViewRecords = () => {
     Car_Wash: record.Car_Wash,
     Misc: record.Misc,
     Fuel: record.Fuel,
-    CPK: record.CPK.toFixed(2),
+    CPK: record.CPK,
     Net_Payin: record.Net_Payin,
   }));
 
   //console.log('table data===', tableData);
   const HideAlert = () => {
-    dispatch({type: 'UPDATE', payload: {sorryAlert: false, show2Alert: false}});
+    dispatch({ type: 'UPDATE', payload: { sorryAlert: false, show2Alert: false } });
   };
 
   return (
     <SafeAreaView
-      style={{display: 'flex', flex: 1, backgroundColor: '#35363A'}}>
+      style={{ display: 'flex', flex: 1, backgroundColor: '#35363A' }}>
       <AwesomeAlert
         show={state.sorryAlert}
         showProgress={false}
@@ -181,47 +190,49 @@ const ViewRecords = () => {
           borderColor: '#000',
           borderBottomWidth: 0.5,
         }}>
-        <Text style={{textAlign: 'center', color: 'green', paddingTop: 20}}>
+        <Text style={{ textAlign: 'center', color: 'green', paddingTop: 20 }}>
           Total Entries = {state.Number_Of_Entries}
         </Text>
 
-        <View style={[styles.textinputview, {borderColor: '#fff'}]}>
+        <View style={[styles.textinputview, { borderColor: '#fff' }]}>
           <Calendar
             value={state.start_date}
-            onChange={async (date: string, day: string) => {
+            onChange={(date: string, day: string) => {
               dispatch({
                 type: 'UPDATE',
-                payload: {start_date: date, start_day: day},
+                payload: { start_date: date, start_day: day },
               });
-              await SearchRecord(date, state.finish_date);
+             // SearchRecord(date, state.finish_date);
             }}
           />
           <Text style={styles.Textinput}>
             {state.start_date
               ? state.start_day + ' ' + state.start_date
-              : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
+              : moment(new Date()).format('dddd, YYYY/MM/DD')
+            }
           </Text>
         </View>
 
-        <View style={[styles.textinputview, {borderColor: '#fff'}]}>
+        <View style={[styles.textinputview, { borderColor: '#fff' }]}>
           <Calendar
             value={state.finish_date}
-            onChange={async (date: string, day: string) => {
+            onChange={(date: string, day: string) => {
               dispatch({
                 type: 'UPDATE',
-                payload: {finish_date: date, finish_day: day},
+                payload: { finish_date: date, finish_day: day },
               });
-              await SearchRecord(state.start_date, date);
+              SearchRecord(state.start_date, state.finish_date);
             }}
           />
           <Text style={styles.Textinput}>
             {state.finish_date
               ? state.finish_day + ' ' + state.finish_date
-              : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
+              : moment(new Date()).format('dddd, YYYY/MM/DD')
+            }
           </Text>
         </View>
 
-        <Text style={[styles.Textinput, {alignSelf: 'center'}]}>
+        <Text style={[styles.Textinput, { alignSelf: 'center' }]}>
           {' '}
           Display Records = {state.totalrecords}
         </Text>
@@ -229,7 +240,7 @@ const ViewRecords = () => {
 
       <ScrollView horizontal={true}>
         <View>
-          <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
+          <Table borderStyle={{ borderWidth: 0, borderColor: '#C1C0B9' }}>
             <Row
               data={tableHead}
               widthArr={widthArr}
@@ -283,7 +294,7 @@ const ViewRecords = () => {
                 widthArr={widthArr}
                 style={{
                   ...styles.row,
-                  ...(index % 2 === 0 ? {backgroundColor: 'white'} : {}),
+                  ...(index % 2 === 0 ? { backgroundColor: 'white' } : {}),
                 }}
               />
             ))}

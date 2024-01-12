@@ -27,25 +27,22 @@ export default StyleSheet.create({
   textinputview: {
     flexDirection: 'row',
     borderBottomWidth: 0.5,
-    marginVertical: 10,
+    marginVertical: 0,
     marginHorizontal: 5,
-    padding: 2,
+    padding: 0,
     paddingBottom: 0,
-    alignItems: 'baseline',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   textInput: {
-    height: 45,
-    padding: 5,
+    paddingRight: 5,
   },
   Textinput: {
-    height: 35,
-    padding: 5,
+    paddingRight: 5,
     color: '#55a8fa',
   },
   titleText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 14,
   },
   button: {
     padding: 10,

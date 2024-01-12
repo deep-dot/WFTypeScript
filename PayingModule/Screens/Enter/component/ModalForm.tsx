@@ -12,7 +12,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {Calendar} from '../../../Components/Calendar';
 import styles from '../EnterDataScreen.style';
 import {StateContext} from '../../../../Utilities/Context';
-import {Insert} from '../Actions';
+import {InsertWeekEndingData} from '../Actions';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ModalForm = () => {
@@ -22,16 +22,12 @@ const ModalForm = () => {
   }
   const {state, dispatch} = stateContext;
 
-  let register = () => {
-    Insert(state, dispatch);
-  };
-
   const inCloud = () => {};
   let load = () => {
     if (!state.Week_Ending_Date || !state.Name) {
       Alert.alert('Put name and date in');
     } else {
-      register();
+      InsertWeekEndingData(state);
       dispatch({type: 'UPDATE', payload: {modalVisible: false}});
     }
   };
@@ -50,12 +46,12 @@ const ModalForm = () => {
           </Text>
 
           <TextInput
-            placeholder="Enter Your Name"
+            placeholder="Your Name"
             placeholderTextColor="#000"
             style={{
               color: '#000',
               marginTop: 20,
-              fontSize: 15,
+              fontSize: 13,
               alignSelf: 'center',
             }}
             onChangeText={(Name: string) => {

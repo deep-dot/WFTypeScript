@@ -36,8 +36,7 @@ export const Calendar = ({onChange, value}: CalendarProps) => {
   };
 
   const handleConfirm = (date: Date) => {
-    const formattedDate = moment(date).format('M/D/YY');
-    // const formattedDate = moment(date).format('YYYY/MM/DD');
+    const formattedDate = moment(date).format('YYYY/MM/DD');
     const dayOfWeek = daysOfWeek[date.getDay()];
 
     onChange(formattedDate, dayOfWeek);

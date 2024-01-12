@@ -82,7 +82,7 @@ export default function DisplayReport() {
     record.Car_Wash,
     record.Misc,
     record.Fuel,
-    record.CPK.toFixed(2),
+    record.CPK,
     record.Net_Payin,
   ]);
 

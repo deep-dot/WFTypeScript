@@ -30,6 +30,7 @@ import {useNavigation} from '@react-navigation/core';
 import ModalForm from './component/ModalForm';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Platform} from 'react-native';
+import moment from 'moment';
 
 interface Cab {
   Cab: string;
@@ -120,7 +121,13 @@ const EnterData = () => {
     if (state.Search_Date) {
       await Update(state, dispatch);
     } else {
-      await Insert(state, dispatch);
+      const res = await Insert(state, dispatch);
+      if (res === 'same date') {
+        Alert.alert(
+          'A record with this date already exists',
+          'Please select another date.',
+        );
+      }
     }
   };
 
@@ -408,7 +415,7 @@ const EnterData = () => {
           <Text style={styles.Textinput}>
             {state.Date
               ? state.Day + ' ' + state.Date
-              : new Date().toLocaleDateString(undefined, {weekday: 'long'})}
+              : moment(new Date()).format('dddd, YYYY/MM/DD')}
           </Text>
         </View>
 

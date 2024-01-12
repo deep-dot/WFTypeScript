@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   textInput: {
-    height: 35,
+    height: 45,
     fontWeight: 'bold',
     color: '#000',
   },

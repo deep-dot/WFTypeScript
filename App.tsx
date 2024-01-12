@@ -7,7 +7,6 @@ import {
   Image,
   StatusBar,
   Platform,
-  EmitterSubscription,
   Alert,
   SafeAreaView,
   ScrollView,
@@ -38,10 +37,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Database from './PayingModule/Database/Database';
 import {
   IN_APP_PURCHASE_KEY,
-  IOS_SANDTEST_URL,
   RECIEPT_VALIDATE_URL,
   ANDROID_PRODUCT_ID,
-  MESSENGER_URL,
   PRIVACY_POLICY,
   TERMS_AND_CONDITIONS,
 } from '@env';
@@ -140,12 +137,12 @@ export default function App() {
       purchaseToken: parsedReceipt.purchaseToken,
     };
 
-    console.log(
-      'receipt body=======',
-      receiptBody,
-      //IOS_SANDTEST_URL,
-      RECIEPT_VALIDATE_URL,
-    );
+    // console.log(
+    //   'receipt body=======',
+    //   receiptBody,
+    //   //IOS_SANDTEST_URL,
+    //   RECIEPT_VALIDATE_URL,
+    // );
 
     try {
       const response = await fetch(RECIEPT_VALIDATE_URL, {
@@ -169,7 +166,7 @@ export default function App() {
         setShowAlert(true);
       }
     } catch (error) {
-      console.error('Error during receipt validation:', error);
+     // console.error('Error during receipt validation:', error);
       Alert.alert(
         'Error',
         'Could not connect to the store. Please try again later.',
@@ -195,14 +192,14 @@ export default function App() {
               //localizedPrice: sub.localizedPrice, // Assuming 'localizedPrice' exists
             }));
             setProducts(productsArray);
-            console.log('Products received:', products[0], products.length);
+          //  console.log('Products received:', products[0], products.length);
           }
 
           const history = await IAP.getPurchaseHistory();
           try {
             const receipt = history[history.length - 1].transactionReceipt;
             if (receipt) {
-              validate(receipt);
+             // validate(receipt);
             }
           } catch (error) {
             console.log('Error getting the receipt:', error);

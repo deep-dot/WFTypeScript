@@ -9,7 +9,7 @@ export const ViewRecordsByDate = (
   start_date: string,
   finish_date: string,
 ): Promise<FormValues[]> => {
-  //console.log('res in updateData in dbUtility', searchByDate);
+  console.log('res in updateData in dbUtility', start_date, finish_date);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -17,6 +17,11 @@ export const ViewRecordsByDate = (
           'SELECT * from datatable where Date between ? and ? order by Date',
           [start_date, finish_date],
           (_tx: Transaction, results: ResultSet) => {
+            console.log(
+              'results.rowsAffected===',
+              results.rows.length,
+              results.rows,
+            );
             if (results.rows.length > 0) {
               let res: any[] = [];
               for (let i = 0; i < results.rows.length; i++) {
@@ -50,15 +55,13 @@ export const SelectFromDataTable = (
           'SELECT * from datatable',
           [],
           (_tx: Transaction, results: ResultSet) => {
-            var Number_Of_Entries = results.rows.length;
-            if (Number_Of_Entries > 0) {
+            if (results.rows.length > 0) {
               const temp: any[] = [];
-              for (let j = 0; j < Number_Of_Entries; j++) {
+              for (let j = 0; j < results.rows.length; j++) {
                 temp.push(results.rows.item(j));
               }
-              //resolve({len, temp});
               resolve(temp);
-              dispatch({type: 'UPDATE', payload: Number_Of_Entries});
+              dispatch({type: 'UPDATE', payload: results.rows.length});
             } else {
               Alert.alert('Data does not exist');
             }
@@ -108,17 +111,18 @@ export const UpdateData = (
 };
 
 export const deleteDataInTable = (date: string) => {
-  // console.log('data in db Utility==', id, date);
+ // console.log('date in deleteDatatable',date);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
           'DELETE FROM datatable WHERE Date = ?',
           [date],
+          // 'DELETE FROM datatable WHERE Date IS NULL',
+          // [],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
               resolve('Deleted successfully');
-              Alert.alert('Deleted successfully');
             } else {
               reject(new Error('No data found for the provided date'));
             }

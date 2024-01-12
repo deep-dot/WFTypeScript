@@ -44,21 +44,42 @@ export const Select = (
   });
 };
 
-export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
-  let Company_Comm_Rate = 100 - state.Driver_Comm_Rate;
+export const InsertWeekEndingData = (state: FormValues) => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
+          'INSERT INTO datatable (Name, Week_Ending_Date, Week_Ending_Day) VALUES(?,?,?)',
+          [state.Name, state.Week_Ending_Date, state.Week_Ending_Day],
+          (transaction: Transaction, resultSet: ResultSet) => {
+            if (resultSet.rowsAffected > 0) {
+              resolve('Inserted');
+            } else {
+              reject(new Error('Insert operation failed'));
+            }
+          },
+          (error: any) => {
+            reject(error);
+          },
+        );
+      });
+    } else {
+      console.log('db is undefined');
+    }
+  });
+};
+
+export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
+  let Company_Comm_Rate = 100 - state.Driver_Comm_Rate;
+  return new Promise((resolve, reject) => {
+    if (db && state.Date != null && state.Date !== '') {
+      db.transaction((txn: Transaction) => {
+        txn.executeSql(
           'SELECT * FROM datatable WHERE Date = ?',
           [state.Date],
-          (_: Transaction, results: ResultSet) => {
+          (transaction: Transaction, results: ResultSet) => {
             if (results.rows.length > 0) {
-              // Record with same date already exists.
-              resolve('Same Date');
-              Alert.alert(
-                'A record with this date already exists. Please choose another date.',
-              );
+              resolve('same date');
             } else {
               txn.executeSql(
                 `INSERT INTO datatable (Name, Week_Ending_Date, Week_Ending_Day, Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate, Date, Day, Shift, Taxi, Jobs_Done, Hours_Worked, Meter_Start, Meter_Finish, Km_Start, Km_Finish, Paidkm_Start, Paidkm_Finish, Eftpos, M3_Dockets, Electronic_Account_Payments, Total_Manual_MPTP31_And_MPTP_Values, Number_Of_Manual_Liftings, Eftpos_Liftings, Car_Wash, Misc, Fuel, Insurance,  
@@ -156,6 +177,7 @@ export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
       });
     } else {
       console.log('db is undefined');
+      Alert.alert('Select Date');
     }
   });
 };
@@ -293,7 +315,7 @@ export function insertCab(
           async (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
               resolve(results);
-              Alert.alert('Added successfully');
+              // Alert.alert('Added successfully');
               dispatch({
                 type: 'UPDATE',
                 payload: {cabCount: cabCount + 1},
@@ -329,7 +351,7 @@ export function deleteCab(
           async (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
               resolve(results);
-              Alert.alert('Deleted successfully');
+              // Alert.alert('Deleted successfully');
               dispatch({
                 type: 'UPDATE',
                 payload: cabCount,
