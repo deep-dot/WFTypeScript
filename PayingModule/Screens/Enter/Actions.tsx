@@ -79,7 +79,7 @@ export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
           [state.Date],
           (transaction: Transaction, results: ResultSet) => {
             if (results.rows.length > 0) {
-              resolve('same date');
+              resolve({msg: 'same date', length: results.rows.length});
             } else {
               txn.executeSql(
                 `INSERT INTO datatable (Name, Week_Ending_Date, Week_Ending_Day, Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate, Date, Day, Shift, Taxi, Jobs_Done, Hours_Worked, Meter_Start, Meter_Finish, Km_Start, Km_Finish, Paidkm_Start, Paidkm_Finish, Eftpos, M3_Dockets, Electronic_Account_Payments, Total_Manual_MPTP31_And_MPTP_Values, Number_Of_Manual_Liftings, Eftpos_Liftings, Car_Wash, Misc, Fuel, Insurance,  

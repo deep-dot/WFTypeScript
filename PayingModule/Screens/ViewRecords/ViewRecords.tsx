@@ -48,7 +48,7 @@ const ViewRecords = () => {
   const { state, dispatch } = stateContext;
 
   let SearchRecord = async (start_date: string, finish_date: string) => {
-    console.log('start date==', start_date, finish_date);
+    //console.log('start date==', start_date, finish_date);
     const current_date = moment(new Date()).format('YYYY/MM/DD');
     const startDate = start_date ? start_date : current_date;
     const endDate = finish_date ? finish_date : current_date;
@@ -75,11 +75,14 @@ const ViewRecords = () => {
   };
 
   const Delete = async (date: string) => {
-    const res = await deleteDataInTable(date);
-    if (res === 'Deleted successfully') {
+    const res: any = await deleteDataInTable(date);
+    if (res.status === 'Deleted successfully') {
+      let data = flatListItems.filter(item => item.Date !== date);
+      setFlatListItems(data);
       dispatch({
         type: 'UPDATE',
-        payload: { totalrecords: state.totalrecords - 1 },
+        payload: { totalrecords: state.totalrecords - res.length,
+        Number_Of_Entries: state.Number_Of_Entries - res.length },
       });
     }
     SelectFromDataTable(dispatch)
@@ -121,37 +124,6 @@ const ViewRecords = () => {
     }
   };
 
-  const tableData = flatListItems.map(record => ({
-    Date: record.Date,
-    Day: record.Day,
-    Shift: record.Shift,
-    Taxi: record.Taxi,
-    Jobs_Done: record.Jobs_Done,
-    Insurance: record.Insurance,
-    Hours_Worked: record.Hours_Worked,
-    Meter_Start: record.Meter_Start,
-    Meter_Finish: record.Meter_Finish,
-    Shift_Total: record.Shift_Total,
-    Km_Start: record.Km_Start,
-    Km_Finish: record.Km_Finish,
-    Kms: record.Kms,
-    Paidkm_Start: record.Paidkm_Start,
-    Paidkm_Finish: record.Paidkm_Finish,
-    Paid_Kms: record.Paid_Kms,
-    Eftpos: record.Eftpos,
-    Number_Of_Manual_Liftings: record.Number_Of_Manual_Liftings,
-    Total_Manual_MPTP31_And_MPTP_Values:
-      record.Total_Manual_MPTP31_And_MPTP_Values,
-    M3_Dockets: record.M3_Dockets,
-    Electronic_Account_Payments: record.Electronic_Account_Payments,
-    Car_Wash: record.Car_Wash,
-    Misc: record.Misc,
-    Fuel: record.Fuel,
-    CPK: record.CPK,
-    Net_Payin: record.Net_Payin,
-  }));
-
-  //console.log('table data===', tableData);
   const HideAlert = () => {
     dispatch({ type: 'UPDATE', payload: { sorryAlert: false, show2Alert: false } });
   };
@@ -200,7 +172,7 @@ const ViewRecords = () => {
             onChange={(date: string, day: string) => {
               dispatch({
                 type: 'UPDATE',
-                payload: { start_date: date, start_day: day },
+                payload: { start_date: date, start_day: day, totalrecords: 0},
               });
              // SearchRecord(date, state.finish_date);
             }}
@@ -246,7 +218,7 @@ const ViewRecords = () => {
               widthArr={widthArr}
               style={styles.header}
             />
-            {tableData && tableData.map((rowdata, index) => (
+            {flatListItems && flatListItems.map((rowdata, index) => (
               <Row
                 key={index}
                 data={[

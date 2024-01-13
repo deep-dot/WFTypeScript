@@ -121,12 +121,19 @@ const EnterData = () => {
     if (state.Search_Date) {
       await Update(state, dispatch);
     } else {
-      const res = await Insert(state, dispatch);
-      if (res === 'same date') {
+      const res: any = await Insert(state, dispatch);
+      if (res.msg === 'same date') {
         Alert.alert(
           'A record with this date already exists',
           'Please select another date.',
         );
+      } else {
+        dispatch({
+          type: 'UPDATE',
+          payload: {
+            Number_Of_Entries: res.length,
+          }
+        })
       }
     }
   };
@@ -296,7 +303,7 @@ const EnterData = () => {
           }}>
           <Text style={[styles.titleText, {color: '#fff'}]}>Shift</Text>
           <TextInput
-            placeholder="............"
+            placeholder="........."
             placeholderTextColor="#ffffff"
             editable={false}
             style={styles.textInput}>
@@ -320,7 +327,7 @@ const EnterData = () => {
             <Picker.Item
               label="Select"
               value="Select"
-              color={Platform.OS === 'ios' ? '#fff' : '#fff'}
+              color={Platform.OS === 'ios' ? '#fff' : '#bbb'}
             />
             <Picker.Item
               label="Day"
@@ -373,7 +380,7 @@ const EnterData = () => {
                 label="Select"
                 key=" "
                 value="Select "
-                color={Platform.OS === 'ios' ? '#fff' : '#fff'}
+                color={Platform.OS === 'ios' ? '#fff' : '#bbb'}
               />
               {state.Cab_Data.map((cab: Cab, i: number) => (
                 <Picker.Item

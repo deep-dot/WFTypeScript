@@ -122,7 +122,10 @@ export const deleteDataInTable = (date: string) => {
           // [],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
-              resolve('Deleted successfully');
+              resolve({
+                status: 'Deleted successfully',
+                length: results.rowsAffected,
+              });
             } else {
               reject(new Error('No data found for the provided date'));
             }

@@ -2,6 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useContext} from 'react';
 import {View, StyleSheet} from 'react-native';
+import {StateContext} from './Context';
 import {
   useTheme,
   Title,
@@ -28,6 +29,12 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
   }
   const {toggleTheme} = themeContext;
 
+  const stateContext = useContext(StateContext);
+  if (!stateContext) {
+    throw new Error('Component must be used within a StateProvider');
+  }
+  const {state, dispatch} = stateContext;
+
   return (
     <View style={{flex: 1}}>
       <DrawerContentScrollView {...props}>
@@ -42,7 +49,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
 
             <View style={styles.row}>
               <View style={styles.section}>
-                <Paragraph style={[styles.paragraph, styles.caption]} />
+                {/* <Paragraph style={[styles.paragraph, styles.caption]} /> */}
                 <Caption style={styles.caption}>Jobs done</Caption>
               </View>
             </View>
@@ -58,13 +65,21 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
                 props.navigation.navigate('Enter Data');
               }}
             />
-            {/* <DrawerItem
-              label="Enter Shift Data"
+            <DrawerItem
+              icon={({color, size}) => (
+                <Icon name="create-outline" color={color} size={size} />
+              )}
+              label="Edit Week Ending Date"
               onPress={() => {
-                props.navigation.navigate('Enter Data');
+                dispatch({
+                  type: 'UPDATE',
+                  payload: {
+                    modalVisible: !state.modalVisible,
+                  },
+                });
               }}
             />
-            <DrawerItem
+            {/* <DrawerItem
               label="View"
               onPress={() => {
                 props.navigation.navigate('View Records');
