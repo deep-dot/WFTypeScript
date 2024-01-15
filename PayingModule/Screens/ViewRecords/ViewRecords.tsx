@@ -64,7 +64,7 @@ const ViewRecords = () => {
       } else {
         dispatch({
           type: 'UPDATE',
-          payload: { totalrecords: res.length.toString() },
+          payload: { totalrecords: res.length },
         });
         setFlatListItems(res);
         //console.log(flatListItems);

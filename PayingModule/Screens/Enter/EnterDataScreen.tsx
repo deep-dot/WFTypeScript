@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useContext} from 'react';
+import React, {useEffect, useContext, useCallback} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -32,9 +32,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {Platform} from 'react-native';
 import moment from 'moment';
 
-interface Cab {
-  Cab: string;
-}
 const EnterData = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackParamList, 'Enter Data'>>();
@@ -132,8 +129,8 @@ const EnterData = () => {
           type: 'UPDATE',
           payload: {
             Number_Of_Entries: res.length,
-          }
-        })
+          },
+        });
       }
     }
   };
@@ -142,18 +139,18 @@ const EnterData = () => {
     dispatch({type: 'REFRESH', payload: null});
   };
 
+  const fetchData = useCallback(async () => {
+    try {
+      await SelectCab(dispatch);
+      await Select(dispatch);
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  }, [dispatch]);
+
   useEffect(() => {
-    // console.log('state.cabcount==', state.cabCount);
-    const fetchData = async () => {
-      try {
-        await SelectCab(dispatch);
-        await Select(dispatch);
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
     fetchData();
-  }, [dispatch, state.cabCount]);
+  }, [fetchData, state.Taxi]);
 
   const onChange = (name: string, value: string) => {
     //console.log('onchange in enter data ==', name, 'and', value);
@@ -368,7 +365,7 @@ const EnterData = () => {
             <Picker
               selectedValue={state.Taxi}
               style={{width: 120}}
-              onValueChange={(Taxi: string) => {
+              onValueChange={Taxi => {
                 dispatch({
                   type: 'UPDATE',
                   payload: {
@@ -382,12 +379,12 @@ const EnterData = () => {
                 value="Select "
                 color={Platform.OS === 'ios' ? '#fff' : '#bbb'}
               />
-              {state.Cab_Data.map((cab: Cab, i: number) => (
+              {state.Cab_Data.map((c: {Cab: string}, key: number) => (
                 <Picker.Item
-                  label={cab.Cab}
-                  key={i}
-                  value={cab.Cab}
-                  color={Platform.OS === 'ios' ? '#fff' : '#000'}
+                  label={c.Cab}
+                  key={key}
+                  value={c.Cab}
+                  color={Platform.OS === 'ios' ? '#fff' : '#999'}
                 />
               ))}
             </Picker>

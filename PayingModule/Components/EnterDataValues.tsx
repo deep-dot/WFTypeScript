@@ -62,7 +62,6 @@ export type FormValues = {
   Shift: string;
   Taxi: string;
   Cab_Data: Cab[];
-  Rego: string;
   Rego_Modal: boolean;
   Current_Date: string;
   Date: string;

@@ -9,39 +9,31 @@ export const ViewRecordsByDate = (
   start_date: string,
   finish_date: string,
 ): Promise<FormValues[]> => {
-  console.log('res in updateData in dbUtility', start_date, finish_date);
   return new Promise((resolve, reject) => {
-    if (db) {
-      db.transaction((txn: Transaction) => {
-        txn.executeSql(
-          'SELECT * from datatable where Date between ? and ? order by Date',
-          [start_date, finish_date],
-          (_tx: Transaction, results: ResultSet) => {
-            console.log(
-              'results.rowsAffected===',
-              results.rows.length,
-              results.rows,
-            );
-            if (results.rows.length > 0) {
-              let res: any[] = [];
-              for (let i = 0; i < results.rows.length; i++) {
-                res.push(results.rows.item(i));
-              }
-              resolve(res);
-              //Alert.alert('Search successfully');
-            } else {
-              Alert.alert('No record exist on this date');
-              reject(new Error('Search operation failed'));
-            }
-          },
-          (error: any) => {
-            reject(error);
-          },
-        );
-      });
-    } else {
-      reject(new Error('db is undefined'));
+    if (!db) {
+      return reject(new Error('db is undefined'));
     }
+
+    db.transaction(txn => {
+      txn.executeSql(
+        'SELECT * FROM datatable WHERE Date BETWEEN ? AND ? ORDER BY Date',
+        [start_date, finish_date],
+        (_tx, results) => {
+          if (results.rows.length > 0) {
+            const res = Array.from({length: results.rows.length}, (_, i) =>
+              results.rows.item(i),
+            );
+            resolve(res);
+          } else {
+            Alert.alert('No record exist on this date');
+            reject(new Error('No records found'));
+          }
+        },
+        error => {
+          reject(error);
+        },
+      );
+    });
   });
 };
 
@@ -111,7 +103,7 @@ export const UpdateData = (
 };
 
 export const deleteDataInTable = (date: string) => {
- // console.log('date in deleteDatatable',date);
+  // console.log('date in deleteDatatable',date);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
