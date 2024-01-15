@@ -204,15 +204,20 @@ const EnterData = () => {
 
       updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
 
-      updatedValues.Shift_Total =
-        updatedValues.Meter_Finish -
-        updatedValues.Meter_Start -
-        updatedValues.Levy;
+      // updatedValues.Shift_Total =
+      //   updatedValues.Meter_Finish -
+      //   updatedValues.Meter_Start -
+      //   updatedValues.Levy;
 
-      updatedValues.Kms = updatedValues.Km_Finish - updatedValues.Km_Start;
+      // updatedValues.Kms = updatedValues.Km_Finish - updatedValues.Km_Start;
 
-      updatedValues.Paid_Kms =
-        updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
+      // updatedValues.Paid_Kms =
+      //   updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
+      updatedValues.Shift_Total = updatedValues.meterTotal - updatedValues.Levy;
+
+      updatedValues.Kms;
+
+      updatedValues.Paid_Kms;
 
       updatedValues.Number_Of_Chairs =
         updatedValues.Eftpos_Liftings + updatedValues.Number_Of_Manual_Liftings;

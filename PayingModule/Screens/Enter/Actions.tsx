@@ -49,7 +49,6 @@ export const Select = (
   });
 };
 
-
 export const InsertWeekEndingData = (state: FormValues) => {
   return new Promise((resolve, reject) => {
     if (!db) {
@@ -98,7 +97,7 @@ export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
                   Driver_Lifting_Value,
                   Commission_Driver,
                   Deductions,
-                  Net_Payin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                  Net_Payin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                 [
                   state.Name,
                   state.Week_Ending_Date,
@@ -114,12 +113,9 @@ export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
                   state.Taxi,
                   state.Jobs_Done,
                   state.Hours_Worked,
-                  state.Meter_Start,
-                  state.Meter_Finish,
-                  state.Km_Start,
-                  state.Km_Finish,
-                  state.Paidkm_Start,
-                  state.Paidkm_Finish,
+                  state.meterTotal,
+                  state.Kms,
+                  state.Paid_Kms,
                   state.Eftpos,
                   state.M3_Dockets,
                   state.Electronic_Account_Payments,
@@ -132,8 +128,6 @@ export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
                   state.Insurance,
                   state.Shift_Total,
                   state.Levy,
-                  state.Kms,
-                  state.Paid_Kms,
                   state.Unpaid_Kms,
                   state.CPK,
                   state.Number_Of_Chairs,
@@ -201,13 +195,11 @@ export function Update(
         txn.executeSql(
           `UPDATE datatable 
              SET Date = ?, Day = ?, Shift = ?, Taxi = ?, Jobs_Done = ?, Hours_Worked = ?, 
-                 Meter_Start = ?, Meter_Finish = ?, Km_Start = ?, Km_Finish = ?, Paidkm_Start = ?, 
-                 Paidkm_Finish = ?, Eftpos = ?, M3_Dockets = ?, Electronic_Account_Payments = ?, 
+                 meterTotal = ?, Kms = ?,
+                 Paid_Kms = ?, Eftpos = ?, M3_Dockets = ?, Electronic_Account_Payments = ?, 
                  Total_Manual_MPTP31_And_MPTP_Values = ?, Number_Of_Manual_Liftings = ?, 
                  Eftpos_Liftings = ?, Car_Wash = ?, Misc = ?, Fuel = ?, Insurance = ?,  Shift_Total = ?,
                  Levy = ?,
-                 Kms = ?,
-                 Paid_Kms = ?,
                  Unpaid_Kms = ?,
                  CPK = ?,
                  Number_Of_Chairs = ?,
@@ -223,12 +215,9 @@ export function Update(
             state.Taxi,
             state.Jobs_Done,
             state.Hours_Worked,
-            state.Meter_Start,
-            state.Meter_Finish,
-            state.Km_Start,
-            state.Km_Finish,
-            state.Paidkm_Start,
-            state.Paidkm_Finish,
+            state.meterTotal,
+            state.Kms,
+            state.Paid_Kms,
             state.Eftpos,
             state.M3_Dockets,
             state.Electronic_Account_Payments,
@@ -241,8 +230,6 @@ export function Update(
             state.Insurance,
             state.Shift_Total,
             state.Levy,
-            state.Kms,
-            state.Paid_Kms,
             state.Unpaid_Kms,
             state.CPK,
             state.Number_Of_Chairs,

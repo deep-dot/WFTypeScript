@@ -6,12 +6,15 @@ export const useInputRefs = () => {
     Hours_Worked: useRef<TextInput>(null),
     Insurance: useRef<TextInput>(null),
     Jobs_Done: useRef<TextInput>(null),
-    Meter_Start: useRef<TextInput>(null),
-    Meter_Finish: useRef<TextInput>(null),
-    Km_Start: useRef<TextInput>(null),
-    Km_Finish: useRef<TextInput>(null),
-    Paidkm_Start: useRef<TextInput>(null),
-    Paidkm_Finish: useRef<TextInput>(null),
+    // Meter_Start: useRef<TextInput>(null),
+    // Meter_Finish: useRef<TextInput>(null),
+    meterTotal: useRef<TextInput>(null),
+    // Km_Start: useRef<TextInput>(null),
+    // Km_Finish: useRef<TextInput>(null),
+    Kms: useRef<TextInput>(null),
+    // Paidkm_Start: useRef<TextInput>(null),
+    // Paidkm_Finish: useRef<TextInput>(null),
+    Paid_Kms: useRef<TextInput>(null),
     Eftpos: useRef<TextInput>(null),
     Eftpos_Liftings: useRef<TextInput>(null),
     Number_Of_Manual_Liftings: useRef<TextInput>(null),
@@ -69,12 +72,15 @@ export type FormValues = {
   Hours_Worked: number;
   Insurance: number;
   Jobs_Done: number;
-  Meter_Start: number;
-  Meter_Finish: number;
-  Km_Start: number;
-  Km_Finish: number;
-  Paidkm_Start: number;
-  Paidkm_Finish: number;
+  // Meter_Start: number;
+  // Meter_Finish: number;
+  meterTotal: number;
+  // Km_Start: number;
+  // Km_Finish: number;
+  Kms: number;
+  // Paidkm_Start: number;
+  // Paidkm_Finish: number;
+  Paid_Kms: number;
   Number_Of_Manual_Liftings: number;
   Total_Manual_MPTP31_And_MPTP_Values: number;
   M3_Dockets: number;
@@ -87,8 +93,6 @@ export type FormValues = {
 
   Shift_Total: number;
   Levy: number;
-  Kms: number;
-  Paid_Kms: number;
   Unpaid_Kms: number;
   CPK: number;
   Total_Lifting_Value: number;
@@ -164,14 +168,15 @@ export const initialValues = {
   Insurance: 0,
   Jobs_Done: 0,
   Levy: 0,
-  Meter_Start: 0,
-  Meter_Finish: 0,
+  // Meter_Start: 0,
+  // Meter_Finish: 0,
+  meterTotal: 0,
   Shift_Total: 0,
-  Km_Start: 0,
-  Km_Finish: 0,
+  // Km_Start: 0,
+  // Km_Finish: 0,
   Kms: 0,
-  Paidkm_Start: 0,
-  Paidkm_Finish: 0,
+  // Paidkm_Start: 0,
+  // Paidkm_Finish: 0,
   Paid_Kms: 0,
   Unpaid_Kms: 0,
   CPK: 0,
@@ -234,15 +239,16 @@ export const refreshValues = {
   Insurance: 0,
   Jobs_Done: 0,
   Levy: 0,
-  Meter_Start: 0,
-  Meter_Finish: 0,
-  Shift_Total: 0,
-  Km_Start: 0,
-  Km_Finish: 0,
+  // Meter_Start: 0,
+  // Meter_Finish: 0,
+  meterTotal: 0,
+  // Km_Start: 0,
+  // Km_Finish: 0,
   Kms: 0,
-  Paidkm_Start: 0,
-  Paidkm_Finish: 0,
+  // Paidkm_Start: 0,
+  // Paidkm_Finish: 0,
   Paid_Kms: 0,
+  Shift_Total: 0,
   Unpaid_Kms: 0,
   CPK: 0,
   Number_Of_Manual_Liftings: 0,
@@ -308,12 +314,15 @@ export type Property2 =
   | 'Hours_Worked'
   | 'Insurance'
   | 'Jobs_Done'
-  | 'Meter_Start'
-  | 'Meter_Finish'
-  | 'Km_Start'
-  | 'Km_Finish'
-  | 'Paidkm_Start'
-  | 'Paidkm_Finish'
+  // | 'Meter_Start'
+  // | 'Meter_Finish'
+  | 'meterTotal'
+  // | 'Km_Start'
+  // | 'Km_Finish'
+  | 'Kms'
+  // | 'Paidkm_Start'
+  // | 'Paidkm_Finish'
+  | 'Paid_Kms'
   | 'Eftpos'
   | 'Eftpos_Liftings'
   | 'Number_Of_Manual_Liftings'
@@ -332,12 +341,15 @@ export const inputs: Input2[] = [
   {title: 'Working Hours', name: 'Hours_Worked', placeholder: '0'},
   {title: 'Insurance', name: 'Insurance', placeholder: '0.00'},
   {title: 'Jobs Done', name: 'Jobs_Done', placeholder: '0'},
-  {title: 'Meter Start', name: 'Meter_Start', placeholder: '0.00'},
-  {title: 'Meter Finish', name: 'Meter_Finish', placeholder: '0.00'},
-  {title: 'KM Start', name: 'Km_Start', placeholder: '0.00'},
-  {title: 'KM Finish', name: 'Km_Finish', placeholder: '0.00'},
-  {title: 'Paid KM Start', name: 'Paidkm_Start', placeholder: '0.00'},
-  {title: 'Paid KM Finish', name: 'Paidkm_Finish', placeholder: '0.00'},
+  // {title: 'Meter Start', name: 'Meter_Start', placeholder: '0.00'},
+  // {title: 'Meter Finish', name: 'Meter_Finish', placeholder: '0.00'},
+  {title: 'Meter Total', name: 'meterTotal', placeholder: '0.00'},
+  // {title: 'KM Start', name: 'Km_Start', placeholder: '0.00'},
+  // {title: 'KM Finish', name: 'Km_Finish', placeholder: '0.00'},
+  {title: 'KMs', name: 'Kms', placeholder: '0.00'},
+  // {title: 'Paid KM Start', name: 'Paidkm_Start', placeholder: '0.00'},
+  // {title: 'Paid KM Finish', name: 'Paidkm_Finish', placeholder: '0.00'},
+  {title: 'Paid KMs', name: 'Paid_Kms', placeholder: '0.00'},
   {title: 'EFTPOS', name: 'Eftpos', placeholder: '0.00'},
   {title: 'EFTPOS Liftings', name: 'Eftpos_Liftings', placeholder: '00'},
   {
@@ -364,8 +376,8 @@ export const inputs: Input2[] = [
 export type Property3 =
   | 'Shift_Total'
   | 'Levy'
-  | 'Kms'
-  | 'Paid_Kms'
+  // | 'Kms'
+  // | 'Paid_Kms'
   | 'Unpaid_Kms'
   | 'CPK'
   | 'Number_Of_Chairs'
@@ -380,10 +392,10 @@ type Input3 = {
   placeholder: string;
 };
 export const payinInputs: Input3[] = [
-  {title: 'Total Meter', name: 'Shift_Total', placeholder: '0.00'},
+  {title: 'Shift Total', name: 'Shift_Total', placeholder: '0.00'},
   {title: 'Levy', name: 'Levy', placeholder: '0.00'},
-  {title: 'Total KMs', name: 'Kms', placeholder: '0.00'},
-  {title: 'Total Paid KM', name: 'Paid_Kms', placeholder: '0.00'},
+  // {title: 'Total KMs', name: 'Kms', placeholder: '0.00'},
+  // {title: 'Total Paid KM', name: 'Paid_Kms', placeholder: '0.00'},
   {title: 'Unpaid KM', name: 'Unpaid_Kms', placeholder: '0.00'},
   {title: 'CPK', name: 'CPK', placeholder: '0.00'},
   {
