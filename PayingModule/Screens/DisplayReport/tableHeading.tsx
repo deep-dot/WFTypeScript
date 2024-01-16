@@ -35,14 +35,14 @@ export const tableHead = [
   'Jobs Done',
   'Insurance',
   'Hours Worked',
-  'Meter Start',
-  'Meter Finish',
+  // 'Meter Start',
+  // 'Meter Finish',
   'Shift Total',
-  'Km Start',
-  'Km Finish',
+  // 'Km Start',
+  // 'Km Finish',
   'Kms',
-  'Paidkm Start',
-  'Paidkm Finish',
+  // 'Paidkm Start',
+  // 'Paidkm Finish',
   'Paid Kms',
   'Eftpos',
   'Manuals',
@@ -58,7 +58,7 @@ export const tableHead = [
 
 export const widthArr = [
   120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
-  120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
+  120, 120, 120, 120, 120, 120,
 ];
 
 export const tableHead1 = [
