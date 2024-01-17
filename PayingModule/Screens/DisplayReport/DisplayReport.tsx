@@ -65,14 +65,14 @@ export default function DisplayReport() {
     record.Jobs_Done,
     record.Insurance,
     record.Hours_Worked,
-    record.Meter_Start,
-    record.Meter_Finish,
+    // record.Meter_Start,
+    // record.Meter_Finish,
     record.Shift_Total,
-    record.Km_Start,
-    record.Km_Finish,
+    // record.Km_Start,
+    // record.Km_Finish,
     record.Kms,
-    record.Paidkm_Start,
-    record.Paidkm_Finish,
+    // record.Paidkm_Start,
+    // record.Paidkm_Finish,
     record.Paid_Kms,
     record.Eftpos,
     record.Number_Of_Manual_Liftings,
@@ -95,14 +95,14 @@ export default function DisplayReport() {
     state.total.Jobs_Done,
     state.total.Insurance,
     state.total.Hours_Worked,
-    '',
-    '',
+    // '',
+    // '',
     state.total.Shift_Total,
-    '',
-    '',
+    // '',
+    // '',
     state.total.Kms,
-    '',
-    '',
+    // '',
+    // '',
     state.total.Paid_Kms,
     state.total.Eftpos,
     state.total.Number_Of_Manual_Liftings,
@@ -112,13 +112,17 @@ export default function DisplayReport() {
     state.total.Car_Wash,
     state.total.Misc,
     state.total.Fuel,
-    '',
+    'avg = ' + state.total.CPK,
     state.total.Net_Payin,
   ];
   //console.log(state.datatotal);
-  state.liftingdata = [state.total.Jobs_Done, state.total.Insurance];
+  state.liftingdata = [
+    Number(state.total.Number_Of_Chairs) * state.Gov_Lifting_Fee,
+    Number(state.total.Number_Of_Chairs),
+    Number(state.total.Number_Of_Chairs) * state.Driver_Share_In_LiftingFee,
+  ];
 
-  state.Deductdata = [state.total.Jobs_Done, state.total.Insurance];
+  state.Deductdata = [state.total.Jobs_Done, state.total.Net_Payin];
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#35363A'}}>
@@ -178,7 +182,7 @@ export default function DisplayReport() {
 
               <View style={{flex: 1, alignItems: 'flex-start', marginTop: 5}}>
                 <Text style={{fontSize: 14, fontWeight: 'bold'}}>
-                  Lifting Fee Totals:{' '}
+                  Lifting Fee Total:{' '}
                 </Text>
               </View>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>

@@ -1,8 +1,8 @@
-import {StyleSheet, StatusBar} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
   container: {flex: 1, paddingTop: 5, marginTop: 0},
-  header: {height: 30, backgroundColor: '#ffffff'},
+  header: {height: 70, backgroundColor: '#ffffff'},
   text: {textAlign: 'center', fontWeight: 'bold', padding: 0, fontSize: 12},
   dataWrapper: {margin: 0},
   row: {height: 30, backgroundColor: '#ffffff'},

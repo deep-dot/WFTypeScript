@@ -72,6 +72,14 @@ const initializeTable = (tableName: string, createTableSQL: string) => {
 //     )`,
 //     );
 //   }, []);
+
+// useEffect(() => {
+//   initializeTable(
+//     'lifting',
+//     'CREATE TABLE IF NOT EXISTS cab (id INTEGER PRIMARY KEY AUTOINCREMENT, Cab TEXT)',
+//   );
+// }, []);
+
 const Database = () => {
   useEffect(() => {
     initializeTable(

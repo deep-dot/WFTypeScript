@@ -12,7 +12,7 @@ export const totalTable = (
     if (db) {
       db.transaction((txn: Transaction) => {
         txn.executeSql(
-          'SELECT Date as Date, SUM(Jobs_Done) as Jobs_Done, SUM(Insurance) as Insurance, SUM(Hours_Worked) as Hours_Worked, SUM(Shift_Total) as Shift_Total, SUM(Kms) as Kms, SUM(Paid_Kms) as Paid_Kms, SUM(Eftpos) as Eftpos, SUM(Number_Of_Manual_Liftings) as Number_Of_Manual_Liftings, SUM(Total_Manual_MPTP31_And_MPTP_Values) as Total_Manual_MPTP31_And_MPTP_Values, SUM(M3_Dockets) as M3_Dockets, SUM(Electronic_Account_Payments) as Electronic_Account_Payments, SUM(Car_Wash) as Car_Wash, SUM(Misc) as Misc, SUM(Fuel) as Fuel, SUM(Net_Payin) as Net_Payin FROM datatable',
+          'SELECT Date as Date, SUM(Jobs_Done) as Jobs_Done, SUM(Insurance) as Insurance, SUM(Hours_Worked) as Hours_Worked, SUM(Shift_Total) as Shift_Total, SUM(Kms) as Kms, SUM(Paid_Kms) as Paid_Kms, SUM(Eftpos) as Eftpos, SUM(Number_Of_Manual_Liftings) as Number_Of_Manual_Liftings, SUM(Number_Of_Chairs) as Number_Of_Chairs, SUM(Total_Manual_MPTP31_And_MPTP_Values) as Total_Manual_MPTP31_And_MPTP_Values, SUM(M3_Dockets) as M3_Dockets, SUM(Electronic_Account_Payments) as Electronic_Account_Payments, SUM(Car_Wash) as Car_Wash, SUM(Misc) as Misc, SUM(Fuel) as Fuel, AVG(CPK) as CPK, SUM(Net_Payin) as Net_Payin FROM datatable',
           [],
           (tx: Transaction, results: ResultSet) => {
             // console.log('results in display report===', results.rows.item(0));

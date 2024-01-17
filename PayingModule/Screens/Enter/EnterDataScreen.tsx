@@ -51,7 +51,19 @@ const EnterData = () => {
       state.Electronic_Account_Payments +
       state.Total_Manual_MPTP31_And_MPTP_Values +
       eftpos_without_lifting;
+    // console.log('Driver_Lifting_Value:', state.Driver_Lifting_Value);
+    // console.log('M3_Dockets:', state.M3_Dockets);
+    // console.log(
+    //   'Electronic_Account_Payments:',
+    //   state.Electronic_Account_Payments,
+    // );
+    // console.log(
+    //   'Total_Manual_MPTP31_And_MPTP_Values:',
+    //   state.Total_Manual_MPTP31_And_MPTP_Values,
+    // );
+    // console.log('eftpos_without_lifting:', eftpos_without_lifting);
 
+    //console.log('Ddeductions==', Cdeductions, eftpos_without_lifting);
     let Ddeductions = Cdeductions + state.Misc + state.Car_Wash + state.Fuel;
 
     let Cnetpayin = state.Commission_Driver - Cdeductions;
@@ -203,6 +215,7 @@ const EnterData = () => {
       // }
 
       updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
+      //console.log('levy===', updatedValues.Jobs_Done, updatedValues.Gov_Levy)
 
       // updatedValues.Shift_Total =
       //   updatedValues.Meter_Finish -
@@ -214,6 +227,11 @@ const EnterData = () => {
       // updatedValues.Paid_Kms =
       //   updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
       updatedValues.Shift_Total = updatedValues.meterTotal - updatedValues.Levy;
+      // console.log(
+      //   'shift total===',
+      //   updatedValues.meterTotal,
+      //   updatedValues.Levy,
+      // );
 
       updatedValues.Kms;
 
@@ -221,6 +239,11 @@ const EnterData = () => {
 
       updatedValues.Number_Of_Chairs =
         updatedValues.Eftpos_Liftings + updatedValues.Number_Of_Manual_Liftings;
+      // console.log(
+      //   'updatedValues.Number_Of_Chairs===',
+      //   updatedValues.Eftpos_Liftings,
+      //   updatedValues.Number_Of_Manual_Liftings,
+      // );
 
       updatedValues.Driver_Lifting_Value =
         updatedValues.Number_Of_Chairs *
@@ -233,6 +256,7 @@ const EnterData = () => {
         updatedValues.Kms > 0
           ? updatedValues.Shift_Total / updatedValues.Kms
           : 0;
+      //console.log(' updatedValues.CPK =', updatedValues.CPK);
 
       updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
 
@@ -494,7 +518,12 @@ const EnterData = () => {
                 value={
                   state[input.name] === 0
                     ? ''
+                    : input.name === 'Number_Of_Chairs'
+                    ? Number(state[input.name]).toFixed(0)
                     : Number(state[input.name]).toFixed(2)
+                  // state[input.name] === 0
+                  //   ? ''
+                  //   : Number(state[input.name]).toFixed(2)
                 }
               />
             </View>

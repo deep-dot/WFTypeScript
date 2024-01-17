@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
-  header: {height: 30, backgroundColor: '#ffffff'},
+  header: {height: 60, backgroundColor: '#ffffff'},
   text: {textAlign: 'center', fontWeight: 'bold', padding: 0, fontSize: 12},
   row: {height: 30, backgroundColor: '#ffffff'},
   rowButtons: {

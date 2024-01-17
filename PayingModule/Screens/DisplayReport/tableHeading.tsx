@@ -57,15 +57,14 @@ export const tableHead = [
 ];
 
 export const widthArr = [
-  120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120,
-  120, 120, 120, 120, 120, 120,
+  130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130,
+  130, 130, 130, 130, 130, 130,
 ];
 
 export const tableHead1 = [
-  'Total Lifting Fee',
-  'Total Liftings;',
-  'Total Company Portion of Lifting Fee:',
-  'Total Driver Portion of Lifting Fee:',
+  'Total lifting fee',
+  'Total number of liftings :',
+  'driver share',
 ];
 export const widthArr1 = [150, 150, 150, 150];
 

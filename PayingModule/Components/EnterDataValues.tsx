@@ -123,7 +123,7 @@ export type FormValues = {
   table: any[];
   tableNameData: string[];
   datatotal: string[];
-  liftingdata: string[];
+  liftingdata: number[];
   Deductdata: string[];
   done: boolean;
   usingservice: boolean;
@@ -304,13 +304,6 @@ export const liftingInputs: Input1[] = [
 ];
 
 export type Property2 =
-  | 'Eftpos'
-  | 'Total_Manual_MPTP31_And_MPTP_Values'
-  | 'M3_Dockets'
-  | 'Electronic_Account_Payments'
-  | 'Car_Wash'
-  | 'Fuel'
-  | 'Misc'
   | 'Hours_Worked'
   | 'Insurance'
   | 'Jobs_Done'
@@ -399,7 +392,7 @@ export const payinInputs: Input3[] = [
   {title: 'Unpaid KM', name: 'Unpaid_Kms', placeholder: '0.00'},
   {title: 'CPK', name: 'CPK', placeholder: '0.00'},
   {
-    title: 'Total Number of Liftings',
+    title: 'Total Liftings',
     name: 'Number_Of_Chairs',
     placeholder: '00',
   },
@@ -408,7 +401,7 @@ export const payinInputs: Input3[] = [
     name: 'Driver_Lifting_Value',
     placeholder: '0.00',
   },
-  {title: 'Commission Driver', name: 'Commission_Driver', placeholder: '00'},
+  {title: 'Commission Driver', name: 'Commission_Driver', placeholder: '0.00'},
   {title: 'Deductions', name: 'Deductions', placeholder: '0.00'},
   {title: 'Net Pay-In', name: 'Net_Payin', placeholder: '0.00'},
 ];
