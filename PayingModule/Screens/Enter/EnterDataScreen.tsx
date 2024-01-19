@@ -66,8 +66,8 @@ const EnterData = () => {
     //console.log('Ddeductions==', Cdeductions, eftpos_without_lifting);
     let Ddeductions = Cdeductions + state.Misc + state.Car_Wash + state.Fuel;
 
-    let Cnetpayin = state.Commission_Driver - Cdeductions;
-    let Dnetpayin = state.Commission_Driver - Ddeductions;
+    let Cnetpayin = state.Commission_Company - Cdeductions;
+    let Dnetpayin = state.Commission_Company - Ddeductions;
     if (state.Car_Wash > 0 || state.Misc > 0 || state.Fuel > 0) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
@@ -251,6 +251,11 @@ const EnterData = () => {
 
       updatedValues.Commission_Driver =
         (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
+
+      updatedValues.Company_Comm_Rate = 100 - updatedValues.Driver_Comm_Rate;
+
+      updatedValues.Commission_Company =
+        (updatedValues.Shift_Total * updatedValues.Company_Comm_Rate) / 100;
 
       updatedValues.CPK =
         updatedValues.Kms > 0

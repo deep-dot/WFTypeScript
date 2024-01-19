@@ -99,6 +99,7 @@ export type FormValues = {
   Number_Of_Chairs: number;
   Driver_Lifting_Value: number;
   Commission_Driver: number;
+  Commission_Company: number;
   Deductions: number;
   Average_Fare: number;
   Net_Payin: number;

@@ -56,7 +56,7 @@ export const InsertWeekEndingData = (state: FormValues) => {
     }
     db.transaction((txn: Transaction) => {
       txn.executeSql(
-        'INSERT INTO datatable (Name, Week_Ending_Date, Week_Ending_Day) VALUES(?,?,?)',
+        'INSERT INTO weekEndingTable (Name, Week_Ending_Date, Week_Ending_Day) VALUES(?,?,?)',
         [state.Name, state.Week_Ending_Date, state.Week_Ending_Day],
         (transaction: Transaction, resultSet: ResultSet) => {
           if (resultSet.rowsAffected > 0) {
@@ -73,8 +73,46 @@ export const InsertWeekEndingData = (state: FormValues) => {
   });
 };
 
-export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
+export function updateLiftingTable(
+  state: FormValues,
+  dispatch: React.Dispatch<Action>,
+): Promise<ResultSet> {
   let Company_Comm_Rate = 100 - state.Driver_Comm_Rate;
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      return reject(new Error('db is undefined'));
+    }
+    db.transaction((txn: Transaction) => {
+      txn.executeSql(
+        `UPDATE liftingTable
+         SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ?`,
+        [
+          state.Gov_Lifting_Fee,
+          state.Driver_Share_In_LiftingFee,
+          state.Gov_Levy,
+          state.Driver_Comm_Rate,
+          Company_Comm_Rate,
+        ],
+        (_tx: Transaction, result: ResultSet) => {
+          if (result.rowsAffected > 0) {
+            console.log(result);
+            dispatch({type: 'UPDATE', payload: result});
+            resolve(result);
+            //Alert.alert('Update operation successful');
+          } else {
+            reject(new Error('No rows were updated'));
+          }
+        },
+        (error: any) => {
+          console.log('SQL execution error: ', error);
+          reject(error);
+        },
+      );
+    });
+  });
+}
+
+export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
   return new Promise((resolve, reject) => {
     if (db && state.Date != null && state.Date !== '') {
       db.transaction((txn: Transaction) => {
@@ -86,7 +124,7 @@ export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
               resolve({msg: 'same date', length: results.rows.length});
             } else {
               txn.executeSql(
-                `INSERT INTO datatable (Name, Week_Ending_Date, Week_Ending_Day, Gov_Lifting_Fee, Driver_Share_In_LiftingFee, Gov_Levy, Driver_Comm_Rate, Company_Comm_Rate, Date, Day, Shift, Taxi, Jobs_Done, Hours_Worked, meterTotal, Kms, Paid_Kms, Eftpos, M3_Dockets, Electronic_Account_Payments, Total_Manual_MPTP31_And_MPTP_Values, Number_Of_Manual_Liftings, Eftpos_Liftings, Car_Wash, Misc, Fuel, Insurance,  
+                `INSERT INTO datatable (Date, Day, Shift, Taxi, Jobs_Done, Hours_Worked, meterTotal, Kms, Paid_Kms, Eftpos, M3_Dockets, Electronic_Account_Payments, Total_Manual_MPTP31_And_MPTP_Values, Number_Of_Manual_Liftings, Eftpos_Liftings, Car_Wash, Misc, Fuel, Insurance,  
                   Shift_Total,
                   Levy,
                   Unpaid_Kms,
@@ -95,16 +133,8 @@ export const Insert = (state: FormValues, dispatch: React.Dispatch<Action>) => {
                   Driver_Lifting_Value,
                   Commission_Driver,
                   Deductions,
-                  Net_Payin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                  Net_Payin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                 [
-                  state.Name,
-                  state.Week_Ending_Date,
-                  state.Week_Ending_Day,
-                  state.Gov_Lifting_Fee,
-                  state.Driver_Share_In_LiftingFee,
-                  state.Gov_Levy,
-                  state.Driver_Comm_Rate,
-                  Company_Comm_Rate,
                   state.Date,
                   state.Day,
                   state.Shift,
@@ -183,7 +213,6 @@ export function Update(
   state: FormValues,
   dispatch: React.Dispatch<Action>,
 ): Promise<ResultSet> {
-  let Company_Comm_Rate = 100 - state.Driver_Comm_Rate;
   return new Promise((resolve, reject) => {
     if (!db) {
       return reject(new Error('db is undefined'));
@@ -255,33 +284,6 @@ export function Update(
             reject(error);
           },
         );
-      } else {
-        txn.executeSql(
-          `UPDATE datatable
-             SET Gov_Lifting_Fee = ?, Driver_Share_In_LiftingFee = ?, Gov_Levy = ?, Driver_Comm_Rate = ?, Company_Comm_Rate = ? WHERE Week_Ending_Date = ?`,
-          [
-            state.Gov_Lifting_Fee,
-            state.Driver_Share_In_LiftingFee,
-            state.Gov_Levy,
-            state.Driver_Comm_Rate,
-            Company_Comm_Rate,
-            state.Week_Ending_Date,
-          ],
-          (_tx: Transaction, result: ResultSet) => {
-            if (result.rowsAffected > 0) {
-              console.log(result);
-              dispatch({type: 'UPDATE', payload: result});
-              resolve(result);
-              //Alert.alert('Update operation successful');
-            } else {
-              reject();
-            }
-          },
-          (error: any) => {
-            console.log('SQL execution error: ', error);
-            reject(error);
-          },
-        );
       }
     });
   });
@@ -294,12 +296,12 @@ export function insertCab(
   cabCount: number,
   dispatch: React.Dispatch<Action>,
 ): Promise<ResultSet> {
-  console.log('formValues.rego==', cabCount);
+ // console.log('formValues.rego==', cabCount);
   return new Promise((resolve, reject) => {
     if (!db) {
       return reject(new Error('db is undefined'));
     }
-    console.log('insert rego==', rego);
+    //console.log('insert rego==', rego);
     db.transaction((txn: Transaction) => {
       txn.executeSql(
         'SELECT * FROM cab WHERE Cab = ?',
