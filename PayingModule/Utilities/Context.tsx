@@ -1,6 +1,6 @@
 import React from 'react';
 import {Action} from './Actions';
-import {FormValues} from '../PayingModule/Screens/Components/EnterDataValues';
+import {FormValues} from '../Screens/Components/EnterDataValues';
 
 interface ContextValue {
   state: FormValues;

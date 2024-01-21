@@ -1,8 +1,8 @@
 import React from 'react';
-import {Transaction, ResultSet} from '../PayingModule/Database/databaseTypes';
+import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
-import db from '../PayingModule/Database/databaseService';
-import {FormValues} from '../PayingModule/Screens/Components/EnterDataValues';
+import db from '../Database/databaseService';
+import {FormValues} from '../Screens/Components/EnterDataValues';
 
 export type Action =
   | {type: 'INSERT'; payload: any}

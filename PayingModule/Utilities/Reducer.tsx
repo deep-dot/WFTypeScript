@@ -1,8 +1,5 @@
 import {Action} from './Actions';
-import {
-  FormValues,
-  refreshValues,
-} from '../PayingModule/Screens/Components/EnterDataValues';
+import {FormValues, refreshValues} from '../Screens/Components/EnterDataValues';
 
 export const reducer = (state: FormValues, action: Action): FormValues => {
   switch (action.type) {
@@ -64,6 +61,6 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
       return {...state};
     default:
       console.error('Unhandled action type:', action);
-      throw new Error(`Unhandled action type: ${action.type}`);
+      throw new Error(`Unhandled action type: ${action}`);
   }
 };

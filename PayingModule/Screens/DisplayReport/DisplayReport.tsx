@@ -12,9 +12,9 @@ import {
 import {Table, Row} from 'react-native-table-component';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from '../screens.style';
-import {ViewRecordsByDate} from '../../../Utilities/Actions';
-import {StateContext} from '../../../Utilities/Context';
-import {totalTable} from '../../../Utilities/Actions';
+import {ViewRecordsByDate} from '../../Utilities/Actions';
+import {StateContext} from '../../Utilities/Context';
+import {totalTable} from '../../Utilities/Actions';
 import {
   tableHead,
   tableHead1,

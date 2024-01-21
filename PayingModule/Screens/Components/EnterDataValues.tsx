@@ -140,7 +140,7 @@ export const initialValues = {
   Week_Ending_Day: '',
 
   //Lifting Modal
-  liftingid: 0,
+  liftingId: 0,
   Gov_Lifting_Fee: 0,
   Driver_Share_In_LiftingFee: 0,
   Gov_Levy: 0,
@@ -185,6 +185,7 @@ export const initialValues = {
   Number_Of_Chairs: 0,
   Driver_Lifting_Value: 0,
   Commission_Driver: 0,
+  Commission_Company: 0,
   Deductions: 0,
   Average_Fare: 0,
   Net_Payin: 0,

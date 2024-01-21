@@ -9,8 +9,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import styles from '../screens.style';
-import {insertCab, deleteCab} from '../../../Utilities/Actions';
-import {StateContext} from '../../../Utilities/Context';
+import {insertCab, deleteCab} from '../../Utilities/Actions';
+import {StateContext} from '../../Utilities/Context';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 export const RegoModal = () => {

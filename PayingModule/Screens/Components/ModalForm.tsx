@@ -11,8 +11,8 @@ import {
 import {ScrollView} from 'react-native-gesture-handler';
 import {Calendar} from './Calendar';
 import styles from '../screens.style';
-import {StateContext} from '../../../Utilities/Context';
-import {saveWeekEndingData} from '../../../Utilities/Actions';
+import {StateContext} from '../../Utilities/Context';
+import {saveWeekEndingData} from '../../Utilities/Actions';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ModalForm = () => {

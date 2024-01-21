@@ -41,7 +41,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
           <View style={styles.userInfoSection}>
             <View style={{flexDirection: 'row', marginTop: 15}}>
               <View style={{marginLeft: 15, flexDirection: 'column'}}>
-                <Title style={styles.title} />
+                <Title style={styles.title}>Title </Title>
                 <Caption style={styles.caption}>@d_dee</Caption>
               </View>
             </View>

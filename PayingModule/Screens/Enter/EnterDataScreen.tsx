@@ -22,8 +22,8 @@ import {
   SelectCab,
   Select,
   upsertData,
-} from '../../../Utilities/Actions';
-import {StateContext} from '../../../Utilities/Context';
+} from '../../Utilities/Actions';
+import {StateContext} from '../../Utilities/Context';
 import {
   useInputRefs,
   inputs,
