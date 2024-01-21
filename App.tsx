@@ -23,7 +23,7 @@ import DisplayReport from './PayingModule/Screens/DisplayReport/DisplayReport';
 import SplashScreen from 'react-native-splash-screen';
 import * as IAP from 'react-native-iap';
 //import * as RNIap from 'react-native-iap';
-import styles from './PayingModule/Screens/Subscription//Subscription.style';
+import styles from './App.style';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
 import {

@@ -14,7 +14,7 @@ import {
   UpdateData,
   SelectFromDataTable,
   deleteDataInTable,
-} from './Actions';
+} from '../../../Utilities/Actions';
 import { Calendar } from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { NavigationProp } from '@react-navigation/native';
@@ -29,7 +29,7 @@ import {
   widthArr,
 } from '../DisplayReport/tableHeading';
 import { ScrollView } from 'react-native-gesture-handler';
-import styles from './ViewRecords.style';
+import styles from '../screens.style';
 import moment from 'moment';
 import { LogBox } from 'react-native';
 

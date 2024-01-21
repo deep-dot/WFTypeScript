@@ -11,7 +11,7 @@ import {
   Modal,
   TouchableOpacity,
 } from 'react-native';
-import {upsertLiftingTable} from '../Actions';
+import {upsertLiftingTable} from '../../../../Utilities/Actions';
 import {StateContext} from '../../../../Utilities/Context';
 import Icon from 'react-native-vector-icons/Ionicons';
 

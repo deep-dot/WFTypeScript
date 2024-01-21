@@ -15,14 +15,14 @@ import {Picker} from '@react-native-picker/picker';
 import {Calculator} from './component/Calculator';
 import {Calendar} from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import styles from './EnterDataScreen.style';
+import styles from '../screens.style';
 import {
   selectWeekEndingTable,
   selectLiftingTable,
   SelectCab,
   Select,
   upsertData,
-} from './Actions';
+} from '../../../Utilities/Actions';
 import {StateContext} from '../../../Utilities/Context';
 import {
   useInputRefs,
