@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useContext, useCallback} from 'react';
+import React, {useEffect, useContext} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -16,7 +16,13 @@ import {Calculator} from './component/Calculator';
 import {Calendar} from '../../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from './EnterDataScreen.style';
-import {SelectCab, Insert, Update, Select} from './Actions';
+import {
+  selectWeekEndingTable,
+  selectLiftingTable,
+  SelectCab,
+  Select,
+  upsertData,
+} from './Actions';
 import {StateContext} from '../../../Utilities/Context';
 import {
   useInputRefs,
@@ -105,7 +111,10 @@ const EnterData = () => {
         Net_Payin: netpayin,
       },
     });
-    alertConfirm('Wish to Save?', () => executeSqlQuery());
+    alertConfirm(
+      'Wish to Save?',
+      async () => await upsertData(state, dispatch),
+    );
   };
 
   const alertConfirm = (title: string, onPressYes: () => void) => {
@@ -126,43 +135,20 @@ const EnterData = () => {
     );
   };
 
-  const executeSqlQuery = async () => {
-    if (state.Search_Date) {
-      await Update(state, dispatch);
-    } else {
-      const res: any = await Insert(state, dispatch);
-      if (res.msg === 'same date') {
-        Alert.alert(
-          'A record with this date already exists',
-          'Please select another date.',
-        );
-      } else {
-        dispatch({
-          type: 'UPDATE',
-          payload: {
-            Number_Of_Entries: res.length,
-          },
-        });
-      }
-    }
-  };
-
   const Refresh = async () => {
     dispatch({type: 'REFRESH', payload: null});
   };
 
-  const fetchData = useCallback(async () => {
+  useEffect(() => {
     try {
-      await SelectCab(dispatch);
-      await Select(dispatch);
+      selectWeekEndingTable(dispatch);
+      selectLiftingTable(dispatch);
+      SelectCab(dispatch);
+      Select(dispatch);
     } catch (error) {
       console.error('An error occurred:', error);
     }
   }, [dispatch]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData, state.Taxi]);
 
   const onChange = (name: string, value: string) => {
     //console.log('onchange in enter data ==', name, 'and', value);
@@ -170,68 +156,12 @@ const EnterData = () => {
   };
 
   const SubmitEditing = (text: string, value: string) => {
-    console.log('click......');
     if (!isNaN(Number(value))) {
       let updatedValues = {...state, [text]: Number(value)};
-      // console.log(`text ${text} and value ${value}`);
-      // if (text === 'Jobs_Done') {
-      //   updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
-      // }
-      // if (text === 'Meter_Finish') {
-      //   updatedValues.Shift_Total =
-      //     updatedValues.Meter_Finish -
-      //     updatedValues.Meter_Start -
-      //     updatedValues.Levy;
-      // }
-      // if (text === 'Km_Finish') {
-      //   updatedValues.Kms = updatedValues.Km_Finish - updatedValues.Km_Start;
-      // }
-      // if (text === 'Paidkm_Finish') {
-      //   updatedValues.Paid_Kms =
-      //     updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
-      // }
-      // if (
-      //   text === 'Fuel' ||
-      //   text === 'Electronic_Account_Payments' ||
-      //   text === 'M3_Dockets'
-      // ) {
-      //   updatedValues.Number_Of_Chairs =
-      //     updatedValues.Eftpos_Liftings +
-      //     updatedValues.Number_Of_Manual_Liftings;
-
-      //   updatedValues.Driver_Lifting_Value =
-      //     updatedValues.Number_Of_Chairs *
-      //     updatedValues.Driver_Share_In_LiftingFee;
-
-      //   updatedValues.Commission_Driver =
-      //     (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
-
-      //   updatedValues.CPK =
-      //     updatedValues.Kms > 0
-      //       ? updatedValues.Shift_Total / updatedValues.Kms
-      //       : 0;
-
-      //   updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
-      // }
 
       updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
-      //console.log('levy===', updatedValues.Jobs_Done, updatedValues.Gov_Levy)
 
-      // updatedValues.Shift_Total =
-      //   updatedValues.Meter_Finish -
-      //   updatedValues.Meter_Start -
-      //   updatedValues.Levy;
-
-      // updatedValues.Kms = updatedValues.Km_Finish - updatedValues.Km_Start;
-
-      // updatedValues.Paid_Kms =
-      //   updatedValues.Paidkm_Finish - updatedValues.Paidkm_Start;
       updatedValues.Shift_Total = updatedValues.meterTotal - updatedValues.Levy;
-      // console.log(
-      //   'shift total===',
-      //   updatedValues.meterTotal,
-      //   updatedValues.Levy,
-      // );
 
       updatedValues.Kms;
 
@@ -239,11 +169,6 @@ const EnterData = () => {
 
       updatedValues.Number_Of_Chairs =
         updatedValues.Eftpos_Liftings + updatedValues.Number_Of_Manual_Liftings;
-      // console.log(
-      //   'updatedValues.Number_Of_Chairs===',
-      //   updatedValues.Eftpos_Liftings,
-      //   updatedValues.Number_Of_Manual_Liftings,
-      // );
 
       updatedValues.Driver_Lifting_Value =
         updatedValues.Number_Of_Chairs *
@@ -261,7 +186,6 @@ const EnterData = () => {
         updatedValues.Kms > 0
           ? updatedValues.Shift_Total / updatedValues.Kms
           : 0;
-      //console.log(' updatedValues.CPK =', updatedValues.CPK);
 
       updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
 

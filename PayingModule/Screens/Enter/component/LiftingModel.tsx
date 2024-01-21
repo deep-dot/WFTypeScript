@@ -11,7 +11,7 @@ import {
   Modal,
   TouchableOpacity,
 } from 'react-native';
-import {updateLiftingTable} from '../Actions';
+import {upsertLiftingTable} from '../Actions';
 import {StateContext} from '../../../../Utilities/Context';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -28,7 +28,9 @@ export const LiftingModel = () => {
         type: 'UPDATE',
         payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
       });
-      updateLiftingTable(state, dispatch);
+      const id = state?.liftingId;
+      let res = await upsertLiftingTable(state, dispatch, id);
+      console.log('res===', res);
     } catch (error) {
       console.error(error);
     }

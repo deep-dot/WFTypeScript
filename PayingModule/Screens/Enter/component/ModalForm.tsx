@@ -12,7 +12,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {Calendar} from '../../../Components/Calendar';
 import styles from '../EnterDataScreen.style';
 import {StateContext} from '../../../../Utilities/Context';
-import {InsertWeekEndingData} from '../Actions';
+import {saveWeekEndingData} from '../Actions';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ModalForm = () => {
@@ -23,14 +23,17 @@ const ModalForm = () => {
   const {state, dispatch} = stateContext;
 
   const inCloud = () => {};
+
   let load = () => {
     if (!state.Week_Ending_Date || !state.Name) {
       Alert.alert('Put name and date in');
     } else {
-      InsertWeekEndingData(state);
+      const id = state.WEid;
+      saveWeekEndingData(state, dispatch, id);
       dispatch({type: 'UPDATE', payload: {modalVisible: false}});
     }
   };
+
   let cancel = () => {
     dispatch({type: 'UPDATE', payload: {modalVisible: false}});
   };

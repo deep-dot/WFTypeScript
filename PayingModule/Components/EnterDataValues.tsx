@@ -6,14 +6,8 @@ export const useInputRefs = () => {
     Hours_Worked: useRef<TextInput>(null),
     Insurance: useRef<TextInput>(null),
     Jobs_Done: useRef<TextInput>(null),
-    // Meter_Start: useRef<TextInput>(null),
-    // Meter_Finish: useRef<TextInput>(null),
     meterTotal: useRef<TextInput>(null),
-    // Km_Start: useRef<TextInput>(null),
-    // Km_Finish: useRef<TextInput>(null),
     Kms: useRef<TextInput>(null),
-    // Paidkm_Start: useRef<TextInput>(null),
-    // Paidkm_Finish: useRef<TextInput>(null),
     Paid_Kms: useRef<TextInput>(null),
     Eftpos: useRef<TextInput>(null),
     Eftpos_Liftings: useRef<TextInput>(null),
@@ -44,17 +38,16 @@ export type FormValues = {
   checking: boolean;
   ShowAlert: boolean;
 
-  //main
-  Record_id: number;
-  Number_Of_Entries: number;
   //Home Screen Modal
   modalVisible: boolean;
+  WEid: number;
   Name: string;
   showAlert: boolean;
   Week_Ending_Date: string;
   Week_Ending_Day: string;
 
   //Lifting Modal
+  liftingId: number;
   Lifting_Modal_Visible: boolean;
   Gov_Lifting_Fee: number;
   Driver_Share_In_LiftingFee: number;
@@ -62,24 +55,24 @@ export type FormValues = {
   Driver_Comm_Rate: number;
   Company_Comm_Rate: number;
 
+  //main
+  Record_id: number;
+  Number_Of_Entries: number;
   Shift: string;
+
+  cabId: number;
   Taxi: string;
   Cab_Data: Cab[];
   Rego_Modal: boolean;
+
   Current_Date: string;
   Date: string;
   Day: string;
   Hours_Worked: number;
   Insurance: number;
   Jobs_Done: number;
-  // Meter_Start: number;
-  // Meter_Finish: number;
   meterTotal: number;
-  // Km_Start: number;
-  // Km_Finish: number;
   Kms: number;
-  // Paidkm_Start: number;
-  // Paidkm_Finish: number;
   Paid_Kms: number;
   Number_Of_Manual_Liftings: number;
   Total_Manual_MPTP31_And_MPTP_Values: number;
@@ -138,30 +131,33 @@ export const initialValues = {
   checking: false,
   ShowAlert: false,
 
-  //main
-  Record_id: 0,
-  Number_Of_Entries: 0,
-
   //Home Screen Modal
   modalVisible: true,
+  WEid: 0,
   Name: '',
   showAlert: false,
   Week_Ending_Date: '',
   Week_Ending_Day: '',
 
   //Lifting Modal
+  liftingid: 0,
   Gov_Lifting_Fee: 0,
   Driver_Share_In_LiftingFee: 0,
   Gov_Levy: 0,
   Driver_Comm_Rate: 0,
   Company_Comm_Rate: 0,
-
   Lifting_Modal_Visible: false,
+
+  //main
+  Record_id: 0,
+  Number_Of_Entries: 0,
   Shift: '',
+
+  cabId: 0,
   Taxi: '',
-  Rego: '',
   Cab_Data: [],
   Rego_Modal: false,
+
   Current_Date: '',
   Date: '',
   Day: '',
@@ -169,15 +165,9 @@ export const initialValues = {
   Insurance: 0,
   Jobs_Done: 0,
   Levy: 0,
-  // Meter_Start: 0,
-  // Meter_Finish: 0,
   meterTotal: 0,
   Shift_Total: 0,
-  // Km_Start: 0,
-  // Km_Finish: 0,
   Kms: 0,
-  // Paidkm_Start: 0,
-  // Paidkm_Finish: 0,
   Paid_Kms: 0,
   Unpaid_Kms: 0,
   CPK: 0,
@@ -240,14 +230,8 @@ export const refreshValues = {
   Insurance: 0,
   Jobs_Done: 0,
   Levy: 0,
-  // Meter_Start: 0,
-  // Meter_Finish: 0,
   meterTotal: 0,
-  // Km_Start: 0,
-  // Km_Finish: 0,
   Kms: 0,
-  // Paidkm_Start: 0,
-  // Paidkm_Finish: 0,
   Paid_Kms: 0,
   Shift_Total: 0,
   Unpaid_Kms: 0,
@@ -308,14 +292,8 @@ export type Property2 =
   | 'Hours_Worked'
   | 'Insurance'
   | 'Jobs_Done'
-  // | 'Meter_Start'
-  // | 'Meter_Finish'
   | 'meterTotal'
-  // | 'Km_Start'
-  // | 'Km_Finish'
   | 'Kms'
-  // | 'Paidkm_Start'
-  // | 'Paidkm_Finish'
   | 'Paid_Kms'
   | 'Eftpos'
   | 'Eftpos_Liftings'
@@ -335,14 +313,8 @@ export const inputs: Input2[] = [
   {title: 'Working Hours', name: 'Hours_Worked', placeholder: '0'},
   {title: 'Insurance', name: 'Insurance', placeholder: '0.00'},
   {title: 'Jobs Done', name: 'Jobs_Done', placeholder: '0'},
-  // {title: 'Meter Start', name: 'Meter_Start', placeholder: '0.00'},
-  // {title: 'Meter Finish', name: 'Meter_Finish', placeholder: '0.00'},
   {title: 'Meter Total', name: 'meterTotal', placeholder: '0.00'},
-  // {title: 'KM Start', name: 'Km_Start', placeholder: '0.00'},
-  // {title: 'KM Finish', name: 'Km_Finish', placeholder: '0.00'},
   {title: 'KMs', name: 'Kms', placeholder: '0.00'},
-  // {title: 'Paid KM Start', name: 'Paidkm_Start', placeholder: '0.00'},
-  // {title: 'Paid KM Finish', name: 'Paidkm_Finish', placeholder: '0.00'},
   {title: 'Paid KMs', name: 'Paid_Kms', placeholder: '0.00'},
   {title: 'EFTPOS', name: 'Eftpos', placeholder: '0.00'},
   {title: 'EFTPOS Liftings', name: 'Eftpos_Liftings', placeholder: '00'},
@@ -370,8 +342,6 @@ export const inputs: Input2[] = [
 export type Property3 =
   | 'Shift_Total'
   | 'Levy'
-  // | 'Kms'
-  // | 'Paid_Kms'
   | 'Unpaid_Kms'
   | 'CPK'
   | 'Number_Of_Chairs'
@@ -388,8 +358,6 @@ type Input3 = {
 export const payinInputs: Input3[] = [
   {title: 'Shift Total', name: 'Shift_Total', placeholder: '0.00'},
   {title: 'Levy', name: 'Levy', placeholder: '0.00'},
-  // {title: 'Total KMs', name: 'Kms', placeholder: '0.00'},
-  // {title: 'Total Paid KM', name: 'Paid_Kms', placeholder: '0.00'},
   {title: 'Unpaid KM', name: 'Unpaid_Kms', placeholder: '0.00'},
   {title: 'CPK', name: 'CPK', placeholder: '0.00'},
   {

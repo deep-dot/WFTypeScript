@@ -3,6 +3,7 @@ import {Transaction, ResultSet} from './databaseTypes';
 import db from './databaseService';
 
 const initializeTable = (tableName: string, createTableSQL: string) => {
+  console.log(`DROP TABLE IF EXISTS ${tableName}`);
   if (db) {
     db.transaction((txn: Transaction) => {
       txn.executeSql(
@@ -10,6 +11,7 @@ const initializeTable = (tableName: string, createTableSQL: string) => {
         [],
         (_tx: Transaction, res: ResultSet) => {
           if (res.rows.length === 0) {
+            console.log(`==== ${tableName}`);
             txn.executeSql(`DROP TABLE IF EXISTS ${tableName}`, []);
             txn.executeSql(createTableSQL, []);
           }
@@ -25,22 +27,25 @@ const Database = () => {
   useEffect(() => {
     initializeTable(
       'weekEndingTable',
-      `CREATE TABLE IF NOT EXISTS cab (id INTEGER PRIMARY KEY AUTOINCREMENT,  
+      `CREATE TABLE IF NOT EXISTS weekEndingTable (id INTEGER PRIMARY KEY AUTOINCREMENT,  
         Name TEXT,
         Week_Ending_Date TEXT,
-        Week_Ending_Day TEXT)`,
+        Week_Ending_Day TEXT
+      )`,
     );
   }, []);
 
   useEffect(() => {
     initializeTable(
       'liftingTable',
-      `CREATE TABLE IF NOT EXISTS cab (id INTEGER PRIMARY KEY AUTOINCREMENT,  
+      `CREATE TABLE IF NOT EXISTS liftingTable (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,  
           Gov_Lifting_Fee NUMERIC,
           Driver_Share_In_LiftingFee NUMERIC,
           Gov_Levy NUMERIC,
           Driver_Comm_Rate NUMERIC,
-          Company_Comm_Rate NUMERIC)`,
+          Company_Comm_Rate NUMERIC
+        )`,
     );
   }, []);
 
@@ -49,7 +54,7 @@ const Database = () => {
       'datatable',
       `CREATE TABLE IF NOT EXISTS datatable (
         Record_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Date TEXT,
+        Date TEXT UNIQUE,
         Day TEXT,
         Shift TEXT,
         Taxi TEXT,        
@@ -84,7 +89,7 @@ const Database = () => {
   useEffect(() => {
     initializeTable(
       'cab',
-      'CREATE TABLE IF NOT EXISTS cab (id INTEGER PRIMARY KEY AUTOINCREMENT, Cab TEXT)',
+      'CREATE TABLE IF NOT EXISTS cab (id INTEGER PRIMARY KEY AUTOINCREMENT, Cab TEXT UNIQUE)',
     );
   }, []);
 

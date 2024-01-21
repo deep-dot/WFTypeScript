@@ -21,12 +21,12 @@ export const RegoModal = () => {
   const {state, dispatch} = stateContext;
 
   const handleCabChange = async (action: Function) => {
-    if (!state.Rego) {
+    if (!state.Taxi) {
       Alert.alert('Please put rego in.');
       return;
     }
     try {
-      await action(state.Rego, state.cabCount, dispatch);
+      await action(state.Taxi, dispatch);
       dispatch({type: 'UPDATE', payload: {Rego_Modal: false}});
     } catch (error) {
       console.log(error);
@@ -53,14 +53,14 @@ export const RegoModal = () => {
           //keyboardType='numeric'
           keyboardType="numbers-and-punctuation"
           placeholderTextColor="#000000"
-          value={state.Rego}
+          value={state.Taxi}
           style={{
             marginTop: 30,
             alignSelf: 'center',
             color: '#000000',
           }}
           onChangeText={(text: string) => {
-            dispatch({type: 'UPDATE', payload: {Rego: text}});
+            dispatch({type: 'UPDATE', payload: {Taxi: text}});
           }}
         />
         <View
