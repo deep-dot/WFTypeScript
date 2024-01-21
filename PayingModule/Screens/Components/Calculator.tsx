@@ -13,7 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import {StateContext} from '../../../../Utilities/Context';
+import {StateContext} from '../../../Utilities/Context';
 
 export const Calculator = () => {
   const stateContext = React.useContext(StateContext);

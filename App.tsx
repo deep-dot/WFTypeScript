@@ -25,7 +25,6 @@ import * as IAP from 'react-native-iap';
 //import * as RNIap from 'react-native-iap';
 import styles from './App.style';
 import AwesomeAlert from 'react-native-awesome-alerts';
-
 import {
   DrawerNavigationProp,
   DrawerContentComponentProps,
@@ -85,7 +84,7 @@ const HomeScreenStack = () => {
                 margin: 10,
                 borderRadius: 50,
               }}
-              source={require('./PayingModule/Components/Images/WFLogo.png')}
+              source={require('./PayingModule/Screens/Components/Images/WFLogo.png')}
             />
           ),
         }}>
@@ -146,7 +145,7 @@ export default function App() {
 
     try {
       const response = await fetch(RECIEPT_VALIDATE_URL, {
-      //const response = await fetch(IOS_SANDTEST_URL, {
+        //const response = await fetch(IOS_SANDTEST_URL, {
         headers: {'Content-Type': 'application/json'},
         method: 'POST',
         body: JSON.stringify({data: receiptBody}),
@@ -166,7 +165,7 @@ export default function App() {
         setShowAlert(true);
       }
     } catch (error) {
-     // console.error('Error during receipt validation:', error);
+      // console.error('Error during receipt validation:', error);
       Alert.alert(
         'Error',
         'Could not connect to the store. Please try again later.',
@@ -192,14 +191,14 @@ export default function App() {
               //localizedPrice: sub.localizedPrice, // Assuming 'localizedPrice' exists
             }));
             setProducts(productsArray);
-          //  console.log('Products received:', products[0], products.length);
+            //  console.log('Products received:', products[0], products.length);
           }
 
           const history = await IAP.getPurchaseHistory();
           try {
             const receipt = history[history.length - 1].transactionReceipt;
             if (receipt) {
-             // validate(receipt);
+              // validate(receipt);
             }
           } catch (error) {
             console.log('Error getting the receipt:', error);

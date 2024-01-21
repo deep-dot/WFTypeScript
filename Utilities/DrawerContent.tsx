@@ -7,7 +7,6 @@ import {
   useTheme,
   Title,
   Caption,
-  Paragraph,
   Drawer,
   Text,
   TouchableRipple,

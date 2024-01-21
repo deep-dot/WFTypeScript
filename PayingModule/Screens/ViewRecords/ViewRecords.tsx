@@ -15,12 +15,12 @@ import {
   SelectFromDataTable,
   deleteDataInTable,
 } from '../../../Utilities/Actions';
-import { Calendar } from '../../Components/Calendar';
+import { Calendar } from '../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import { NavigationProp } from '@react-navigation/native';
 import { StackParamList } from '../../../App';
 import { useNavigation } from '@react-navigation/core';
-import { FormValues } from '../../Components/EnterDataValues';
+import { FormValues } from '../Components/EnterDataValues';
 import { StateContext } from '../../../Utilities/Context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Table, Row } from 'react-native-table-component';

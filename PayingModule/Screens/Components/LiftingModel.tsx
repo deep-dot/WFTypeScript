@@ -11,8 +11,8 @@ import {
   Modal,
   TouchableOpacity,
 } from 'react-native';
-import {upsertLiftingTable} from '../../../../Utilities/Actions';
-import {StateContext} from '../../../../Utilities/Context';
+import {upsertLiftingTable} from '../../../Utilities/Actions';
+import {StateContext} from '../../../Utilities/Context';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 export const LiftingModel = () => {

@@ -1,6 +1,6 @@
 import {Linking, Alert} from 'react-native';
 import RNPrint from 'react-native-print';
-import {FormValues} from '../../Components/EnterDataValues';
+import {FormValues} from '../Components/EnterDataValues';
 import {Action} from '../../../Utilities/Actions';
 
 export const starRating = (

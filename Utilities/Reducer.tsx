@@ -2,7 +2,7 @@ import {Action} from './Actions';
 import {
   FormValues,
   refreshValues,
-} from '../PayingModule/Components/EnterDataValues';
+} from '../PayingModule/Screens/Components/EnterDataValues';
 
 export const reducer = (state: FormValues, action: Action): FormValues => {
   switch (action.type) {

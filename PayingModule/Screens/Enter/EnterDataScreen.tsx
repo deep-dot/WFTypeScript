@@ -9,11 +9,11 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import {RegoModal} from './component/RegoModal';
-import {LiftingModel} from './component/LiftingModel';
+import {RegoModal} from '../Components/RegoModal';
+import {LiftingModel} from '../Components/LiftingModel';
 import {Picker} from '@react-native-picker/picker';
-import {Calculator} from './component/Calculator';
-import {Calendar} from '../../Components/Calendar';
+import {Calculator} from '../Components/Calculator';
+import {Calendar} from '../Components/Calendar';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from '../screens.style';
 import {
@@ -29,11 +29,11 @@ import {
   inputs,
   liftingInputs,
   payinInputs,
-} from '../../Components/EnterDataValues';
+} from '../Components/EnterDataValues';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App';
 import {useNavigation} from '@react-navigation/core';
-import ModalForm from './component/ModalForm';
+import ModalForm from '../Components/ModalForm';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Platform} from 'react-native';
 import moment from 'moment';
