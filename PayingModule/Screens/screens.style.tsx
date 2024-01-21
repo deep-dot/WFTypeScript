@@ -76,6 +76,6 @@ export default StyleSheet.create({
   },
   titleText: {
     color: '#000000',
-    fontSize: 18,
+    fontSize: 14,
   },
 });

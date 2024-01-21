@@ -25,7 +25,7 @@ import {
 } from './tableHeading';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {NavigationProp} from '@react-navigation/native';
-import {StackParamList} from '../../../App';
+import {StackParamList} from '../../../App/App';
 import {useNavigation} from '@react-navigation/core';
 
 export default function DisplayReport() {

@@ -14,12 +14,12 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native';
-import ThemeProvider from './Utilities/ThemeProvider';
-import EnterData from './PayingModule/Screens/Enter/EnterDataScreen';
-import DrawerContent from './Utilities/DrawerContent';
-import {StateProvider} from './Utilities/StateProvider';
-import ViewRecords from './PayingModule/Screens/ViewRecords/ViewRecords';
-import DisplayReport from './PayingModule/Screens/DisplayReport/DisplayReport';
+import ThemeProvider from '../PayingModule/Utilities/ThemeProvider';
+import EnterData from '../PayingModule/Screens/Enter/EnterDataScreen';
+import DrawerContent from '../PayingModule/Utilities/DrawerContent';
+import {StateProvider} from '../PayingModule/Utilities/StateProvider';
+import ViewRecords from '../PayingModule/Screens/ViewRecords/ViewRecords';
+import DisplayReport from '../PayingModule/Screens/DisplayReport/DisplayReport';
 import SplashScreen from 'react-native-splash-screen';
 import * as IAP from 'react-native-iap';
 //import * as RNIap from 'react-native-iap';
@@ -33,7 +33,7 @@ import {
 import {createStackNavigator} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Database from './PayingModule/Database/Database';
+import Database from '../PayingModule/Database/Database';
 import {
   IN_APP_PURCHASE_KEY,
   RECIEPT_VALIDATE_URL,
@@ -84,7 +84,7 @@ const HomeScreenStack = () => {
                 margin: 10,
                 borderRadius: 50,
               }}
-              source={require('./PayingModule/Screens/Components/Images/WFLogo.png')}
+              source={require('../PayingModule/Screens/Components/Images/WFLogo.png')}
             />
           ),
         }}>
@@ -100,7 +100,6 @@ type DrawerParamList = {
   HomeScreenStack: StackParamList;
   EnterData: undefined;
   ViewRecords: undefined;
-  // Other routes...
 };
 const RootDrawer = createDrawerNavigator<DrawerParamList>();
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
