@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useCallback} from 'react';
 import {
   Text,
   View,
   ScrollView,
-  Alert,
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
@@ -27,6 +26,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {NavigationProp} from '@react-navigation/native';
 import {StackParamList} from '../../../App/App';
 import {useNavigation} from '@react-navigation/core';
+import {LogBox} from 'react-native';
+LogBox.ignoreLogs([
+  'Warning: Failed prop type: Invalid prop `style` of type `array` supplied to `Row`, expected `object`',
+]);
 
 export default function DisplayReport() {
   const navigation =
@@ -37,24 +40,20 @@ export default function DisplayReport() {
   }
   const {starRating, state, dispatch} = stateContext;
 
+  let Report = useCallback(async () => {
+    const results = await ViewRecordsByDate(
+      state.start_date,
+      state.finish_date,
+    );
+    dispatch({
+      type: 'UPDATE',
+      payload: {table: results, nametable: results},
+    });
+    await totalTable(dispatch);
+  }, [dispatch, state.start_date, state.finish_date]);
   useEffect(() => {
-    let Report = async () => {
-      if (!state.start_date || !state.finish_date) {
-        Alert.alert('Please select Date !');
-      } else {
-        const results = await ViewRecordsByDate(
-          state.start_date,
-          state.finish_date,
-        );
-        dispatch({
-          type: 'UPDATE',
-          payload: {table: results, nametable: results},
-        });
-        await totalTable(dispatch);
-      }
-    };
     Report();
-  }, [dispatch, state.finish_date, state.start_date]);
+  }, [Report]);
 
   state.tableData = state.table.map(record => [
     '',
@@ -65,14 +64,8 @@ export default function DisplayReport() {
     record.Jobs_Done,
     record.Insurance,
     record.Hours_Worked,
-    // record.Meter_Start,
-    // record.Meter_Finish,
     record.Shift_Total,
-    // record.Km_Start,
-    // record.Km_Finish,
     record.Kms,
-    // record.Paidkm_Start,
-    // record.Paidkm_Finish,
     record.Paid_Kms,
     record.Eftpos,
     record.Number_Of_Manual_Liftings,
@@ -95,14 +88,8 @@ export default function DisplayReport() {
     state.total.Jobs_Done,
     state.total.Insurance,
     state.total.Hours_Worked,
-    // '',
-    // '',
     state.total.Shift_Total,
-    // '',
-    // '',
     state.total.Kms,
-    // '',
-    // '',
     state.total.Paid_Kms,
     state.total.Eftpos,
     state.total.Number_Of_Manual_Liftings,
@@ -240,7 +227,18 @@ export default function DisplayReport() {
         <TouchableOpacity onPress={() => navigation.navigate('Enter Data')}>
           <Icon name="enter-outline" size={20} color="#fff" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('View Records')}>
+        <TouchableOpacity
+          onPress={() => {
+            dispatch({
+              type: 'UPDATE',
+              payload: {
+                start_date: '',
+                finish_date: '',
+                totalrecords: 0,
+              },
+            });
+            navigation.navigate('View Records');
+          }}>
           <Icon name="eye-outline" size={25} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity

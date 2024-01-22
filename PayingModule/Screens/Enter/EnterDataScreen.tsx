@@ -31,7 +31,7 @@ import {
   payinInputs,
 } from '../Components/EnterDataValues';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {StackParamList} from '../../../App';
+import {StackParamList} from '../../../App/App';
 import {useNavigation} from '@react-navigation/core';
 import ModalForm from '../Components/ModalForm';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -57,19 +57,6 @@ const EnterData = () => {
       state.Electronic_Account_Payments +
       state.Total_Manual_MPTP31_And_MPTP_Values +
       eftpos_without_lifting;
-    // console.log('Driver_Lifting_Value:', state.Driver_Lifting_Value);
-    // console.log('M3_Dockets:', state.M3_Dockets);
-    // console.log(
-    //   'Electronic_Account_Payments:',
-    //   state.Electronic_Account_Payments,
-    // );
-    // console.log(
-    //   'Total_Manual_MPTP31_And_MPTP_Values:',
-    //   state.Total_Manual_MPTP31_And_MPTP_Values,
-    // );
-    // console.log('eftpos_without_lifting:', eftpos_without_lifting);
-
-    //console.log('Ddeductions==', Cdeductions, eftpos_without_lifting);
     let Ddeductions = Cdeductions + state.Misc + state.Car_Wash + state.Fuel;
 
     let Cnetpayin = state.Commission_Company - Cdeductions;
@@ -468,7 +455,17 @@ const EnterData = () => {
         }}>
         <TouchableOpacity
           // style={styles.button}
-          onPress={() => navigation.navigate('View Records')}>
+          onPress={() => {
+            dispatch({
+              type: 'UPDATE',
+              payload: {
+                start_date: '',
+                finish_date: '',
+                totalrecords: 0,
+              },
+            });
+            navigation.navigate('View Records');
+          }}>
           <Icon name="eye-outline" size={25} color="#fff" />
         </TouchableOpacity>
 

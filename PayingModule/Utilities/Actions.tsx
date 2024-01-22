@@ -494,27 +494,27 @@ export const ViewRecordsByDate = (
   finish_date: string,
 ): Promise<FormValues[]> => {
   return new Promise((resolve, reject) => {
+    console.log('state.start_date, state.finish_date', start_date, finish_date);
     if (!db) {
       return reject(new Error('db is undefined'));
     }
-
     db.transaction(txn => {
       txn.executeSql(
         'SELECT * FROM datatable WHERE Date BETWEEN ? AND ? ORDER BY Date',
         [start_date, finish_date],
         (_tx, results) => {
           if (results.rows.length > 0) {
-            const res = Array.from({length: results.rows.length}, (_, i) =>
-              results.rows.item(i),
-            );
-            resolve(res);
+            const temp: any[] = [];
+            for (let j = 0; j < results.rows.length; j++) {
+              temp.push(results.rows.item(j));
+            }
+            resolve(temp);
           } else {
-            Alert.alert('No record exist on this date');
-            reject(new Error('No records found'));
+            resolve([]);
           }
         },
         error => {
-          reject(error);
+          reject(new Error(`SQL error: ${error.message}`));
         },
       );
     });
