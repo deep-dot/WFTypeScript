@@ -32,6 +32,7 @@ interface tableData {
   [key: string]: string;
 }
 export type FormValues = {
+  Number_Of_Entries: number;
   //subscription
   purchased: boolean;
   products: {};
@@ -57,7 +58,6 @@ export type FormValues = {
 
   //main
   Record_id: number;
-  Number_Of_Entries: number;
   Shift: string;
 
   cabId: number;
@@ -125,6 +125,7 @@ export type FormValues = {
 };
 
 export const initialValues = {
+  Number_Of_Entries: 0,
   //subscription
   purchased: false,
   products: {},
@@ -150,7 +151,6 @@ export const initialValues = {
 
   //main
   Record_id: 0,
-  Number_Of_Entries: 0,
   Shift: '',
 
   cabId: 0,

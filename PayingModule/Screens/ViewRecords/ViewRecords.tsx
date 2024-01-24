@@ -48,25 +48,21 @@ const ViewRecords = () => {
   const searchRecord = useCallback(async () => {
     try {
       let records = await ViewRecordsByDate(state.start_date, state.finish_date);
-      if (records.length > 0) {
+      if (records) {
+        // console.log('how many records searched===', records.length);
         dispatch({
-          type: 'UPDATE',
-          payload: { totalrecords: records.length },
+          type: 'INSERT',
+          payload: { totalrecords: records.length, table: 'datatable'},
         });
-        setFlatListItems(records);
-      } else {
-        dispatch({
-          type: 'UPDATE',
-          payload: { totalrecords: 0 },
-        });
-        setFlatListItems([]);
+       return setFlatListItems(records);
       }
+        setFlatListItems([]);
     } catch (error) {
       console.error('Error fetching records:', error);
       Alert.alert('Error', 'An error occurred while fetching records.');
       dispatch({
-        type: 'UPDATE',
-        payload: { totalrecords: 0 },
+        type: 'INSERT',
+        payload: { totalrecords: 0, table: 'datatable' },
       });
       setFlatListItems([]);
     }
@@ -84,9 +80,9 @@ const ViewRecords = () => {
       let data = flatListItems.filter(item => item.Date !== date);
       setFlatListItems(data);
       dispatch({
-        type: 'UPDATE',
-        payload: { totalrecords: state.totalrecords - res.length,
-        Number_Of_Entries: state.Number_Of_Entries - res.length },
+        type: 'DELETE',
+        payload: { totalrecords: state.totalrecords - 1,
+        Number_Of_Entries: state.Number_Of_Entries - 1, table: 'datatable' },
       });
     }
     SelectFromDataTable(dispatch)
@@ -147,7 +143,7 @@ const ViewRecords = () => {
             onChange={(date: string, day: string) => {
               dispatch({
                 type: 'UPDATE',
-                payload: { start_date: date, start_day: day, totalrecords: 0, finish_date: '' },
+                payload: { start_date: date, start_day: day, finish_date: '', table: 'datatable' },
               });
              // SearchRecord(date, state.finish_date);
             }}
@@ -167,7 +163,7 @@ const ViewRecords = () => {
             onChange={(date: string, day: string) => {
               dispatch({
                 type: 'UPDATE',
-                payload: { finish_date: date, finish_day: day },
+                payload: { finish_date: date, finish_day: day, table: 'datatable' },
               });
             }}
           />

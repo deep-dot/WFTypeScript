@@ -5,13 +5,23 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
   switch (action.type) {
     case 'INSERT':
       // console.log('action.payload===', action.payload);
-      const {insertId, table: insertTable} = action.payload;
+      const {
+        insertId,
+        table: insertTable,
+        Number_Of_Entries: numberOfEntries,
+        totalrecords,
+      } = action.payload;
       if (insertTable === 'liftingTable') {
         return {...state, liftingId: insertId};
       } else if (insertTable === 'weekEndingTable') {
         return {...state, WEid: insertId};
       } else if (insertTable === 'datatable') {
-        return {...state, Record_id: insertId};
+        return {
+          ...state,
+          Record_id: insertId,
+          Number_Of_Entries: numberOfEntries,
+          totalrecords,
+        };
       } else if (insertTable === 'cab') {
         const newCab = {Cab: action.payload.rego, id: insertId};
         return {
@@ -22,7 +32,7 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
       return state;
     case 'SELECT':
       //console.log('action.payload===', action.payload);
-      const {data, table: selectTable} = action.payload;
+      const {data, table: selectTable, Number_Of_Entries} = action.payload;
       if (selectTable === 'liftingTable') {
         return {
           ...state,
@@ -40,7 +50,7 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
           Week_Ending_Day: data.Week_Ending_Day,
         };
       } else if (selectTable === 'datatable') {
-        return {...state, Record_id: insertId};
+        return {...state, Record_id: insertId, Number_Of_Entries};
       } else if (selectTable === 'cab') {
         return {...state, Cab_Data: action.payload.data};
       }
@@ -48,11 +58,27 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
     case 'UPDATE':
       return {...state, ...action.payload};
     case 'DELETE':
-      const regoToDelete = action.payload.rego;
-      return {
-        ...state,
-        Cab_Data: state.Cab_Data.filter(item => item.Cab !== regoToDelete),
-      };
+      const {
+        rego,
+        totalrecords: TR,
+        Number_Of_Entries: NOE,
+        table: deleteFromTable,
+      } = action.payload;
+      if (deleteFromTable === 'datatable') {
+        return {
+          ...state,
+          totalrecords: TR,
+          Number_Of_Entries: NOE,
+        };
+      }
+      if (deleteFromTable === 'cab') {
+        //console.log('deleteFromTable ===', deleteFromTable, rego);
+        return {
+          ...state,
+          Cab_Data: state.Cab_Data.filter(item => item.Cab !== rego),
+        };
+      }
+    // eslint-disable-next-line no-fallthrough
     case 'REFRESH':
       return {...state, ...refreshValues};
     case 'ERROR':

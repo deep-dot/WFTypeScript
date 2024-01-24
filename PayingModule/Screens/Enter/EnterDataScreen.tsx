@@ -98,10 +98,13 @@ const EnterData = () => {
         Net_Payin: netpayin,
       },
     });
-    alertConfirm(
-      'Wish to Save?',
-      async () => await upsertData(state, dispatch),
-    );
+    alertConfirm('Wish to Save?', async () => {
+      try {
+        await upsertData(state, dispatch);
+      } catch (error) {
+        console.log(error);
+      }
+    });
   };
 
   const alertConfirm = (title: string, onPressYes: () => void) => {
@@ -135,7 +138,7 @@ const EnterData = () => {
     } catch (error) {
       console.error('An error occurred:', error);
     }
-  }, [dispatch]);
+  }, [dispatch, state.Number_Of_Entries]);
 
   const onChange = (name: string, value: string) => {
     //console.log('onchange in enter data ==', name, 'and', value);

@@ -312,11 +312,11 @@ export const upsertData = (
   return new Promise((resolve, reject) => {
     if (!db) {
       Alert.alert('Database not initialized');
-      return reject(new Error('Database is undefined'));
+      return;
     }
     if (!state.Date || state.Date === '') {
       Alert.alert('Please select a date');
-      return reject(new Error('Date is required'));
+      return;
     }
 
     const isUpdate = state.Search_Date && state.Search_Date !== '';
@@ -423,21 +423,26 @@ export const upsertData = (
               : 'Record inserted successfully!';
             resolve(message);
             Alert.alert(message);
+
             dispatch({
               type: actionType,
-              payload: {insertId: resultSet.insertId, table: 'datatable'},
+              payload: {
+                insertId: resultSet.insertId,
+                table: 'datatable',
+                Number_Of_Entries: state.Number_Of_Entries + 1,
+              },
             });
           } else {
             const error = new Error(
               isUpdate ? 'Update operation failed' : 'Insert operation failed',
             );
             reject(error);
-            Alert.alert(error.message);
+            Alert.alert('No duplicate date entry is allowed');
           }
         },
         (error: any) => {
           reject(error);
-          Alert.alert('Database operation failed', error.message);
+          Alert.alert('No duplicate date entry is allowed');
         },
       );
     });
@@ -460,19 +465,21 @@ export const Select = (
           if (len > 0) {
             const lastRowData = results.rows.item(len - 1);
             dispatch({
-              type: 'UPDATE',
+              type: 'SELECT',
               payload: {
                 lastRowData,
                 Number_Of_Entries: len,
+                table: 'datatable',
               },
             });
           } else {
             // Handle the case where there are no entries
             dispatch({
-              type: 'UPDATE',
+              type: 'SELECT',
               payload: {
                 lastRowData: null,
                 Number_Of_Entries: 0,
+                table: 'datatable',
               },
             });
           }
@@ -514,7 +521,7 @@ export const ViewRecordsByDate = (
           }
         },
         error => {
-          reject(new Error(`SQL error: ${error.message}`));
+          reject(new Error(`SQL error: ${error}`));
         },
       );
     });
