@@ -12,6 +12,7 @@ export const tableHead = [
   'Paid Kms',
   'Eftpos',
   'Manuals',
+  'No. of Eftpos Liftings',
   'Manual $',
   'M3 Dockets',
   'Electronic Payments',
@@ -24,7 +25,7 @@ export const tableHead = [
 
 export const widthArr = [
   130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130,
-  130, 130, 130, 130, 130, 130,
+  130, 130, 130, 130, 130, 130, 130,
 ];
 
 export const tableHead1 = [

@@ -312,8 +312,8 @@ export const inputs: Input2[] = [
   {title: 'Meter Total', name: 'meterTotal', placeholder: '0.00'},
   {title: 'KMs', name: 'Kms', placeholder: '0.00'},
   {title: 'Paid KMs', name: 'Paid_Kms', placeholder: '0.00'},
-  {title: 'EFTPOS', name: 'Eftpos', placeholder: '0.00'},
-  {title: 'EFTPOS Liftings', name: 'Eftpos_Liftings', placeholder: '00'},
+  {title: 'Eftpos', name: 'Eftpos', placeholder: '0.00'},
+  {title: 'No. of Eftpos Liftings', name: 'Eftpos_Liftings', placeholder: '00'},
   {
     title: 'Number of Manuals',
     name: 'Number_Of_Manual_Liftings',

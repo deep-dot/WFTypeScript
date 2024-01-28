@@ -75,8 +75,8 @@ export default function DisplayReport() {
   );
 
   let deductData = useMemo(
-    () => [total.Jobs_Done, state.Net_Payin],
-    [state.Net_Payin, total.Jobs_Done],
+    () => [total.Deductions, state.Net_Payin],
+    [state.Net_Payin, total.Deductions],
   );
 
   return (
@@ -127,6 +127,7 @@ export default function DisplayReport() {
                       'Kms',
                       'Paid_Kms',
                       'Eftpos',
+                      'Eftpos_Liftings',
                       'Number_Of_Manual_Liftings',
                       'Total_Manual_MPTP31_And_MPTP_Values',
                       'M3_Dockets',
@@ -167,6 +168,7 @@ export default function DisplayReport() {
                     'Kms',
                     'Paid_Kms',
                     'Eftpos',
+                    'Eftpos_Liftings',
                     'Number_Of_Manual_Liftings',
                     'Total_Manual_MPTP31_And_MPTP_Values',
                     'M3_Dockets',

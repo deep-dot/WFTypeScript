@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useContext} from 'react';
+import React, {useEffect, useContext, useMemo} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -21,7 +21,6 @@ import {
   selectLiftingTable,
   SelectCab,
   SelectFromDataTable,
-  Select,
   upsertData,
 } from '../../Utilities/Actions';
 import {StateContext} from '../../Utilities/Context';
@@ -52,6 +51,7 @@ const EnterData = () => {
   let Save = () => {
     let eftpos_without_lifting =
       state.Eftpos - state.Number_Of_Chairs * state.Gov_Lifting_Fee;
+
     let Cdeductions =
       state.Driver_Lifting_Value +
       state.M3_Dockets +
@@ -91,6 +91,11 @@ const EnterData = () => {
     }
   };
 
+  let payin = useMemo(
+    () => [state.Deductions, state.Net_Payin],
+    [state.Net_Payin, state.Deductions],
+  );
+
   const handleDeduction = (deductions: number, netpayin: number) => {
     dispatch({
       type: 'UPDATE',
@@ -104,7 +109,6 @@ const EnterData = () => {
         await upsertData(state, dispatch);
       } catch (error) {
         console.log(error);
-
       }
     });
   };
@@ -136,7 +140,7 @@ const EnterData = () => {
       selectWeekEndingTable(dispatch);
       selectLiftingTable(dispatch);
       SelectCab(dispatch);
-     SelectFromDataTable(dispatch);
+      SelectFromDataTable(dispatch);
     } catch (error) {
       console.error('An error occurred:', error);
     }

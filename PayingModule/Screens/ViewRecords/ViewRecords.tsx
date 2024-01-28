@@ -195,6 +195,7 @@ const ViewRecords = () => {
                   rowdata.Kms,
                   rowdata.Paid_Kms,
                   rowdata.Eftpos,
+                  rowdata.Eftpos_Liftings,
                   rowdata.Number_Of_Manual_Liftings,
                   rowdata.Total_Manual_MPTP31_And_MPTP_Values,
                   rowdata.M3_Dockets,
