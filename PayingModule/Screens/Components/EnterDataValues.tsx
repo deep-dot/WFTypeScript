@@ -25,10 +25,8 @@ export const useInputRefs = () => {
 interface Cab {
   Cab: string;
 }
-interface total {
-  [key: string]: string;
-}
-interface tableData {
+
+export interface tableData {
   [key: string]: string;
 }
 export type FormValues = {
@@ -100,7 +98,6 @@ export type FormValues = {
   Calculator_Modal_Visible: boolean;
   Indicator: boolean;
   Search_Date: string;
-  cabCount: number;
 
   //View Records
   totalrecords: number;
@@ -113,15 +110,13 @@ export type FormValues = {
 
   //display table
   nametable: any[];
-  total: total;
+  total: {};
   table: any[];
   tableNameData: string[];
-  datatotal: string[];
-  liftingdata: number[];
-  Deductdata: string[];
+  datatotal: {};
   done: boolean;
   usingservice: boolean;
-  tableData: tableData[][];
+  tableData: tableData[];
 };
 
 export const initialValues = {
@@ -209,7 +204,7 @@ export const initialValues = {
   table: [],
   total: {},
   tableNameData: [],
-  datatotal: [],
+  datatotal: {},
   liftingdata: [],
   Deductdata: [],
   done: false,

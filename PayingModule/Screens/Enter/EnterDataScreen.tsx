@@ -20,6 +20,7 @@ import {
   selectWeekEndingTable,
   selectLiftingTable,
   SelectCab,
+  SelectFromDataTable,
   Select,
   upsertData,
 } from '../../Utilities/Actions';
@@ -103,6 +104,7 @@ const EnterData = () => {
         await upsertData(state, dispatch);
       } catch (error) {
         console.log(error);
+
       }
     });
   };
@@ -134,11 +136,11 @@ const EnterData = () => {
       selectWeekEndingTable(dispatch);
       selectLiftingTable(dispatch);
       SelectCab(dispatch);
-      Select(dispatch);
+     SelectFromDataTable(dispatch);
     } catch (error) {
       console.error('An error occurred:', error);
     }
-  }, [dispatch, state.Number_Of_Entries]);
+  }, [dispatch]);
 
   const onChange = (name: string, value: string) => {
     //console.log('onchange in enter data ==', name, 'and', value);

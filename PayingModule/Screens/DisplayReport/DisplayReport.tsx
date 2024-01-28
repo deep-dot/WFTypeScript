@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useContext, useEffect, useCallback} from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useCallback,
+  useState,
+  useMemo,
+} from 'react';
 import {
   Text,
   View,
@@ -11,7 +17,6 @@ import {
 import {Table, Row} from 'react-native-table-component';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from '../screens.style';
-import {ViewRecordsByDate} from '../../Utilities/Actions';
 import {StateContext} from '../../Utilities/Context';
 import {totalTable} from '../../Utilities/Actions';
 import {
@@ -31,6 +36,9 @@ LogBox.ignoreLogs([
   'Warning: Failed prop type: Invalid prop `style` of type `array` supplied to `Row`, expected `object`',
 ]);
 
+type TotalType = {
+  [key: string]: any; // or replace `any` with a more specific type if possible
+};
 export default function DisplayReport() {
   const navigation =
     useNavigation<NavigationProp<StackParamList, 'Display Report'>>();
@@ -39,77 +47,37 @@ export default function DisplayReport() {
     throw new Error('Component must be used within a StateProvider');
   }
   const {starRating, state, dispatch} = stateContext;
+  const [total, setTotal] = useState<TotalType>({});
 
   let Report = useCallback(async () => {
-    const results = await ViewRecordsByDate(
-      state.start_date,
-      state.finish_date,
-    );
-    dispatch({
-      type: 'UPDATE',
-      payload: {table: results, nametable: results},
-    });
-    await totalTable(dispatch);
-  }, [dispatch, state.start_date, state.finish_date]);
+    let res = await totalTable(dispatch);
+    setTotal(res);
+  }, [dispatch]);
+
+  // console.log('total:', total);
+  // console.log('tableData:', state.tableData);
+
   useEffect(() => {
     Report();
   }, [Report]);
 
-  state.tableData = state.table.map(record => [
-    '',
-    record.Date,
-    record.Day,
-    record.Shift,
-    record.Taxi,
-    record.Jobs_Done,
-    record.Insurance,
-    record.Hours_Worked,
-    record.Shift_Total,
-    record.Kms,
-    record.Paid_Kms,
-    record.Eftpos,
-    record.Number_Of_Manual_Liftings,
-    record.Total_Manual_MPTP31_And_MPTP_Values,
-    record.M3_Dockets,
-    record.Electronic_Account_Payments,
-    record.Car_Wash,
-    record.Misc,
-    record.Fuel,
-    record.CPK,
-    record.Net_Payin,
-  ]);
+  let liftingData = useMemo(
+    () => [
+      Number(total.Number_Of_Chairs) * state.Gov_Lifting_Fee,
+      Number(total.Number_Of_Chairs),
+      Number(total.Number_Of_Chairs) * state.Driver_Share_In_LiftingFee,
+    ],
+    [
+      total.Number_Of_Chairs,
+      state.Gov_Lifting_Fee,
+      state.Driver_Share_In_LiftingFee,
+    ],
+  );
 
-  state.datatotal = [
-    'Total',
-    '',
-    '',
-    '',
-    '',
-    state.total.Jobs_Done,
-    state.total.Insurance,
-    state.total.Hours_Worked,
-    state.total.Shift_Total,
-    state.total.Kms,
-    state.total.Paid_Kms,
-    state.total.Eftpos,
-    state.total.Number_Of_Manual_Liftings,
-    state.total.Total_Manual_MPTP31_And_MPTP_Values,
-    state.total.M3_Dockets,
-    state.total.Electronic_Account_Payments,
-    state.total.Car_Wash,
-    state.total.Misc,
-    state.total.Fuel,
-    'avg = ' + state.total.CPK,
-    state.total.Net_Payin,
-  ];
-  //console.log(state.datatotal);
-  state.liftingdata = [
-    Number(state.total.Number_Of_Chairs) * state.Gov_Lifting_Fee,
-    Number(state.total.Number_Of_Chairs),
-    Number(state.total.Number_Of_Chairs) * state.Driver_Share_In_LiftingFee,
-  ];
-
-  state.Deductdata = [state.total.Jobs_Done, state.total.Net_Payin];
+  let deductData = useMemo(
+    () => [total.Jobs_Done, state.Net_Payin],
+    [state.Net_Payin, total.Jobs_Done],
+  );
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#35363A'}}>
@@ -145,26 +113,88 @@ export default function DisplayReport() {
                 />
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-                {state.tableData.map((rowdata, index) => (
-                  <Row
-                    key={index}
-                    data={rowdata}
-                    widthArr={widthArr}
-                    style={[
-                      styles.row,
-                      index % 2 === 0 && {backgroundColor: 'white'},
-                    ]}
-                    textStyle={styles.text}
-                  />
-                ))}
+                {state.tableData &&
+                  state.tableData.map((rowdata, index) => {
+                    let keysToInclude = [
+                      'Date',
+                      'Day',
+                      'Shift',
+                      'Taxi',
+                      'Jobs_Done',
+                      'Insurance',
+                      'Hours_Worked',
+                      'Shift_Total',
+                      'Kms',
+                      'Paid_Kms',
+                      'Eftpos',
+                      'Number_Of_Manual_Liftings',
+                      'Total_Manual_MPTP31_And_MPTP_Values',
+                      'M3_Dockets',
+                      'Electronic_Account_Payments',
+                      'Car_Wash',
+                      'Misc',
+                      'Fuel',
+                      'CPK',
+                      'Net_Payin',
+                    ];
+                    let dataObj: {[key: string]: any} = {};
+                    keysToInclude.forEach(key => {
+                      dataObj[key] = rowdata[key];
+                    });
+                    let data = Object.values(dataObj);
+                    return (
+                      <Row
+                        key={index}
+                        index={index}
+                        data={['', ...data]}
+                        widthArr={widthArr}
+                        style={[
+                          styles.row,
+                          index % 2 === 0 && {backgroundColor: 'white'},
+                        ]}
+                        textStyle={styles.text}
+                      />
+                    );
+                  })}
               </Table>
               <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
-                <Row
-                  data={state.datatotal}
-                  widthArr={widthArr}
-                  style={styles.row}
-                  textStyle={styles.text}
-                />
+                {(() => {
+                  let keysToInclude = [
+                    'Jobs_Done',
+                    'Insurance',
+                    'Hours_Worked',
+                    'Shift_Total',
+                    'Kms',
+                    'Paid_Kms',
+                    'Eftpos',
+                    'Number_Of_Manual_Liftings',
+                    'Total_Manual_MPTP31_And_MPTP_Values',
+                    'M3_Dockets',
+                    'Electronic_Account_Payments',
+                    'Car_Wash',
+                    'Misc',
+                    'Fuel',
+                    'CPK',
+                    'Net_Payin',
+                  ];
+
+                  let dataObj: {[key: string]: any} = {};
+
+                  keysToInclude.forEach(key => {
+                    dataObj[key] = total[key];
+                  });
+
+                  let data = Object.values(dataObj);
+
+                  return (
+                    <Row
+                      data={['Total', '', '', '', '', ...data]}
+                      widthArr={widthArr}
+                      style={styles.row}
+                      textStyle={styles.text}
+                    />
+                  );
+                })()}
               </Table>
 
               <View style={{flex: 1, alignItems: 'flex-start', marginTop: 5}}>
@@ -182,7 +212,7 @@ export default function DisplayReport() {
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
                 <Row
-                  data={state.liftingdata}
+                  data={liftingData}
                   widthArr={widthArr}
                   style={styles.row}
                   textStyle={styles.text}
@@ -204,7 +234,7 @@ export default function DisplayReport() {
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
                 <Row
-                  data={state.Deductdata}
+                  data={deductData}
                   widthArr={widthArr}
                   style={styles.row}
                   textStyle={styles.text}

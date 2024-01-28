@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useContext, useEffect, useCallback, useState } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -12,14 +12,12 @@ import {
 import {
   ViewRecordsByDate,
   UpdateData,
-  SelectFromDataTable,
   deleteDataInTable,
 } from '../../Utilities/Actions';
 import { Calendar } from '../Components/Calendar';
 import { NavigationProp } from '@react-navigation/native';
 import { StackParamList } from '../../../App/App';
 import { useNavigation } from '@react-navigation/core';
-import { FormValues } from '../Components/EnterDataValues';
 import { StateContext } from '../../Utilities/Context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Table, Row } from 'react-native-table-component';
@@ -30,6 +28,8 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import styles from '../screens.style';
 import { LogBox } from 'react-native';
+import { tableData } from '../Components/EnterDataValues';
+// import { FormValues } from '../Components/EnterDataValues';
 
 LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.']);
 
@@ -38,63 +38,34 @@ LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type 
 const ViewRecords = () => {
   const navigation =
     useNavigation<NavigationProp<StackParamList, 'View Records'>>();
-  const [flatListItems, setFlatListItems] = useState<FormValues[]>([]);
   const stateContext = useContext(StateContext);
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
   const { state, dispatch } = stateContext;
+  const [isLoading, setIsLoading] = useState(false);
+  const [ res, setRes] = useState<tableData[]>([]);
 
   const searchRecord = useCallback(async () => {
+    setIsLoading(true);
     try {
-      let records = await ViewRecordsByDate(state.start_date, state.finish_date);
-      if (records) {
-        // console.log('how many records searched===', records.length);
-        dispatch({
-          type: 'INSERT',
-          payload: { totalrecords: records.length, table: 'datatable'},
-        });
-       return setFlatListItems(records);
-      }
-        setFlatListItems([]);
+      let tem = await ViewRecordsByDate(state.start_date, state.finish_date, dispatch);      
+      setRes(tem);
+      //console.log('res===',res);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching records:', error);
-      Alert.alert('Error', 'An error occurred while fetching records.');
-      dispatch({
-        type: 'INSERT',
-        payload: { totalrecords: 0, table: 'datatable' },
-      });
-      setFlatListItems([]);
+      setIsLoading(false);
     }
-  },[ dispatch, state.start_date, state.finish_date ]);
+  },[ dispatch, state.start_date, state.finish_date]);
 
   useEffect(() => {
-    if (state.start_date && state.finish_date) {
+    if (state.start_date && state.finish_date)  {
       searchRecord();
     }
-  }, [state.start_date, state.finish_date, searchRecord]);
+}, [searchRecord, state.finish_date, state.start_date]);
 
-  const Delete = async (date: string) => {
-    const res: any = await deleteDataInTable(date);
-    if (res.status === 'Deleted successfully') {
-      let data = flatListItems.filter(item => item.Date !== date);
-      setFlatListItems(data);
-      dispatch({
-        type: 'DELETE',
-        payload: { totalrecords: state.totalrecords - 1,
-        Number_Of_Entries: state.Number_Of_Entries - 1, table: 'datatable' },
-      });
-    }
-    SelectFromDataTable(dispatch)
-      .then(temp => {
-        setFlatListItems(temp);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
-  const DeleteRecord = (date: string) => {
+  const DeleteRecord = async (date: string) => {
     Alert.alert(
       'Please confirm!',
       'Do you wish to delete the record?',
@@ -102,7 +73,7 @@ const ViewRecords = () => {
         {
           text: 'Yes',
           onPress: () => {
-            Delete(date);
+            deleteDataInTable(date, state, dispatch);
           },
         },
         {
@@ -182,6 +153,9 @@ const ViewRecords = () => {
         </Text>
       </View>
 
+      {isLoading ? (
+      <Text>Loading...</Text> // Show a loading message or a spinner
+    ) : (
       <ScrollView horizontal={true}>
         <View>
          {state.start_date !== '' && state.finish_date !== '' ?
@@ -191,7 +165,8 @@ const ViewRecords = () => {
               widthArr={widthArr}
               style={styles.header}
             />
-            {flatListItems && flatListItems.map((rowdata, index) => (
+            {/* {flatListItems && flatListItems.map((rowdata, index) => ( */}
+            {res && res.map((rowdata, index: number) => (
               <Row
                 key={index}
                 data={[
@@ -214,21 +189,21 @@ const ViewRecords = () => {
                   rowdata.Shift,
                   rowdata.Taxi,
                   rowdata.Jobs_Done,
-                  (rowdata.Insurance).toFixed(2),
+                  rowdata.Insurance,
                   rowdata.Hours_Worked,
-                  (rowdata.Shift_Total).toFixed(2),
+                  rowdata.Shift_Total,
                   rowdata.Kms,
                   rowdata.Paid_Kms,
-                  (rowdata.Eftpos).toFixed(2),
+                  rowdata.Eftpos,
                   rowdata.Number_Of_Manual_Liftings,
-                  (rowdata.Total_Manual_MPTP31_And_MPTP_Values).toFixed(2),
-                  (rowdata.M3_Dockets).toFixed(2),
-                  (rowdata.Electronic_Account_Payments).toFixed(2),
-                  (rowdata.Car_Wash).toFixed(2),
-                  (rowdata.Misc).toFixed(2),
-                  (rowdata.Fuel).toFixed(2),
-                  (rowdata.CPK).toFixed(2),
-                  (rowdata.Net_Payin).toFixed(2),
+                  rowdata.Total_Manual_MPTP31_And_MPTP_Values,
+                  rowdata.M3_Dockets,
+                  rowdata.Electronic_Account_Payments,
+                  rowdata.Car_Wash,
+                  rowdata.Misc,
+                  rowdata.Fuel,
+                  rowdata.CPK,
+                  rowdata.Net_Payin,
                 ]}
                 widthArr={widthArr}
                 style={{
@@ -242,7 +217,7 @@ const ViewRecords = () => {
           }
         </View>
       </ScrollView>
-
+    )}
       <View
         style={{
           flexDirection: 'row',

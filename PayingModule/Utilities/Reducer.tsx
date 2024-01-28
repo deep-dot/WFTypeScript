@@ -4,23 +4,26 @@ import {FormValues, refreshValues} from '../Screens/Components/EnterDataValues';
 export const reducer = (state: FormValues, action: Action): FormValues => {
   switch (action.type) {
     case 'INSERT':
-      // console.log('action.payload===', action.payload);
+      //console.log('action.payload===', action.payload);
       const {
         insertId,
         table: insertTable,
         Number_Of_Entries: numberOfEntries,
         totalrecords,
+        tableData,
       } = action.payload;
       if (insertTable === 'liftingTable') {
         return {...state, liftingId: insertId};
       } else if (insertTable === 'weekEndingTable') {
         return {...state, WEid: insertId};
       } else if (insertTable === 'datatable') {
+        // console.log('action.payload===', action.payload);
         return {
           ...state,
           Record_id: insertId,
           Number_Of_Entries: numberOfEntries,
           totalrecords,
+          tableData,
         };
       } else if (insertTable === 'cab') {
         const newCab = {Cab: action.payload.rego, id: insertId};
@@ -50,7 +53,13 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
           Week_Ending_Day: data.Week_Ending_Day,
         };
       } else if (selectTable === 'datatable') {
-        return {...state, Record_id: insertId, Number_Of_Entries};
+        return {
+          ...state,
+          Record_id: insertId,
+          Number_Of_Entries,
+          totalrecords,
+          tableData,
+        };
       } else if (selectTable === 'cab') {
         return {...state, Cab_Data: action.payload.data};
       }

@@ -2,7 +2,7 @@ import React from 'react';
 import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
 import db from '../Database/databaseService';
-import {FormValues} from '../Screens/Components/EnterDataValues';
+import {FormValues, tableData} from '../Screens/Components/EnterDataValues';
 
 export type Action =
   | {type: 'INSERT'; payload: any}
@@ -449,57 +449,13 @@ export const upsertData = (
   });
 };
 
-export const Select = (
-  dispatch: React.Dispatch<Action>,
-): Promise<FormValues[]> => {
-  return new Promise((resolve, reject) => {
-    if (!db) {
-      return reject(new Error('db is undefined'));
-    }
-    db.transaction((txn: Transaction) => {
-      txn.executeSql(
-        'SELECT * from datatable',
-        [],
-        (_tx: Transaction, results: ResultSet) => {
-          const len = results.rows.length;
-          if (len > 0) {
-            const lastRowData = results.rows.item(len - 1);
-            dispatch({
-              type: 'SELECT',
-              payload: {
-                lastRowData,
-                Number_Of_Entries: len,
-                table: 'datatable',
-              },
-            });
-          } else {
-            // Handle the case where there are no entries
-            dispatch({
-              type: 'SELECT',
-              payload: {
-                lastRowData: null,
-                Number_Of_Entries: 0,
-                table: 'datatable',
-              },
-            });
-          }
-        },
-        (_t, error) => {
-          console.log(error);
-          reject(error);
-          return true;
-        },
-      );
-    });
-  });
-};
-
 // View records
 
 export const ViewRecordsByDate = (
   start_date: string,
   finish_date: string,
-): Promise<FormValues[]> => {
+  dispatch: React.Dispatch<Action>,
+): Promise<tableData[]> => {
   return new Promise((resolve, reject) => {
     console.log('state.start_date, state.finish_date', start_date, finish_date);
     if (!db) {
@@ -511,13 +467,24 @@ export const ViewRecordsByDate = (
         [start_date, finish_date],
         (_tx, results) => {
           if (results.rows.length > 0) {
-            const temp: any[] = [];
+            const temp: tableData[] = [];
             for (let j = 0; j < results.rows.length; j++) {
               temp.push(results.rows.item(j));
             }
+            // console.log('temp===', temp.length);
+            dispatch({
+              type: 'INSERT',
+              payload: {
+                tableData: temp,
+                totalrecords: temp.length,
+                table: 'datatable',
+              },
+            });
+            //console.log('temp===', state.tableData);
             resolve(temp);
           } else {
             resolve([]);
+            Alert.alert('Sorry!', 'No record');
           }
         },
         error => {
@@ -538,16 +505,14 @@ export const SelectFromDataTable = (
           'SELECT * from datatable',
           [],
           (_tx: Transaction, results: ResultSet) => {
-            if (results.rows.length > 0) {
-              const temp: any[] = [];
-              for (let j = 0; j < results.rows.length; j++) {
-                temp.push(results.rows.item(j));
-              }
-              resolve(temp);
-              dispatch({type: 'UPDATE', payload: results.rows.length});
-            } else {
-              Alert.alert('Data does not exist');
-            }
+            // console.log('count===', results);
+            dispatch({
+              type: 'INSERT',
+              payload: {
+                Number_Of_Entries: results.rows.length,
+                table: 'datatable',
+              },
+            });
           },
           (_t, error) => {
             console.log(error);
@@ -593,8 +558,12 @@ export const UpdateData = (
   });
 };
 
-export const deleteDataInTable = (date: string) => {
-  // console.log('date in deleteDatatable',date);
+export const deleteDataInTable = (
+  date: string,
+  state: FormValues,
+  dispatch: React.Dispatch<Action>,
+) => {
+  //console.log('date in deleteDatatable',date);
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -605,10 +574,7 @@ export const deleteDataInTable = (date: string) => {
           // [],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
-              resolve({
-                status: 'Deleted successfully',
-                length: results.rowsAffected,
-              });
+              SelectFromDataTable(dispatch);
             } else {
               reject(new Error('No data found for the provided date'));
             }
@@ -639,7 +605,9 @@ export const totalTable = (
             // console.log('results in display report===', results.rows.item(0));
             var len = results.rows.length;
             if (len >= 0) {
-              resolve(results.rows.item(0));
+              let firstRow = results.rows.item(0);
+              //console.log('firstrow==', firstRow);
+              resolve(firstRow);
               dispatch({
                 type: 'UPDATE',
                 payload: {
