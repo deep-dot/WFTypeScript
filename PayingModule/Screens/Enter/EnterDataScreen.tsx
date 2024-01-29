@@ -311,9 +311,10 @@ const EnterData = () => {
             }}
             onValueChange={(Shift: string) => {
               dispatch({
-                type: 'UPDATE',
+                type: 'INSERT',
                 payload: {
                   Shift,
+                  table: 'cab',
                 },
               });
             }}>
@@ -360,12 +361,14 @@ const EnterData = () => {
             </TextInput>
             <Picker
               selectedValue={state.Taxi}
-              style={{width: 120}}
+              style={styles.picker}
+              itemStyle={styles.pickerItem}
               onValueChange={Taxi => {
                 dispatch({
-                  type: 'UPDATE',
+                  type: 'INSERT',
                   payload: {
                     Taxi,
+                    table: 'cab',
                   },
                 });
               }}>
@@ -389,9 +392,10 @@ const EnterData = () => {
             // style={styles.button}
             onPress={() => {
               dispatch({
-                type: 'UPDATE',
+                type: 'INSERT',
                 payload: {
                   Rego_Modal: !state.Rego_Modal,
+                  table: 'cab',
                 },
               });
             }}>
@@ -404,10 +408,11 @@ const EnterData = () => {
             value={state.Date}
             onChange={(date: string, day: string) => {
               dispatch({
-                type: 'UPDATE',
+                type: 'INSERT',
                 payload: {
                   Date: date,
                   Day: day,
+                  table: 'datatable',
                 },
               });
             }}

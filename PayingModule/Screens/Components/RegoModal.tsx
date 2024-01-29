@@ -27,7 +27,7 @@ export const RegoModal = () => {
     }
     try {
       await action(state.Taxi, dispatch);
-      dispatch({type: 'UPDATE', payload: {Rego_Modal: false}});
+      dispatch({type: 'INSERT', payload: {Rego_Modal: false, table: 'cab'}});
     } catch (error) {
       console.log(error);
     }
@@ -60,7 +60,7 @@ export const RegoModal = () => {
             color: '#000000',
           }}
           onChangeText={(text: string) => {
-            dispatch({type: 'UPDATE', payload: {Taxi: text}});
+            dispatch({type: 'INSERT', payload: {Taxi: text, table: 'cab'}});
           }}
         />
         <View
@@ -78,7 +78,10 @@ export const RegoModal = () => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              dispatch({type: 'UPDATE', payload: {Rego_Modal: false}});
+              dispatch({
+                type: 'INSERT',
+                payload: {Rego_Modal: false, table: 'cab'},
+              });
             }}>
             <Icon name="exit-outline" size={20} color="#000" />
           </TouchableOpacity>

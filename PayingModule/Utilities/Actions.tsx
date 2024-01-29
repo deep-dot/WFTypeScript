@@ -254,7 +254,7 @@ export const SelectCab = (dispatch: React.Dispatch<Action>) => {
             const filteredRes = temp.filter(item => item.Cab != null);
             if (filteredRes.length > 0) {
               dispatch({
-                type: 'SELECT',
+                type: 'INSERT',
                 payload: {data: filteredRes, table: 'cab'},
               });
             }

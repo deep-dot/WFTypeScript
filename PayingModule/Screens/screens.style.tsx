@@ -5,6 +5,17 @@ export default StyleSheet.create({
   container: {
     flex: 1,
   },
+
+  picker: {
+    width: 120,
+  },
+
+  pickerItem: {
+    // adjust padding, margin, or height if necessary
+    padding: 20,
+    height: 20,
+    margin: 20,
+  },
   scrollView: {
     //backgroundColor: '#35363A',
     marginHorizontal: 20,

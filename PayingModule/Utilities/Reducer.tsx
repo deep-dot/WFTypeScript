@@ -9,16 +9,18 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
       } else if (action.payload.table === 'weekEndingTable') {
         return {...state, ...action.payload};
       } else if (action.payload.table === 'datatable') {
-        console.log('action.payload datatable===', action.payload);
+        // console.log('action.payload datatable===', action.payload);
         return {
           ...state,
           ...action.payload,
           ...action.payload.updatedValues,
         };
       } else if (action.payload.table === 'cab') {
-        const newCab = {Cab: action.payload.rego, id: action.payload.insertId};
+       // console.log('cab insert===', action.payload);
+        const newCab = {Cab: action.payload.rego};
         return {
           ...state,
+          ...action.payload,
           Cab_Data: [...state.Cab_Data, newCab],
         };
       }
