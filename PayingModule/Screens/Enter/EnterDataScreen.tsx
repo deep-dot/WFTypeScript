@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useContext, useMemo} from 'react';
+import React, {useEffect, useContext, useCallback, useState} from 'react';
 import {
   Alert,
   TouchableOpacity,
@@ -47,93 +47,10 @@ const EnterData = () => {
   }
   const {state, dispatch} = stateContext;
   const inputRefs = useInputRefs();
-
-  let Save = () => {
-    let eftpos_without_lifting =
-      state.Eftpos - state.Number_Of_Chairs * state.Gov_Lifting_Fee;
-
-    let Cdeductions =
-      state.Driver_Lifting_Value +
-      state.M3_Dockets +
-      state.Electronic_Account_Payments +
-      state.Total_Manual_MPTP31_And_MPTP_Values +
-      eftpos_without_lifting;
-    let Ddeductions = Cdeductions + state.Misc + state.Car_Wash + state.Fuel;
-
-    let Cnetpayin = state.Commission_Company - Cdeductions;
-    let Dnetpayin = state.Commission_Company - Ddeductions;
-    if (state.Car_Wash > 0 || state.Misc > 0 || state.Fuel > 0) {
-      Alert.alert(
-        'Are fuel, washing, miscellaneous expenses',
-        '',
-        [
-          {
-            text: "Driver's ?",
-            onPress: () => {
-              handleDeduction(Ddeductions, Dnetpayin);
-            },
-          },
-          {
-            text: "Company's ?",
-            onPress: () => {
-              handleDeduction(Cdeductions, Cnetpayin);
-            },
-          },
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-        ],
-        {cancelable: true},
-      );
-    } else {
-      handleDeduction(Cdeductions, Cnetpayin);
-    }
-  };
-
-  let payin = useMemo(
-    () => [state.Deductions, state.Net_Payin],
-    [state.Net_Payin, state.Deductions],
-  );
-
-  const handleDeduction = (deductions: number, netpayin: number) => {
-    dispatch({
-      type: 'UPDATE',
-      payload: {
-        Deductions: deductions,
-        Net_Payin: netpayin,
-      },
-    });
-    alertConfirm('Wish to Save?', async () => {
-      try {
-        await upsertData(state, dispatch);
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  };
-
-  const alertConfirm = (title: string, onPressYes: () => void) => {
-    Alert.alert(
-      'Please confirm!',
-      title,
-      [
-        {
-          text: 'Yes',
-          onPress: onPressYes,
-        },
-        {
-          text: 'No',
-          style: 'cancel',
-        },
-      ],
-      {cancelable: true},
-    );
-  };
-
-  const Refresh = async () => {
-    dispatch({type: 'REFRESH', payload: null});
-  };
+  const [Cnetpayin, setCnetpayin] = useState(Number);
+  const [Dnetpayin, setDnetpayin] = useState(Number);
+  const [Cdeductions, setCdeductions] = useState(Number);
+  const [Ddeductions, setDdeductions] = useState(Number);
 
   useEffect(() => {
     try {
@@ -146,51 +63,175 @@ const EnterData = () => {
     }
   }, [dispatch]);
 
+  const calculateAndUpdateValues = useCallback(() => {
+    //const calculateAndUpdateValues = () => {
+    let updatedValues = {...state};
+    updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
+    console.log(
+      'updatedValues.Jobs_Done==',
+      updatedValues.Jobs_Done,
+      updatedValues.Levy,
+    );
+    updatedValues.Shift_Total = updatedValues.meterTotal - updatedValues.Levy;
+
+    updatedValues.Kms;
+
+    updatedValues.Paid_Kms;
+
+    updatedValues.Number_Of_Chairs =
+      updatedValues.Eftpos_Liftings + updatedValues.Number_Of_Manual_Liftings;
+
+    updatedValues.Driver_Lifting_Value =
+      updatedValues.Number_Of_Chairs * updatedValues.Driver_Share_In_LiftingFee;
+
+    updatedValues.Commission_Driver =
+      (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
+
+    updatedValues.Company_Comm_Rate = 100 - updatedValues.Driver_Comm_Rate;
+
+    updatedValues.Commission_Company =
+      (updatedValues.Shift_Total * updatedValues.Company_Comm_Rate) / 100;
+
+    updatedValues.CPK =
+      updatedValues.Kms > 0 ? updatedValues.Shift_Total / updatedValues.Kms : 0;
+
+    updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
+
+    //from save function
+    let eftpos_without_lifting =
+      state.Eftpos - state.Number_Of_Chairs * state.Gov_Lifting_Fee;
+
+    let cdeductions =
+      state.Commission_Driver +
+      state.Driver_Lifting_Value +
+      state.M3_Dockets +
+      state.Electronic_Account_Payments +
+      state.Total_Manual_MPTP31_And_MPTP_Values +
+      eftpos_without_lifting;
+    setCdeductions(cdeductions);
+    let ddeductions = cdeductions + state.Misc + state.Car_Wash + state.Fuel;
+    setDdeductions(ddeductions);
+    let cnetpayin = state.Commission_Company - cdeductions;
+    setCnetpayin(cnetpayin);
+    let dnetpayin = state.Commission_Company - ddeductions;
+    setDnetpayin(dnetpayin);
+
+    dispatch({type: 'INSERT', payload: {updatedValues, table: 'datatable'}});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    dispatch,
+    state.Hours_Worked,
+    state.Insurance,
+    state.Jobs_Done,
+    state.meterTotal,
+    state.Kms,
+    state.Paid_Kms,
+    state.Eftpos,
+    state.Eftpos_Liftings,
+    state.Number_Of_Manual_Liftings,
+    state.Total_Manual_MPTP31_And_MPTP_Values,
+    state.M3_Dockets,
+    state.Electronic_Account_Payments,
+    state.Misc,
+    state.Car_Wash,
+    state.Fuel,
+  ]);
+
+  useEffect(() => {
+    calculateAndUpdateValues();
+  }, [calculateAndUpdateValues]);
+
   const onChange = (name: string, value: string) => {
-    //console.log('onchange in enter data ==', name, 'and', value);
-    dispatch({type: 'UPDATE', payload: {[name]: value}});
+    console.log('onchange==', name, value);
+    dispatch({type: 'INSERT', payload: {[name]: value, table: 'datatable'}});
   };
 
-  const SubmitEditing = (text: string, value: string) => {
+  const SubmitEditing = (name: string, value: string) => {
     if (!isNaN(Number(value))) {
-      let updatedValues = {...state, [text]: Number(value)};
-
-      updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
-
-      updatedValues.Shift_Total = updatedValues.meterTotal - updatedValues.Levy;
-
-      updatedValues.Kms;
-
-      updatedValues.Paid_Kms;
-
-      updatedValues.Number_Of_Chairs =
-        updatedValues.Eftpos_Liftings + updatedValues.Number_Of_Manual_Liftings;
-
-      updatedValues.Driver_Lifting_Value =
-        updatedValues.Number_Of_Chairs *
-        updatedValues.Driver_Share_In_LiftingFee;
-
-      updatedValues.Commission_Driver =
-        (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
-
-      updatedValues.Company_Comm_Rate = 100 - updatedValues.Driver_Comm_Rate;
-
-      updatedValues.Commission_Company =
-        (updatedValues.Shift_Total * updatedValues.Company_Comm_Rate) / 100;
-
-      updatedValues.CPK =
-        updatedValues.Kms > 0
-          ? updatedValues.Shift_Total / updatedValues.Kms
-          : 0;
-
-      updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
-
-      dispatch({type: 'UPDATE', payload: updatedValues});
+      dispatch({
+        type: 'INSERT',
+        payload: {[name]: Number(value), table: 'datatable'},
+      });
+      calculateAndUpdateValues();
     } else {
       Alert.alert('Please input a correct number');
-      let updatedValues = {...state, [text]: ''};
-      dispatch({type: 'UPDATE', payload: updatedValues});
+      dispatch({type: 'INSERT', payload: {[name]: '', table: 'datatable'}});
     }
+  };
+
+  let Save = () => {
+    console.log('in save==', Cdeductions, Ddeductions, Cnetpayin, Dnetpayin);
+    if (state.Car_Wash > 0 || state.Misc > 0 || state.Fuel > 0) {
+      Alert.alert(
+        'Are fuel, washing, miscellaneous expenses',
+        '',
+        [
+          {
+            text: "Driver's ?",
+            onPress: () => {
+              dispatch({
+                type: 'INSERT',
+                payload: {
+                  Deductions: Ddeductions,
+                  Net_Payin: Dnetpayin,
+                  table: 'datatable',
+                },
+              });
+              alertConfirm();
+            },
+          },
+          {
+            text: "Company's ?",
+            onPress: () => {
+              dispatch({
+                type: 'INSERT',
+                payload: {
+                  Deductions: Cdeductions,
+                  Net_Payin: Cnetpayin,
+                  table: 'datatable',
+                },
+              });
+              alertConfirm();
+            },
+          },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+        ],
+        {cancelable: true},
+      );
+    } else {
+      alertConfirm();
+    }
+  };
+
+  const alertConfirm = () => {
+    Alert.alert(
+      'Please confirm!',
+      'Wish to Save?',
+      [
+        {
+          text: 'Yes',
+          onPress: async () => {
+            try {
+              await upsertData(state, dispatch);
+            } catch (error) {
+              console.log(error);
+            }
+          },
+        },
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+      ],
+      {cancelable: true},
+    );
+  };
+
+  const Refresh = async () => {
+    dispatch({type: 'REFRESH', payload: null});
   };
 
   return (
@@ -237,6 +278,7 @@ const EnterData = () => {
               type: 'UPDATE',
               payload: {
                 Lifting_Modal_Visible: !state.Lifting_Modal_Visible,
+                table: 'datatable',
               },
             })
           }>
@@ -390,7 +432,11 @@ const EnterData = () => {
                 returnKeyType="next"
                 // keyboardType="numeric"
                 onChangeText={(value: string) => onChange(input.name, value)}
-                value={state[input.name] === 0 ? '' : String(state[input.name])}
+                value={
+                  state[input.name] !== 0 && state[input.name] !== undefined
+                    ? String(state[input.name])
+                    : ''
+                }
                 ref={inputRefs[input.name]}
                 onSubmitEditing={() => {
                   if (input.name) {

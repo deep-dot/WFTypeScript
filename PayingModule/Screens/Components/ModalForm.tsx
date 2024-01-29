@@ -30,12 +30,14 @@ const ModalForm = () => {
     } else {
       const id = state.WEid;
       saveWeekEndingData(state, dispatch, id);
-      dispatch({type: 'UPDATE', payload: {modalVisible: false}});
     }
   };
 
   let cancel = () => {
-    dispatch({type: 'UPDATE', payload: {modalVisible: false}});
+    dispatch({
+      type: 'INSERT',
+      payload: {modalVisible: false, table: 'datatable'},
+    });
   };
   return (
     <Modal
@@ -59,9 +61,10 @@ const ModalForm = () => {
             }}
             onChangeText={(Name: string) => {
               dispatch({
-                type: 'UPDATE',
+                type: 'INSERT',
                 payload: {
                   Name,
+                  table: 'datatable',
                 },
               });
             }}
@@ -73,10 +76,11 @@ const ModalForm = () => {
               value={state.Date}
               onChange={(date: string, day: string) => {
                 dispatch({
-                  type: 'UPDATE',
+                  type: 'INSERT',
                   payload: {
                     Week_Ending_Date: date,
                     Week_Ending_Day: day,
+                    table: 'datatable',
                   },
                 });
               }}

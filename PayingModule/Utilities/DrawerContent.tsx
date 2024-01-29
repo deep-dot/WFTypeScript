@@ -74,6 +74,7 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
                   type: 'UPDATE',
                   payload: {
                     modalVisible: !state.modalVisible,
+                    table: 'weekEndingTable',
                   },
                 });
               }}

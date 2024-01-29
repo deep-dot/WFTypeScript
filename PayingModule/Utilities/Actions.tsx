@@ -78,12 +78,12 @@ export function saveWeekEndingData(
         params,
         (_tx: Transaction, result: ResultSet) => {
           if (result.rowsAffected > 0) {
-            const operationId = id ? id : result.insertId;
-            dispatch({
-              type: id ? 'UPDATE' : 'INSERT',
-              payload: {insertId: operationId, table: 'weekEndingTable'},
-            });
+            id ? id : result.insertId;
             resolve(result);
+            dispatch({
+              type: 'INSERT',
+              payload: {modalVisible: false, table: 'weekEndingTable'},
+            });
             Alert.alert(id ? 'Update successful' : 'Insert successful');
           } else {
             reject(
@@ -427,7 +427,7 @@ export const upsertData = (
             dispatch({
               type: actionType,
               payload: {
-                insertId: resultSet.insertId,
+                Record_id: resultSet.insertId,
                 table: 'datatable',
                 Number_Of_Entries: state.Number_Of_Entries + 1,
               },
@@ -505,7 +505,7 @@ export const SelectFromDataTable = (
           'SELECT * from datatable',
           [],
           (_tx: Transaction, results: ResultSet) => {
-            // console.log('count===', results);
+            //console.log('count===', results.rows.length);
             dispatch({
               type: 'INSERT',
               payload: {

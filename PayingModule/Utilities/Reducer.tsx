@@ -4,29 +4,19 @@ import {FormValues, refreshValues} from '../Screens/Components/EnterDataValues';
 export const reducer = (state: FormValues, action: Action): FormValues => {
   switch (action.type) {
     case 'INSERT':
-      //console.log('action.payload===', action.payload);
-      const {
-        insertId,
-        table: insertTable,
-        Number_Of_Entries: numberOfEntries,
-        totalrecords,
-        tableData,
-      } = action.payload;
-      if (insertTable === 'liftingTable') {
-        return {...state, liftingId: insertId};
-      } else if (insertTable === 'weekEndingTable') {
-        return {...state, WEid: insertId};
-      } else if (insertTable === 'datatable') {
-        // console.log('action.payload===', action.payload);
+      if (action.payload.table === 'liftingTable') {
+        return {...state, liftingId: action.payload.insertId};
+      } else if (action.payload.table === 'weekEndingTable') {
+        return {...state, ...action.payload};
+      } else if (action.payload.table === 'datatable') {
+        console.log('action.payload datatable===', action.payload);
         return {
           ...state,
-          Record_id: insertId,
-          Number_Of_Entries: numberOfEntries,
-          totalrecords,
-          tableData,
+          ...action.payload,
+          ...action.payload.updatedValues,
         };
-      } else if (insertTable === 'cab') {
-        const newCab = {Cab: action.payload.rego, id: insertId};
+      } else if (action.payload.table === 'cab') {
+        const newCab = {Cab: action.payload.rego, id: action.payload.insertId};
         return {
           ...state,
           Cab_Data: [...state.Cab_Data, newCab],
@@ -35,56 +25,57 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
       return state;
     case 'SELECT':
       //console.log('action.payload===', action.payload);
-      const {data, table: selectTable, Number_Of_Entries} = action.payload;
-      if (selectTable === 'liftingTable') {
+      if (action.payload.table === 'liftingTable') {
         return {
           ...state,
-          Gov_Lifting_Fee: data.Gov_Lifting_Fee,
-          Driver_Share_In_LiftingFee: data.Driver_Share_In_LiftingFee,
-          Gov_Levy: data.Gov_Levy,
-          Driver_Comm_Rate: data.Driver_Comm_Rate,
-          Company_Comm_Rate: data.Company_Comm_Rate,
+          Gov_Lifting_Fee: action.payload.data.Gov_Lifting_Fee,
+          Driver_Share_In_LiftingFee:
+            action.payload.data.Driver_Share_In_LiftingFee,
+          Gov_Levy: action.payload.data.Gov_Levy,
+          Driver_Comm_Rate: action.payload.data.Driver_Comm_Rate,
+          Company_Comm_Rate: action.payload.data.Company_Comm_Rate,
         };
-      } else if (selectTable === 'weekEndingTable') {
+      } else if (action.payload.table === 'weekEndingTable') {
         return {
           ...state,
-          Name: data.Name,
-          Week_Ending_Date: data.Week_Ending_Date,
-          Week_Ending_Day: data.Week_Ending_Day,
+          Name: action.payload.data.Name,
+          Week_Ending_Date: action.payload.data.Week_Ending_Date,
+          Week_Ending_Day: action.payload.data.Week_Ending_Day,
         };
-      } else if (selectTable === 'datatable') {
+      } else if (action.payload.table === 'datatable') {
         return {
           ...state,
-          Record_id: insertId,
-          Number_Of_Entries,
-          totalrecords,
-          tableData,
+          Record_id: action.payload.insertId,
+          Number_Of_Entries: action.payload.Number_Of_Entries,
+          totalrecords: action.payload.totalrecords,
+          tableData: action.payload.tableData,
         };
-      } else if (selectTable === 'cab') {
+      } else if (action.payload.table === 'cab') {
         return {...state, Cab_Data: action.payload.data};
       }
       return state;
     case 'UPDATE':
-      return {...state, ...action.payload};
+      if (action.payload.table === 'datatable') {
+        return {...state, ...action.payload};
+      } else if (action.payload.table === 'weekEndingTable') {
+        return {...state, ...action.payload};
+      }
+      return state;
     case 'DELETE':
-      const {
-        rego,
-        totalrecords: TR,
-        Number_Of_Entries: NOE,
-        table: deleteFromTable,
-      } = action.payload;
-      if (deleteFromTable === 'datatable') {
+      if (action.payload.table === 'datatable') {
         return {
           ...state,
-          totalrecords: TR,
-          Number_Of_Entries: NOE,
+          totalrecords: action.payload.totalrecords,
+          Number_Of_Entries: action.payload.Number_Of_Entries,
         };
       }
-      if (deleteFromTable === 'cab') {
-        //console.log('deleteFromTable ===', deleteFromTable, rego);
+      if (action.payload.table === 'cab') {
+        //console.log('action.payload.deleteFromTable ===', action.payload.deleteFromTable, rego);
         return {
           ...state,
-          Cab_Data: state.Cab_Data.filter(item => item.Cab !== rego),
+          Cab_Data: state.Cab_Data.filter(
+            item => item.Cab !== action.payload.rego,
+          ),
         };
       }
     // eslint-disable-next-line no-fallthrough

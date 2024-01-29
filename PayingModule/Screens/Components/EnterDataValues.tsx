@@ -259,7 +259,8 @@ export type Property1 =
   | 'Gov_Lifting_Fee'
   | 'Driver_Share_In_LiftingFee'
   | 'Gov_Levy'
-  | 'Driver_Comm_Rate';
+  | 'Driver_Comm_Rate'
+  | 'Company_Comm_Rate';
 type Input1 = {
   title: string;
   name: Property1;
@@ -282,6 +283,11 @@ export const liftingInputs: Input1[] = [
     name: 'Driver_Comm_Rate',
     placeholder: '00',
   },
+  // {
+  //   title: 'Company Commission Rate %',
+  //   name: 'Company_Comm_Rate',
+  //   placeholder: '00',
+  // },
 ];
 
 export type Property2 =
@@ -343,6 +349,7 @@ export type Property3 =
   | 'Number_Of_Chairs'
   | 'Driver_Lifting_Value'
   | 'Commission_Driver'
+  | 'Commission_Company'
   | 'Deductions'
   | 'Net_Payin';
 
@@ -367,6 +374,11 @@ export const payinInputs: Input3[] = [
     placeholder: '0.00',
   },
   {title: 'Commission Driver', name: 'Commission_Driver', placeholder: '0.00'},
+  {
+    title: 'Commission Company',
+    name: 'Commission_Company',
+    placeholder: '0.00',
+  },
   {title: 'Deductions', name: 'Deductions', placeholder: '0.00'},
   {title: 'Net Pay-In', name: 'Net_Payin', placeholder: '0.00'},
 ];

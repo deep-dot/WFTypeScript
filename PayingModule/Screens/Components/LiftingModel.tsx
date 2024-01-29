@@ -26,11 +26,14 @@ export const LiftingModel = () => {
     try {
       dispatch({
         type: 'UPDATE',
-        payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
+        payload: {
+          Lifting_Modal_Visible: !state.Lifting_Modal_Visible,
+          table: 'datatable',
+        },
       });
       const id = state?.liftingId;
-      let res = await upsertLiftingTable(state, dispatch, id);
-      console.log('res===', res);
+      await upsertLiftingTable(state, dispatch, id);
+      // console.log('res===', res);
     } catch (error) {
       console.error(error);
     }
@@ -39,7 +42,10 @@ export const LiftingModel = () => {
   const onCancel = () => {
     dispatch({
       type: 'UPDATE',
-      payload: {Lifting_Modal_Visible: !state.Lifting_Modal_Visible},
+      payload: {
+        Lifting_Modal_Visible: !state.Lifting_Modal_Visible,
+        table: 'datatable',
+      },
     });
   };
 
@@ -66,7 +72,7 @@ export const LiftingModel = () => {
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',
-                    payload: {Gov_Lifting_Fee: value},
+                    payload: {Gov_Lifting_Fee: value, table: 'datatable'},
                   });
                 }}
                 onSubmitEditing={() => {}}
@@ -88,7 +94,10 @@ export const LiftingModel = () => {
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',
-                    payload: {Driver_Share_In_LiftingFee: value},
+                    payload: {
+                      Driver_Share_In_LiftingFee: value,
+                      table: 'datatable',
+                    },
                   });
                 }}
                 onSubmitEditing={() => {}}
@@ -106,7 +115,7 @@ export const LiftingModel = () => {
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',
-                    payload: {Gov_Levy: value},
+                    payload: {Gov_Levy: value, table: 'datatable'},
                   });
                 }}
                 onSubmitEditing={() => {}}
@@ -130,12 +139,36 @@ export const LiftingModel = () => {
                 onChangeText={(value: string) => {
                   dispatch({
                     type: 'UPDATE',
-                    payload: {Driver_Comm_Rate: value},
+                    payload: {Driver_Comm_Rate: value, table: 'datatable'},
                   });
                 }}
                 onSubmitEditing={() => {}}
               />
             </View>
+
+            {/* <View style={styles.textinputview}>
+              <Text style={styles.titletext}>
+                Company Commission {'\n'}Rate(%)
+              </Text>
+              <TextInput
+                placeholder="00"
+                placeholderTextColor="#000"
+                style={styles.textInput}
+                keyboardType="numeric"
+                value={
+                  state.Company_Comm_Rate === 0
+                    ? ''
+                    : String(state.Company_Comm_Rate)
+                }
+                onChangeText={(value: string) => {
+                  dispatch({
+                    type: 'UPDATE',
+                    payload: {Company_Comm_Rate: value, table: 'datatable'},
+                  });
+                }}
+                onSubmitEditing={() => {}}
+              />
+            </View> */}
 
             <View
               style={{
