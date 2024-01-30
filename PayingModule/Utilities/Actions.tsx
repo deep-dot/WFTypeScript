@@ -220,7 +220,7 @@ export function insertCab(
             resolve(result);
             dispatch({
               type: 'INSERT',
-              payload: {table: 'cab', rego},
+              payload: {table: 'cab', rego, Rego_Modal: false, Taxi: ''},
             });
           } else {
             reject(new Error('Insert operation failed'));
@@ -254,7 +254,7 @@ export const SelectCab = (dispatch: React.Dispatch<Action>) => {
             const filteredRes = temp.filter(item => item.Cab != null);
             if (filteredRes.length > 0) {
               dispatch({
-                type: 'INSERT',
+                type: 'SELECT',
                 payload: {data: filteredRes, table: 'cab'},
               });
             }
@@ -289,7 +289,7 @@ export function deleteCab(
             resolve(results);
             dispatch({
               type: 'DELETE',
-              payload: {rego, table: 'cab'},
+              payload: {rego, table: 'cab', Rego_Modal: false, Taxi: ''},
             });
           } else {
             reject(new Error('Delete operation failed'));

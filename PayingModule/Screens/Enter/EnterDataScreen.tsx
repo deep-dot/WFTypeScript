@@ -135,6 +135,8 @@ const EnterData = () => {
     state.Misc,
     state.Car_Wash,
     state.Fuel,
+    state.Cab_Data,
+    state.Taxi,
   ]);
 
   useEffect(() => {
@@ -368,13 +370,14 @@ const EnterData = () => {
                   type: 'INSERT',
                   payload: {
                     Taxi,
+                    Rego_Modal: false,
                     table: 'cab',
                   },
                 });
               }}>
               <Picker.Item
                 label="Select"
-                key=" "
+                // key=" "
                 value="Select "
                 color={Platform.OS === 'ios' ? '#fff' : '#bbb'}
               />

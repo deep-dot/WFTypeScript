@@ -27,7 +27,7 @@ export const RegoModal = () => {
     }
     try {
       await action(state.Taxi, dispatch);
-      dispatch({type: 'INSERT', payload: {Rego_Modal: false, table: 'cab'}});
+      // dispatch({type: 'INSERT', payload: {Rego_Modal: false, table: 'cab'}});
     } catch (error) {
       console.log(error);
     }

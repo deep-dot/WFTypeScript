@@ -16,11 +16,12 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
           ...action.payload.updatedValues,
         };
       } else if (action.payload.table === 'cab') {
-       // console.log('cab insert===', action.payload);
+        // console.log('cab insert===', action.payload);
         const newCab = {Cab: action.payload.rego};
         return {
           ...state,
-          ...action.payload,
+          Rego_Modal: action.payload.Rego_Modal,
+          Taxi: action.payload.Taxi,
           Cab_Data: [...state.Cab_Data, newCab],
         };
       }
@@ -75,6 +76,8 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
         //console.log('action.payload.deleteFromTable ===', action.payload.deleteFromTable, rego);
         return {
           ...state,
+          Taxi: action.payload.Taxi,
+          Rego_Modal: action.payload.Rego_Modal,
           Cab_Data: state.Cab_Data.filter(
             item => item.Cab !== action.payload.rego,
           ),
