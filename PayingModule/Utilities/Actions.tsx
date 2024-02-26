@@ -84,7 +84,7 @@ export function saveWeekEndingData(
               type: 'INSERT',
               payload: {modalVisible: false, table: 'weekEndingTable'},
             });
-            Alert.alert(id ? 'Update successful' : 'Insert successful');
+            // Alert.alert(id ? 'Update successful' : 'Insert successful');
           } else {
             reject(
               new Error(
@@ -318,7 +318,7 @@ export const upsertData = (
       Alert.alert('Please select a date');
       return;
     }
-
+    //console.log('in upsertData===', state.Net_Payin);
     const isUpdate = state.Search_Date && state.Search_Date !== '';
 
     const query = isUpdate
@@ -420,7 +420,7 @@ export const upsertData = (
             const actionType = isUpdate ? 'UPDATE' : 'INSERT';
             const message = isUpdate
               ? 'Record updated successfully!'
-              : 'Record inserted successfully!';
+              : 'Record entered successfully!';
             resolve(message);
             Alert.alert(message);
 
@@ -529,7 +529,7 @@ export const SelectFromDataTable = (
 };
 
 export const UpdateData = (
-  Search_Date: string,
+  Search_Date: string | number,
   dispatch: React.Dispatch<Action>,
 ) => {
   return new Promise((resolve, reject) => {
@@ -541,7 +541,10 @@ export const UpdateData = (
           (_tx: Transaction, results: ResultSet) => {
             if (results.rows.length > 0) {
               let res = results.rows.item(0);
-              dispatch({type: 'UPDATE', payload: {...res, Search_Date}});
+              dispatch({
+                type: 'UPDATE',
+                payload: {...res, Search_Date, table: 'datatable'},
+              });
               resolve(res);
             } else {
               reject();
@@ -559,7 +562,7 @@ export const UpdateData = (
 };
 
 export const deleteDataInTable = (
-  date: string,
+  date: string | number,
   state: FormValues,
   dispatch: React.Dispatch<Action>,
 ) => {
@@ -592,8 +595,10 @@ export const deleteDataInTable = (
 
 // display report
 
+// eslint-disable-next-line prettier/prettier
 export const totalTable = (
-  dispatch: React.Dispatch<Action>,
+ // dispatch: React.Dispatch<Action>,
+// eslint-disable-next-line prettier/prettier
 ): Promise<FormValues[]> => {
   return new Promise((resolve, reject) => {
     if (db) {
@@ -608,12 +613,12 @@ export const totalTable = (
               let firstRow = results.rows.item(0);
               //console.log('firstrow==', firstRow);
               resolve(firstRow);
-              dispatch({
-                type: 'UPDATE',
-                payload: {
-                  total: results.rows.item(0),
-                },
-              });
+              // dispatch({
+              //   type: 'UPDATE',
+              //   payload: {
+              //     total: results.rows.item(0),
+              //   },
+              // });
             } else {
               Alert.alert('No data found');
             }

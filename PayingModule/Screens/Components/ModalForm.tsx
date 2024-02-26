@@ -64,7 +64,7 @@ const ModalForm = () => {
                 type: 'INSERT',
                 payload: {
                   Name,
-                  table: 'datatable',
+                  table: 'weekEndingTable',
                 },
               });
             }}
@@ -80,7 +80,7 @@ const ModalForm = () => {
                   payload: {
                     Week_Ending_Date: date,
                     Week_Ending_Day: day,
-                    table: 'datatable',
+                    table: 'weekEndingTable',
                   },
                 });
               }}

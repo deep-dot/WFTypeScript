@@ -49,9 +49,9 @@ const ViewRecords = () => {
   const searchRecord = useCallback(async () => {
     setIsLoading(true);
     try {
-      let tem = await ViewRecordsByDate(state.start_date, state.finish_date, dispatch);      
+      let tem = await ViewRecordsByDate(state.start_date, state.finish_date, dispatch);
       setRes(tem);
-      //console.log('res===',res);
+      //console.log('res===',res[0].Net_Payin);
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching records:', error);
@@ -65,7 +65,7 @@ const ViewRecords = () => {
     }
 }, [searchRecord, state.finish_date, state.start_date]);
 
-  const DeleteRecord = async (date: string) => {
+  const DeleteRecord = async (date: string | number) => {
     Alert.alert(
       'Please confirm!',
       'Do you wish to delete the record?',
@@ -85,13 +85,13 @@ const ViewRecords = () => {
     );
   };
 
-  const edit = async (searchDate: string) => {
+  const edit = async (searchDate: string | number) => {
     try {
       await UpdateData(searchDate, dispatch);
       navigation.navigate('Enter Data');
-    } catch (error) {
-      Alert.alert('Record does not exist');
-      //console.error(error);
+    } catch (error: any) {
+      //Alert.alert('Record does not exist');
+      console.error(error.message);
     }
   };
 
@@ -203,7 +203,7 @@ const ViewRecords = () => {
                   rowdata.Car_Wash,
                   rowdata.Misc,
                   rowdata.Fuel,
-                  rowdata.CPK,
+                  typeof rowdata.CPK === 'number' ? rowdata.CPK.toFixed(2) : rowdata.CPK,
                   rowdata.Net_Payin,
                 ]}
                 widthArr={widthArr}

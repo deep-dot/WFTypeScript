@@ -9,12 +9,16 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
       } else if (action.payload.table === 'weekEndingTable') {
         return {...state, ...action.payload};
       } else if (action.payload.table === 'datatable') {
-        // console.log('action.payload datatable===', action.payload);
-        return {
+       // console.log('before:', JSON.stringify(state, null, 2));
+
+        //console.table(action);
+        const newState = {
           ...state,
-          ...action.payload,
+          //...action.payload,
           ...action.payload.updatedValues,
         };
+        console.log('After update state:', JSON.stringify(newState, null, 2));
+        return newState;
       } else if (action.payload.table === 'cab') {
         // console.log('cab insert===', action.payload);
         const newCab = {Cab: action.payload.rego};
@@ -51,7 +55,7 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
           Record_id: action.payload.insertId,
           Number_Of_Entries: action.payload.Number_Of_Entries,
           totalrecords: action.payload.totalrecords,
-          tableData: action.payload.tableData,
+          //tableData: action.payload.tableData,
         };
       } else if (action.payload.table === 'cab') {
         return {...state, Cab_Data: action.payload.data};

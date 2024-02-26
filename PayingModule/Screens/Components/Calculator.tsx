@@ -122,6 +122,7 @@ export const Calculator = () => {
       payload: {
         Electronic_Account_Payments: calculationText,
         Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+        table: 'datatable',
       },
     });
   };
@@ -132,6 +133,7 @@ export const Calculator = () => {
       payload: {
         M3_Dockets: calculationText,
         Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+        table: 'datatable',
       },
     });
   };
@@ -141,6 +143,7 @@ export const Calculator = () => {
       type: 'UPDATE',
       payload: {
         Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+        table: 'datatable',
       },
     });
   };

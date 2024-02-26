@@ -38,6 +38,11 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {Platform} from 'react-native';
 import moment from 'moment';
 
+interface Cab {
+  Cab: string;
+  id: number;
+}
+
 const EnterData = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackParamList, 'Enter Data'>>();
@@ -47,10 +52,10 @@ const EnterData = () => {
   }
   const {state, dispatch} = stateContext;
   const inputRefs = useInputRefs();
-  const [Cnetpayin, setCnetpayin] = useState(Number);
-  const [Dnetpayin, setDnetpayin] = useState(Number);
-  const [Cdeductions, setCdeductions] = useState(Number);
-  const [Ddeductions, setDdeductions] = useState(Number);
+  const [Cnetpayin, setCnetpayin] = useState(0);
+  const [Dnetpayin, setDnetpayin] = useState(0);
+  const [Cdeductions, setCdeductions] = useState(0);
+  const [Ddeductions, setDdeductions] = useState(0);
 
   useEffect(() => {
     try {
@@ -58,20 +63,22 @@ const EnterData = () => {
       selectLiftingTable(dispatch);
       SelectCab(dispatch);
       SelectFromDataTable(dispatch);
+      state.Cab_Data.filter(cab => Object.keys(cab).length > 0);
     } catch (error) {
       console.error('An error occurred:', error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   const calculateAndUpdateValues = useCallback(() => {
     //const calculateAndUpdateValues = () => {
     let updatedValues = {...state};
     updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
-    console.log(
-      'updatedValues.Jobs_Done==',
-      updatedValues.Jobs_Done,
-      updatedValues.Levy,
-    );
+    // console.log(
+    //   'updatedValues.Jobs_Done==',
+    //   updatedValues.Eftpos_Liftings,
+    //   updatedValues.Number_Of_Manual_Liftings,
+    // );
     updatedValues.Shift_Total = updatedValues.meterTotal - updatedValues.Levy;
 
     updatedValues.Kms;
@@ -79,7 +86,8 @@ const EnterData = () => {
     updatedValues.Paid_Kms;
 
     updatedValues.Number_Of_Chairs =
-      updatedValues.Eftpos_Liftings + updatedValues.Number_Of_Manual_Liftings;
+      Number(updatedValues.Eftpos_Liftings) +
+      Number(updatedValues.Number_Of_Manual_Liftings);
 
     updatedValues.Driver_Lifting_Value =
       updatedValues.Number_Of_Chairs * updatedValues.Driver_Share_In_LiftingFee;
@@ -102,7 +110,7 @@ const EnterData = () => {
       state.Eftpos - state.Number_Of_Chairs * state.Gov_Lifting_Fee;
 
     let cdeductions =
-      state.Commission_Driver +
+      // state.Commission_Driver +
       state.Driver_Lifting_Value +
       state.M3_Dockets +
       state.Electronic_Account_Payments +
@@ -137,6 +145,12 @@ const EnterData = () => {
     state.Fuel,
     state.Cab_Data,
     state.Taxi,
+    state.Deductions,
+    state.Net_Payin,
+    Cnetpayin,
+    Dnetpayin,
+    Cdeductions,
+    Ddeductions,
   ]);
 
   useEffect(() => {
@@ -144,7 +158,7 @@ const EnterData = () => {
   }, [calculateAndUpdateValues]);
 
   const onChange = (name: string, value: string) => {
-    console.log('onchange==', name, value);
+    // console.log('onchange==', name, value);
     dispatch({type: 'INSERT', payload: {[name]: value, table: 'datatable'}});
   };
 
@@ -174,8 +188,8 @@ const EnterData = () => {
               dispatch({
                 type: 'INSERT',
                 payload: {
-                  Deductions: Ddeductions,
-                  Net_Payin: Dnetpayin,
+                  Deductions: isNaN(Ddeductions) ? 0 : Ddeductions,
+                  Net_Payin: isNaN(Dnetpayin) ? 0 : Dnetpayin,
                   table: 'datatable',
                 },
               });
@@ -188,8 +202,8 @@ const EnterData = () => {
               dispatch({
                 type: 'INSERT',
                 payload: {
-                  Deductions: Cdeductions,
-                  Net_Payin: Cnetpayin,
+                  Deductions: isNaN(Cdeductions) ? 0 : Cdeductions,
+                  Net_Payin: isNaN(Cnetpayin) ? 0 : Cnetpayin,
                   table: 'datatable',
                 },
               });
@@ -217,7 +231,8 @@ const EnterData = () => {
           text: 'Yes',
           onPress: async () => {
             try {
-              await upsertData(state, dispatch);
+              let res: any = await upsertData(state, dispatch);
+              console.log('upsert function===', res.Net_Payin);
             } catch (error) {
               console.log(error);
             }
@@ -263,14 +278,17 @@ const EnterData = () => {
             <Text style={[styles.titleText, {color: '#55a8fa'}]}>
               {input.title}
             </Text>
-            <TextInput
+            <Text style={[styles.titleText, {color: '#55a8fa'}]}>
+              {Number(state[input.name]).toFixed(2)}
+            </Text>
+            {/* <TextInput
               placeholder="0.00"
               placeholderTextColor="#55a8fa"
               style={[styles.textInput, {color: '#55a8fa'}]}
               returnKeyType="next"
               keyboardType="numeric"
               value={state[input.name] === 0 ? '' : String(state[input.name])}
-            />
+            /> */}
           </View>
         ))}
         <TouchableOpacity
@@ -316,7 +334,7 @@ const EnterData = () => {
                 type: 'INSERT',
                 payload: {
                   Shift,
-                  table: 'cab',
+                  table: 'datatable',
                 },
               });
             }}>
@@ -381,14 +399,15 @@ const EnterData = () => {
                 value="Select "
                 color={Platform.OS === 'ios' ? '#fff' : '#bbb'}
               />
-              {state.Cab_Data.map((c: {Cab: string}, key: number) => (
-                <Picker.Item
-                  label={c.Cab}
-                  key={key}
-                  value={c.Cab}
-                  color={Platform.OS === 'ios' ? '#fff' : '#999'}
-                />
-              ))}
+              {state.Cab_Data &&
+                state.Cab_Data.map((c: {Cab: string}, key: number) => (
+                  <Picker.Item
+                    label={c.Cab}
+                    key={key}
+                    value={c.Cab}
+                    color={Platform.OS === 'ios' ? '#fff' : '#999'}
+                  />
+                ))}
             </Picker>
           </View>
           <TouchableOpacity
@@ -466,6 +485,7 @@ const EnterData = () => {
                 type: 'UPDATE',
                 payload: {
                   Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+                  table: 'datatable',
                 },
               });
             }}>
@@ -488,7 +508,10 @@ const EnterData = () => {
               <Text style={[styles.titleText, {color: '#55a8fa'}]}>
                 {input.title}
               </Text>
-              <TextInput
+              <Text style={[styles.titleText, {color: '#55a8fa'}]}>
+                {Number(state[input.name]).toFixed(2)}
+              </Text>
+              {/* <TextInput
                 placeholder={input.placeholder}
                 placeholderTextColor="#55a8fa"
                 style={[styles.textInput, {color: '#55a8fa'}]}
@@ -504,7 +527,7 @@ const EnterData = () => {
                   //   ? ''
                   //   : Number(state[input.name]).toFixed(2)
                 }
-              />
+              /> */}
             </View>
           ))}
         </View>

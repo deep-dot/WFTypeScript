@@ -24,10 +24,11 @@ export const useInputRefs = () => {
 
 interface Cab {
   Cab: string;
+  id: number;
 }
 
 export interface tableData {
-  [key: string]: string;
+  [key: string]: string | number;
 }
 export type FormValues = {
   Number_Of_Entries: number;
@@ -116,7 +117,7 @@ export type FormValues = {
   datatotal: {};
   done: boolean;
   usingservice: boolean;
-  tableData: tableData[];
+  //tableData: tableData[];
 };
 
 export const initialValues = {
