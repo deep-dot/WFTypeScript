@@ -28,7 +28,7 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import styles from '../screens.style';
 import { LogBox } from 'react-native';
-import { tableData } from '../Components/EnterDataValues';
+import { FormValues } from '../Components/EnterDataValues';
 // import { FormValues } from '../Components/EnterDataValues';
 
 LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.']);
@@ -44,12 +44,12 @@ const ViewRecords = () => {
   }
   const { state, dispatch } = stateContext;
   const [isLoading, setIsLoading] = useState(false);
-  const [ res, setRes] = useState<tableData[]>([]);
+  const [ res, setRes] = useState<FormValues[]>([]);
 
   const searchRecord = useCallback(async () => {
     setIsLoading(true);
     try {
-      let tem = await ViewRecordsByDate(state.start_date, state.finish_date, dispatch);
+      let tem = await ViewRecordsByDate(String(state.start_date), String(state.finish_date), dispatch);
       setRes(tem);
       //console.log('res===',res[0].Net_Payin);
       setIsLoading(false);
@@ -110,7 +110,7 @@ const ViewRecords = () => {
 
         <View style={[styles.textinputview, { borderColor: '#fff' }]}>
           <Calendar
-            value={state.start_date}
+            value={String(state.start_date)}
             onChange={(date: string, day: string) => {
               dispatch({
                 type: 'UPDATE',
@@ -130,7 +130,7 @@ const ViewRecords = () => {
 
         <View style={[styles.textinputview, { borderColor: '#fff' }]}>
           <Calendar
-            value={state.finish_date}
+            value={String(state.finish_date)}
             onChange={(date: string, day: string) => {
               dispatch({
                 type: 'UPDATE',
@@ -173,13 +173,13 @@ const ViewRecords = () => {
                   <View style={styles.rowButtons}>
                     <TouchableOpacity
                       onPress={() => {
-                        DeleteRecord(rowdata.Date);
+                        DeleteRecord(String(rowdata.Date));
                       }}>
                       <Icon name="trash-outline" size={20} color="tomato" />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
-                        edit(rowdata.Date);
+                        edit(String(rowdata.Date));
                       }}>
                       <Icon name="create-outline" size={20} color="#000" />
                     </TouchableOpacity>

@@ -22,102 +22,98 @@ export const useInputRefs = () => {
   return refs;
 };
 
-interface Cab {
-  Cab: string;
-  id: number;
-}
-
-export interface tableData {
-  [key: string]: string | number;
-}
+// export interface tableData {
+//   [key: string]: string | number;
+// }
 export type FormValues = {
-  Number_Of_Entries: number;
-  //subscription
-  purchased: boolean;
-  products: {};
-  checking: boolean;
-  ShowAlert: boolean;
+  [key: string]: string | number | boolean;
+  // Number_Of_Entries: number;
+  // //subscription
+  // purchased: boolean;
+  // products: {};
+  // checking: boolean;
+  // ShowAlert: boolean;
 
-  //Home Screen Modal
-  modalVisible: boolean;
-  WEid: number;
-  Name: string;
-  showAlert: boolean;
-  Week_Ending_Date: string;
-  Week_Ending_Day: string;
+  // //Home Screen Modal
+  // modalVisible: boolean;
+  // WEid: number;
+  // Name: string;
+  // showAlert: boolean;
+  // Week_Ending_Date: string;
+  // Week_Ending_Day: string;
 
-  //Lifting Modal
-  liftingId: number;
-  Lifting_Modal_Visible: boolean;
-  Gov_Lifting_Fee: number;
-  Driver_Share_In_LiftingFee: number;
-  Gov_Levy: number;
-  Driver_Comm_Rate: number;
-  Company_Comm_Rate: number;
+  // //Lifting Modal
+  // liftingId: number;
+  // Lifting_Modal_Visible: boolean;
+  // Gov_Lifting_Fee: number;
+  // Driver_Share_In_LiftingFee: number;
+  // Gov_Levy: number;
+  // Driver_Comm_Rate: number;
+  // Company_Comm_Rate: number;
 
-  //main
-  Record_id: number;
-  Shift: string;
+  // //main
+  // Record_id: number;
+  // Shift: string;
 
-  cabId: number;
-  Taxi: string;
-  Cab_Data: Cab[];
-  Rego_Modal: boolean;
+  // cabId: number;
+  // Taxi: string;
+  // Cab_Data: Cab[];
+  // Rego_Modal: boolean;
 
-  Current_Date: string;
-  Date: string;
-  Day: string;
-  Hours_Worked: number;
-  Insurance: number;
-  Jobs_Done: number;
-  meterTotal: number;
-  Kms: number;
-  Paid_Kms: number;
-  Number_Of_Manual_Liftings: number;
-  Total_Manual_MPTP31_And_MPTP_Values: number;
-  M3_Dockets: number;
-  Eftpos: number;
-  Eftpos_Liftings: number;
-  Electronic_Account_Payments: number;
-  Misc: number;
-  Car_Wash: number;
-  Fuel: number;
+  // Current_Date: string;
+  // Date: string;
+  // Day: string;
+  // Hours_Worked: number;
+  // Insurance: number;
+  // Jobs_Done: number;
+  // meterTotal: number;
+  // Kms: number;
+  // Paid_Kms: number;
+  // Number_Of_Manual_Liftings: number;
+  // Total_Manual_MPTP31_And_MPTP_Values: number;
+  // M3_Dockets: number;
+  // Eftpos: number;
+  // Eftpos_Liftings: number;
+  // Electronic_Account_Payments: number;
+  // Misc: number;
+  // Car_Wash: number;
+  // Fuel: number;
 
-  Shift_Total: number;
-  Levy: number;
-  Unpaid_Kms: number;
-  CPK: number;
-  Total_Lifting_Value: number;
-  Number_Of_Chairs: number;
-  Driver_Lifting_Value: number;
-  Commission_Driver: number;
-  Commission_Company: number;
-  Deductions: number;
-  Average_Fare: number;
-  Net_Payin: number;
-  Net_Driver_Income: number;
-  Calculator_Modal_Visible: boolean;
-  Indicator: boolean;
-  Search_Date: string;
+  // Shift_Total: number;
+  // Levy: number;
+  // Unpaid_Kms: number;
+  // CPK: number;
+  // Total_Lifting_Value: number;
+  // Number_Of_Chairs: number;
+  // Driver_Lifting_Value: number;
+  // Commission_Driver: number;
+  // Commission_Company: number;
+  // Deductions: number;
+  // Average_Fare: number;
+  // Net_Payin: number;
+  // Net_Driver_Income: number;
+  // Calculator_Modal_Visible: boolean;
+  // Indicator: boolean;
+  // Search_Date: string;
 
-  //View Records
-  totalrecords: number;
-  start_date: string;
-  start_day: string;
-  finish_day: string;
-  finish_date: string;
-  sorryAlert: boolean;
-  show2Alert: boolean;
+  // //View Records
+  // totalrecords: number;
+  // start_date: string;
+  // start_day: string;
+  // finish_day: string;
+  // finish_date: string;
+  // sorryAlert: boolean;
+  // show2Alert: boolean;
 
-  //display table
-  nametable: any[];
-  total: {};
-  table: any[];
-  tableNameData: string[];
-  datatotal: {};
-  done: boolean;
-  usingservice: boolean;
-  //tableData: tableData[];
+  // //display table
+  // nametable: any[];
+  // total: {};
+  // table: any[];
+  // tableNameData: string[];
+  // datatotal: {};
+  // done: boolean;
+  // usingservice: boolean;
+  // //tableData: tableData[];
 };
 
 export const initialValues = {
@@ -201,16 +197,16 @@ export const initialValues = {
   show2Alert: false,
 
   // display report
-  nametable: [],
-  table: [],
+  //nametable: [],
+  //table: [],
   total: {},
-  tableNameData: [],
+  // tableNameData: [],
   datatotal: {},
   liftingdata: [],
   Deductdata: [],
   done: false,
   usingservice: false,
-  tableData: [],
+  // tableData: [],
 };
 
 export const refreshValues = {

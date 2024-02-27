@@ -32,7 +32,7 @@ export const LiftingModel = () => {
         },
       });
       const id = state?.liftingId;
-      await upsertLiftingTable(state, dispatch, id);
+      await upsertLiftingTable(state, dispatch, Number(id));
       // console.log('res===', res);
     } catch (error) {
       console.error(error);
@@ -52,7 +52,11 @@ export const LiftingModel = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Modal
-        visible={state.Lifting_Modal_Visible}
+        visible={
+          state.Lifting_Modal_Visible !== undefined
+            ? Boolean(state.Lifting_Modal_Visible)
+            : undefined
+        }
         animationType={'fade'}
         onRequestClose={() => {}}>
         <ScrollView>

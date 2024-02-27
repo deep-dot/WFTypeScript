@@ -2,7 +2,7 @@ import React from 'react';
 import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
 import db from '../Database/databaseService';
-import {FormValues, tableData} from '../Screens/Components/EnterDataValues';
+import {FormValues} from '../Screens/Components/EnterDataValues';
 
 export type Action =
   | {type: 'INSERT'; payload: any}
@@ -138,7 +138,7 @@ export function upsertLiftingTable(
   dispatch: React.Dispatch<Action>,
   id?: number, // Optional ID. If provided, perform an update; if not, perform an insert.
 ): Promise<ResultSet> {
-  let Company_Comm_Rate = 100 - state.Driver_Comm_Rate;
+  let Company_Comm_Rate = 100 - Number(state.Driver_Comm_Rate);
   return new Promise((resolve, reject) => {
     if (!db) {
       return reject(new Error('db is undefined'));
@@ -429,7 +429,7 @@ export const upsertData = (
               payload: {
                 Record_id: resultSet.insertId,
                 table: 'datatable',
-                Number_Of_Entries: state.Number_Of_Entries + 1,
+                Number_Of_Entries: Number(state.Number_Of_Entries) + 1,
               },
             });
           } else {
@@ -455,7 +455,7 @@ export const ViewRecordsByDate = (
   start_date: string,
   finish_date: string,
   dispatch: React.Dispatch<Action>,
-): Promise<tableData[]> => {
+): Promise<FormValues[]> => {
   return new Promise((resolve, reject) => {
     console.log('state.start_date, state.finish_date', start_date, finish_date);
     if (!db) {
@@ -467,7 +467,7 @@ export const ViewRecordsByDate = (
         [start_date, finish_date],
         (_tx, results) => {
           if (results.rows.length > 0) {
-            const temp: tableData[] = [];
+            const temp: FormValues[] = [];
             for (let j = 0; j < results.rows.length; j++) {
               temp.push(results.rows.item(j));
             }

@@ -41,7 +41,9 @@ export const RegoModal = () => {
   };
   return (
     <Modal
-      visible={state.Rego_Modal}
+      visible={
+        state.Rego_Modal !== undefined ? Boolean(state.Rego_Modal) : undefined
+      }
       animationType={'fade'}
       onRequestClose={() => {}}>
       <View style={[styles.model, {alignSelf: 'center'}]}>
@@ -53,7 +55,7 @@ export const RegoModal = () => {
           //keyboardType='numeric'
           keyboardType="numbers-and-punctuation"
           placeholderTextColor="#000000"
-          value={state.Taxi}
+          value={String(state.Taxi)}
           style={{
             marginTop: 30,
             alignSelf: 'center',

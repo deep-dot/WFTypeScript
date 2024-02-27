@@ -29,19 +29,27 @@ const ModalForm = () => {
       Alert.alert('Put name and date in');
     } else {
       const id = state.WEid;
-      saveWeekEndingData(state, dispatch, id);
+      saveWeekEndingData(state, dispatch, Number(id));
     }
   };
 
   let cancel = () => {
-    dispatch({
-      type: 'INSERT',
-      payload: {modalVisible: false, table: 'datatable'},
-    });
+    if (!state.Week_Ending_Date || !state.Name) {
+      Alert.alert('Put name and date in');
+    } else {
+      dispatch({
+        type: 'INSERT',
+        payload: {modalVisible: false, table: 'datatable'},
+      });
+    }
   };
   return (
     <Modal
-      visible={state.modalVisible}
+      visible={
+        state.modalVisible !== undefined
+          ? Boolean(state.modalVisible)
+          : undefined
+      }
       animationType={'fade'}
       onRequestClose={() => {}}>
       <ScrollView>
@@ -68,12 +76,12 @@ const ModalForm = () => {
                 },
               });
             }}
-            value={state.Name}
+            value={String(state.Name)}
           />
 
           <View style={{marginTop: 40, alignItems: 'center', marginBottom: 20}}>
             <Calendar
-              value={state.Date}
+              value={String(state.Date)}
               onChange={(date: string, day: string) => {
                 dispatch({
                   type: 'INSERT',

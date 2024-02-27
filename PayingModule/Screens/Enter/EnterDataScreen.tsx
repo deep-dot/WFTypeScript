@@ -38,11 +38,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {Platform} from 'react-native';
 import moment from 'moment';
 
-interface Cab {
-  Cab: string;
-  id: number;
-}
-
 const EnterData = () => {
   const navigation =
     useNavigation<StackNavigationProp<StackParamList, 'Enter Data'>>();
@@ -57,74 +52,83 @@ const EnterData = () => {
   const [Cdeductions, setCdeductions] = useState(0);
   const [Ddeductions, setDdeductions] = useState(0);
 
+  // interface Cab {
+  //   Cab: string;
+  //   id: number;
+  // }
+  // type Cab_Data = {
+  //   [key: string]: Cab;
+  // };
+
   useEffect(() => {
     try {
       selectWeekEndingTable(dispatch);
       selectLiftingTable(dispatch);
       SelectCab(dispatch);
       SelectFromDataTable(dispatch);
-      state.Cab_Data.filter(cab => Object.keys(cab).length > 0);
     } catch (error) {
       console.error('An error occurred:', error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   const calculateAndUpdateValues = useCallback(() => {
     //const calculateAndUpdateValues = () => {
-    let updatedValues = {...state};
-    updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
+    //let updatedValues = {...state};
+    state.Levy = +state.Jobs_Done * +state.Gov_Levy;
     // console.log(
-    //   'updatedValues.Jobs_Done==',
-    //   updatedValues.Eftpos_Liftings,
-    //   updatedValues.Number_Of_Manual_Liftings,
+    //   'state.Jobs_Done==',
+    //   state.Eftpos_Liftings,
+    //   state.Number_Of_Manual_Liftings,
     // );
-    updatedValues.Shift_Total = updatedValues.meterTotal - updatedValues.Levy;
+    state.Shift_Total = +state.meterTotal - state.Levy;
 
-    updatedValues.Kms;
+    state.Kms;
 
-    updatedValues.Paid_Kms;
+    state.Paid_Kms;
 
-    updatedValues.Number_Of_Chairs =
-      Number(updatedValues.Eftpos_Liftings) +
-      Number(updatedValues.Number_Of_Manual_Liftings);
+    state.Number_Of_Chairs =
+      Number(state.Eftpos_Liftings) + Number(state.Number_Of_Manual_Liftings);
 
-    updatedValues.Driver_Lifting_Value =
-      updatedValues.Number_Of_Chairs * updatedValues.Driver_Share_In_LiftingFee;
+    state.Driver_Lifting_Value =
+      state.Number_Of_Chairs * +state.Driver_Share_In_LiftingFee;
 
-    updatedValues.Commission_Driver =
-      (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
+    state.Commission_Driver =
+      (state.Shift_Total * +state.Driver_Comm_Rate) / 100;
 
-    updatedValues.Company_Comm_Rate = 100 - updatedValues.Driver_Comm_Rate;
+    state.Company_Comm_Rate = 100 - +state.Driver_Comm_Rate;
 
-    updatedValues.Commission_Company =
-      (updatedValues.Shift_Total * updatedValues.Company_Comm_Rate) / 100;
+    state.Commission_Company =
+      (state.Shift_Total * state.Company_Comm_Rate) / 100;
 
-    updatedValues.CPK =
-      updatedValues.Kms > 0 ? updatedValues.Shift_Total / updatedValues.Kms : 0;
+    state.CPK = +state.Kms > 0 ? state.Shift_Total / +state.Kms : 0;
 
-    updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
+    state.Unpaid_Kms = +state.Kms - +state.Paid_Kms;
 
     //from save function
     let eftpos_without_lifting =
-      state.Eftpos - state.Number_Of_Chairs * state.Gov_Lifting_Fee;
+      +state.Eftpos - state.Number_Of_Chairs * +state.Gov_Lifting_Fee;
 
     let cdeductions =
-      // state.Commission_Driver +
-      state.Driver_Lifting_Value +
-      state.M3_Dockets +
-      state.Electronic_Account_Payments +
-      state.Total_Manual_MPTP31_And_MPTP_Values +
-      eftpos_without_lifting;
+      (Number(state.Driver_Lifting_Value) || 0) +
+      (Number(state.M3_Dockets) || 0) +
+      (Number(state.Electronic_Account_Payments) || 0) +
+      (Number(state.Total_Manual_MPTP31_And_MPTP_Values) || 0) +
+      (Number(eftpos_without_lifting) || 0);
+
     setCdeductions(cdeductions);
-    let ddeductions = cdeductions + state.Misc + state.Car_Wash + state.Fuel;
+    let ddeductions =
+      cdeductions +
+      (Number(state.Misc) || 0) +
+      (Number(state.Car_Wash) || 0) +
+      (Number(state.Fuel) || 0);
+
     setDdeductions(ddeductions);
     let cnetpayin = state.Commission_Company - cdeductions;
     setCnetpayin(cnetpayin);
     let dnetpayin = state.Commission_Company - ddeductions;
     setDnetpayin(dnetpayin);
 
-    dispatch({type: 'INSERT', payload: {updatedValues, table: 'datatable'}});
+    // dispatch({type: 'INSERT', payload: {state, table: 'datatable'}});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     dispatch,
@@ -177,7 +181,7 @@ const EnterData = () => {
 
   let Save = () => {
     console.log('in save==', Cdeductions, Ddeductions, Cnetpayin, Dnetpayin);
-    if (state.Car_Wash > 0 || state.Misc > 0 || state.Fuel > 0) {
+    if (+state.Car_Wash > 0 || +state.Misc > 0 || +state.Fuel > 0) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
         '',
@@ -255,7 +259,9 @@ const EnterData = () => {
     <SafeAreaView style={styles.container}>
       <ModalForm />
       <AwesomeAlert
-        show={state.Indicator}
+        show={
+          state.Indicator !== undefined ? Boolean(state.Indicator) : undefined
+        }
         showProgress={true}
         title="Please wait"
         closeOnTouchOutside={false}
@@ -325,7 +331,9 @@ const EnterData = () => {
             </Text>
           </TextInput>
           <Picker
-            selectedValue={state.Shift}
+            selectedValue={
+              state.Shift !== undefined ? String(state.Shift) : undefined
+            }
             style={{
               width: 100,
             }}
@@ -400,7 +408,7 @@ const EnterData = () => {
                 color={Platform.OS === 'ios' ? '#fff' : '#bbb'}
               />
               {state.Cab_Data &&
-                state.Cab_Data.map((c: {Cab: string}, key: number) => (
+                state.Cab_Data.map((c, key) => (
                   <Picker.Item
                     label={c.Cab}
                     key={key}
@@ -427,7 +435,7 @@ const EnterData = () => {
 
         <View style={styles.textinputview}>
           <Calendar
-            value={state.Date}
+            value={String(state.Date)}
             onChange={(date: string, day: string) => {
               dispatch({
                 type: 'INSERT',
