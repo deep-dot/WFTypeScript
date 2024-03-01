@@ -27,12 +27,9 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import styles from '../screens.style';
 import { LogBox } from 'react-native';
-import { FormValues } from '../Components/EnterDataValues';
-// import { FormValues } from '../Components/EnterDataValues';
+import { tableData } from '../Components/EnterDataValues';
 
 LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.']);
-
-
 
 const ViewRecords = () => {
   const navigation =
@@ -43,7 +40,7 @@ const ViewRecords = () => {
   }
   const { state, dispatch } = stateContext;
   const [isLoading, setIsLoading] = useState(false);
-  const [ res, setRes] = useState<FormValues[]>([]);
+  const [ res, setRes] = useState<tableData[]>([]);
 
   const searchRecord = useCallback(async () => {
     setIsLoading(true);
@@ -64,7 +61,7 @@ const ViewRecords = () => {
     }
 }, [searchRecord, state.finish_date, state.start_date]);
 
-  const DeleteRecord = async (date: string | number) => {
+  const DeleteRecord = async (date: string) => {
     Alert.alert(
       'Please confirm!',
       'Do you wish to delete the record?',

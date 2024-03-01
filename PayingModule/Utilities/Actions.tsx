@@ -2,7 +2,7 @@ import React from 'react';
 import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
 import db from '../Database/databaseService';
-import {FormValues} from '../Screens/Components/EnterDataValues';
+import {tableData} from '../Screens/Components/EnterDataValues';
 
 export type Action =
   | {type: 'INSERT'; payload: any}
@@ -49,7 +49,7 @@ export const selectWeekEndingTable = (dispatch: React.Dispatch<Action>) => {
   });
 };
 export function saveWeekEndingData(
-  state: FormValues,
+  state: tableData,
   dispatch: React.Dispatch<Action>,
   id?: number, // id is optional. If provided, update; if not, insert.
 ): Promise<ResultSet> {
@@ -146,7 +146,7 @@ export const selectLiftingTable = (dispatch: React.Dispatch<Action>) => {
   });
 };
 export function upsertLiftingTable(
-  state: FormValues,
+  state: tableData,
   dispatch: React.Dispatch<Action>,
   id?: number, // Optional ID. If provided, perform an update; if not, perform an insert.
 ): Promise<ResultSet> {
@@ -299,7 +299,8 @@ export function deleteCab(
         [rego],
         async (_tx: Transaction, results: ResultSet) => {
           if (results.rowsAffected > 0) {
-            resolve(results);
+            // resolve(results);
+            // console.log('delete cab action==', results);
             dispatch({
               type: 'DELETE',
               payload: {rego, table: 'cab', Rego_Modal: false, Taxi: ''},
@@ -319,7 +320,7 @@ export function deleteCab(
 //main data
 
 export const upsertData = (
-  state: FormValues,
+  state: tableData,
   dispatch: React.Dispatch<Action>,
 ) => {
   return new Promise((resolve, reject) => {
@@ -468,7 +469,7 @@ export const ViewRecordsByDate = (
   start_date: string,
   finish_date: string,
   dispatch: React.Dispatch<Action>,
-): Promise<FormValues[]> => {
+): Promise<tableData[]> => {
   return new Promise((resolve, reject) => {
     console.log('state.start_date, state.finish_date', start_date, finish_date);
     if (!db) {
@@ -480,7 +481,7 @@ export const ViewRecordsByDate = (
         [start_date, finish_date],
         (_tx, results) => {
           if (results.rows.length > 0) {
-            const temp: FormValues[] = [];
+            const temp: tableData[] = [];
             for (let j = 0; j < results.rows.length; j++) {
               temp.push(results.rows.item(j));
             }
@@ -510,7 +511,7 @@ export const ViewRecordsByDate = (
 
 export const SelectFromDataTable = (
   dispatch: React.Dispatch<Action>,
-): Promise<FormValues[]> => {
+): Promise<tableData[]> => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -575,8 +576,8 @@ export const UpdateData = (
 };
 
 export const deleteDataInTable = (
-  date: string | number,
-  state: FormValues,
+  date: string,
+  state: tableData,
   dispatch: React.Dispatch<Action>,
 ) => {
   //console.log('date in deleteDatatable',date);
@@ -590,7 +591,11 @@ export const deleteDataInTable = (
           // [],
           (_tx: Transaction, results: ResultSet) => {
             if (results.rowsAffected > 0) {
-              SelectFromDataTable(dispatch);
+              // SelectFromDataTable(dispatch);
+              dispatch({
+                type: 'DELETE',
+                payload: {table: 'datatable', date: date},
+              });
             } else {
               reject(new Error('No data found for the provided date'));
             }
@@ -612,7 +617,7 @@ export const deleteDataInTable = (
 export const totalTable = (
   // dispatch: React.Dispatch<Action>,
 // eslint-disable-next-line prettier/prettier
-): Promise<FormValues[]> => {
+): Promise<tableData[]> => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {

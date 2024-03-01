@@ -1,7 +1,7 @@
 import {Action} from './Actions';
-import {FormValues, refreshValues} from '../Screens/Components/EnterDataValues';
+import {tableData, refreshValues} from '../Screens/Components/EnterDataValues';
 
-export const reducer = (state: FormValues, action: Action): FormValues => {
+export const reducer = (state: tableData, action: Action): tableData => {
   switch (action.type) {
     case 'INSERT':
       if (action.payload.table === 'liftingTable') {
@@ -20,9 +20,9 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
       } else if (action.payload.table === 'cab') {
         //console.log('cab insert===', action.payload);
         const newCab = {Cab: action.payload.rego};
-        const cabdata = (state.Cab_Data as Array<{Cab: string}>).filter(
-          cab => Object.keys(cab).length > 0,
-        );
+        const cabdata = (
+          state.Cab_Data as unknown as Array<{Cab: string}>
+        ).filter(cab => Object.keys(cab).length > 0);
         return {
           ...state,
           ...action.payload,
@@ -65,27 +65,32 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
       return state;
     case 'DELETE':
       if (action.payload.table === 'datatable') {
+        // Assuming state.datatableData is an array of objects that includes a Date property
+        const updatedData = Array.isArray(state.tableData)
+          ? state.tableData.filter(item => item.Date !== action.payload.date)
+          : state.tableData;
         return {
           ...state,
-          ...action.payload,
-          // totalrecords: action.payload.totalrecords,
-          // Number_Of_Entries: action.payload.Number_Of_Entries,
+          tableData: updatedData,
         };
       }
+
       if (action.payload.table === 'cab') {
-        //console.log('action.payload.deleteFromTable ===', action.payload.deleteFromTable, rego);
+        console.log(
+          'action.payload.delete Table ===',
+          // action.payload.deleteFromTable,
+          // rego,
+          state.Cab_Data,
+        );
         return {
           ...state,
           Taxi: action.payload.Taxi,
           Rego_Modal: action.payload.Rego_Modal,
-          //certain that state.Cab_Data can safely be treated as Array<{ Cab: string }> at this point in your code, you could first cast it to unknown and then to the desired array type. This double casting tells TypeScript that you're intentionally overriding its type inference:
-          Cab_Data: (state.Cab_Data as Array<{Cab: string}>).filter(
-            item => item.Cab !== action.payload.rego,
-          ),
-
-          // Cab_Data: (state.Cab_Data as Array<{Cab: string}>).filter(
-          //   item => item.Cab !== action.payload.rego,
-          // ),
+          Cab_Data: Array.isArray(state.Cab_Data)
+            ? state.Cab_Data.filter(
+                item => item && item.Cab !== action.payload.rego,
+              )
+            : state.Cab_Data, // Keep the original state if it's not an array
         };
       }
     // eslint-disable-next-line no-fallthrough
