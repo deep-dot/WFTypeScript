@@ -5,24 +5,22 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
   switch (action.type) {
     case 'INSERT':
       if (action.payload.table === 'liftingTable') {
-        return {...state, liftingId: action.payload.insertId};
+        //console.log('insert in liftingtable===', action.payload);
+        return {...state, ...action.payload};
       } else if (action.payload.table === 'weekEndingTable') {
+        //console.log('insert in weekEndingtable===', action.payload);
         return {...state, ...action.payload};
       } else if (action.payload.table === 'datatable') {
-        // console.log('before:', JSON.stringify(state, null, 2));
-
-        //console.table(action);
         const newState = {
           ...state,
           ...action.payload,
-          //tableData: action.payload.updatedValues,
+          ...action.payload.updatedValues,
         };
-        console.log('After update state:', JSON.stringify(newState, null, 2));
         return newState;
       } else if (action.payload.table === 'cab') {
         //console.log('cab insert===', action.payload);
         const newCab = {Cab: action.payload.rego};
-        const cabdata = state.Cab_Data.filter(
+        const cabdata = (state.Cab_Data as Array<{Cab: string}>).filter(
           cab => Object.keys(cab).length > 0,
         );
         return {
@@ -40,28 +38,18 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
         return {
           ...state,
           ...action.payload,
-          // Gov_Lifting_Fee: action.payload.data.Gov_Lifting_Fee,
-          // Driver_Share_In_LiftingFee:
-          //   action.payload.data.Driver_Share_In_LiftingFee,
-          // Gov_Levy: action.payload.data.Gov_Levy,
-          // Driver_Comm_Rate: action.payload.data.Driver_Comm_Rate,
-          // Company_Comm_Rate: action.payload.data.Company_Comm_Rate,
         };
       } else if (action.payload.table === 'weekEndingTable') {
         return {
           ...state,
           ...action.payload,
-          // Name: action.payload.data.Name,
-          // Week_Ending_Date: action.payload.data.Week_Ending_Date,
-          // Week_Ending_Day: action.payload.data.Week_Ending_Day,
         };
       } else if (action.payload.table === 'datatable') {
         return {
           ...state,
           ...action.payload,
-          // Record_id: action.payload.insertId,
           // Number_Of_Entries: action.payload.Number_Of_Entries,
-          // totalrecords: action.payload.totalrecords,
+          // displayRecords: action.payload.displayRecords,
           //tableData: action.payload.tableData,
         };
       } else if (action.payload.table === 'cab') {
@@ -90,9 +78,14 @@ export const reducer = (state: FormValues, action: Action): FormValues => {
           ...state,
           Taxi: action.payload.Taxi,
           Rego_Modal: action.payload.Rego_Modal,
-          Cab_Data: state.Cab_Data.filter(
+          //certain that state.Cab_Data can safely be treated as Array<{ Cab: string }> at this point in your code, you could first cast it to unknown and then to the desired array type. This double casting tells TypeScript that you're intentionally overriding its type inference:
+          Cab_Data: (state.Cab_Data as Array<{Cab: string}>).filter(
             item => item.Cab !== action.payload.rego,
           ),
+
+          // Cab_Data: (state.Cab_Data as Array<{Cab: string}>).filter(
+          //   item => item.Cab !== action.payload.rego,
+          // ),
         };
       }
     // eslint-disable-next-line no-fallthrough

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 import React, { useContext, useEffect, useCallback, useState } from 'react';
@@ -105,7 +104,7 @@ const ViewRecords = () => {
           borderBottomWidth: 0.5,
         }}>
         <Text style={{ textAlign: 'center', color: 'green', paddingTop: 20 }}>
-          Total Entries = {state.Number_Of_Entries}
+          Total Entries = {Number(state.Number_Of_Entries)}
         </Text>
 
         <View style={[styles.textinputview, { borderColor: '#fff' }]}>
@@ -149,7 +148,7 @@ const ViewRecords = () => {
 
         <Text style={[styles.Textinput, { alignSelf: 'center' }]}>
           {' '}
-          Display Records = {state.totalrecords}
+          Display Records = {Number(state.displayRecords)}
         </Text>
       </View>
 
@@ -234,7 +233,7 @@ const ViewRecords = () => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            state.totalrecords ?
+            state.displayRecords ?
             navigation.navigate('Display Report') :
             Alert.alert('No records');
           }}>

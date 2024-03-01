@@ -25,8 +25,10 @@ export const useInputRefs = () => {
 // export interface tableData {
 //   [key: string]: string | number;
 // }
+
 export type FormValues = {
-  [key: string]: string | number | boolean;
+  [key: string]: string | number | boolean | {Cab: string}[];
+  //Cab_Data: { Cab: string; }[];
   // Number_Of_Entries: number;
   // //subscription
   // purchased: boolean;
@@ -185,10 +187,10 @@ export const initialValues = {
   Calculator_Modal_Visible: false,
   Indicator: false,
   Search_Date: '',
-  cabCount: 50,
 
   //View Records
-  totalrecords: 0,
+  displayRecords: 0,
+  tableData: [],
   start_date: '',
   start_day: '',
   finish_day: '',
@@ -200,13 +202,12 @@ export const initialValues = {
   //nametable: [],
   //table: [],
   total: {},
-  // tableNameData: [],
+  tableNameData: [],
   datatotal: {},
   liftingdata: [],
   Deductdata: [],
   done: false,
   usingservice: false,
-  // tableData: [],
 };
 
 export const refreshValues = {

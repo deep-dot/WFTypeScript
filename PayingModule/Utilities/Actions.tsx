@@ -26,12 +26,17 @@ export const selectWeekEndingTable = (dispatch: React.Dispatch<Action>) => {
         (_tx: Transaction, results: ResultSet) => {
           var len = results.rows.length;
           if (len > 0) {
-            let temp = results.rows.item(0);
+            let data = results.rows.item(0);
             dispatch({
               type: 'SELECT',
-              payload: {data: temp, table: 'weekEndingTable'},
+              payload: {
+                Name: data.Name,
+                Week_Ending_Date: data.Week_Ending_Date,
+                Week_Ending_Day: data.Week_Ending_Day,
+                table: 'weekEndingTable',
+              },
             });
-            resolve(temp);
+            resolve(data);
           } else {
             resolve([]);
           }
@@ -116,12 +121,19 @@ export const selectLiftingTable = (dispatch: React.Dispatch<Action>) => {
         (_tx: Transaction, results: ResultSet) => {
           var len = results.rows.length;
           if (len > 0) {
-            let temp = results.rows.item(0);
+            let data = results.rows.item(0);
             dispatch({
               type: 'SELECT',
-              payload: {data: temp, table: 'liftingTable'},
+              payload: {
+                Gov_Lifting_Fee: data.Gov_Lifting_Fee,
+                Driver_Share_In_LiftingFee: data.Driver_Share_In_LiftingFee,
+                Gov_Levy: data.Gov_Levy,
+                Driver_Comm_Rate: data.Driver_Comm_Rate,
+                Company_Comm_Rate: data.Company_Comm_Rate,
+                table: 'liftingTable',
+              },
             });
-            resolve(temp);
+            resolve(data);
           } else {
             resolve([]);
           }
@@ -138,6 +150,7 @@ export function upsertLiftingTable(
   dispatch: React.Dispatch<Action>,
   id?: number, // Optional ID. If provided, perform an update; if not, perform an insert.
 ): Promise<ResultSet> {
+  console.log('id in upsert liftin table==', id);
   let Company_Comm_Rate = 100 - Number(state.Driver_Comm_Rate);
   return new Promise((resolve, reject) => {
     if (!db) {
@@ -177,10 +190,10 @@ export function upsertLiftingTable(
         params,
         (_tx: Transaction, result: ResultSet) => {
           if (result.rowsAffected > 0) {
-            const operationId = id ? id : result.insertId;
+            const liftingId = id ? id : result.insertId;
             dispatch({
               type: id ? 'UPDATE' : 'INSERT',
-              payload: {insertId: operationId, table: 'liftingTable'},
+              payload: {liftingId, table: 'liftingTable'},
             });
             resolve(result);
             //Alert.alert(id ? 'Update successful' : 'Insert successful');
@@ -473,10 +486,10 @@ export const ViewRecordsByDate = (
             }
             // console.log('temp===', temp.length);
             dispatch({
-              type: 'INSERT',
+              type: 'SELECT',
               payload: {
                 tableData: temp,
-                totalrecords: temp.length,
+                displayRecords: temp.length,
                 table: 'datatable',
               },
             });
@@ -507,7 +520,7 @@ export const SelectFromDataTable = (
           (_tx: Transaction, results: ResultSet) => {
             //console.log('count===', results.rows.length);
             dispatch({
-              type: 'INSERT',
+              type: 'SELECT',
               payload: {
                 Number_Of_Entries: results.rows.length,
                 table: 'datatable',
@@ -597,7 +610,7 @@ export const deleteDataInTable = (
 
 // eslint-disable-next-line prettier/prettier
 export const totalTable = (
- // dispatch: React.Dispatch<Action>,
+  // dispatch: React.Dispatch<Action>,
 // eslint-disable-next-line prettier/prettier
 ): Promise<FormValues[]> => {
   return new Promise((resolve, reject) => {

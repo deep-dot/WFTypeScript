@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable no-lone-blocks */
 import React, {useContext} from 'react';
 import {
   TextInput,

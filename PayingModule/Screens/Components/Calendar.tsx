@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, FC} from 'react';
+import React, {useState} from 'react';
 import {Image, TouchableOpacity, SafeAreaView} from 'react-native';
 import moment from 'moment';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';

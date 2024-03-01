@@ -39,7 +39,7 @@ const ModalForm = () => {
     } else {
       dispatch({
         type: 'INSERT',
-        payload: {modalVisible: false, table: 'datatable'},
+        payload: {modalVisible: false, table: 'weekEndingTable'},
       });
     }
   };

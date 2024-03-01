@@ -52,20 +52,16 @@ const EnterData = () => {
   const [Cdeductions, setCdeductions] = useState(0);
   const [Ddeductions, setDdeductions] = useState(0);
 
-  // interface Cab {
-  //   Cab: string;
-  //   id: number;
-  // }
-  // type Cab_Data = {
-  //   [key: string]: Cab;
-  // };
-
   useEffect(() => {
     try {
+      // const functions = async () => {
+      // const liftingModalData = await
       selectWeekEndingTable(dispatch);
       selectLiftingTable(dispatch);
       SelectCab(dispatch);
       SelectFromDataTable(dispatch);
+      // }
+      // functions();
     } catch (error) {
       console.error('An error occurred:', error);
     }
@@ -73,62 +69,67 @@ const EnterData = () => {
 
   const calculateAndUpdateValues = useCallback(() => {
     //const calculateAndUpdateValues = () => {
-    //let updatedValues = {...state};
-    state.Levy = +state.Jobs_Done * +state.Gov_Levy;
+    let updatedValues = {...state};
+    updatedValues.Levy = +updatedValues.Jobs_Done * +updatedValues.Gov_Levy;
     // console.log(
-    //   'state.Jobs_Done==',
-    //   state.Eftpos_Liftings,
-    //   state.Number_Of_Manual_Liftings,
+    //   'updatedValues.Jobs_Done==',
+    //   updatedValues.Eftpos_Liftings,
+    //   updatedValues.Number_Of_Manual_Liftings,
     // );
-    state.Shift_Total = +state.meterTotal - state.Levy;
+    updatedValues.Shift_Total = +updatedValues.meterTotal - updatedValues.Levy;
 
-    state.Kms;
+    updatedValues.Kms;
 
-    state.Paid_Kms;
+    updatedValues.Paid_Kms;
 
-    state.Number_Of_Chairs =
-      Number(state.Eftpos_Liftings) + Number(state.Number_Of_Manual_Liftings);
+    updatedValues.Number_Of_Chairs =
+      +updatedValues.Eftpos_Liftings + +updatedValues.Number_Of_Manual_Liftings;
 
-    state.Driver_Lifting_Value =
-      state.Number_Of_Chairs * +state.Driver_Share_In_LiftingFee;
+    updatedValues.Driver_Lifting_Value =
+      updatedValues.Number_Of_Chairs *
+      +updatedValues.Driver_Share_In_LiftingFee;
 
-    state.Commission_Driver =
-      (state.Shift_Total * +state.Driver_Comm_Rate) / 100;
+    updatedValues.Commission_Driver =
+      (updatedValues.Shift_Total * +updatedValues.Driver_Comm_Rate) / 100;
 
-    state.Company_Comm_Rate = 100 - +state.Driver_Comm_Rate;
+    updatedValues.Company_Comm_Rate = 100 - +updatedValues.Driver_Comm_Rate;
 
-    state.Commission_Company =
-      (state.Shift_Total * state.Company_Comm_Rate) / 100;
+    updatedValues.Commission_Company =
+      (updatedValues.Shift_Total * updatedValues.Company_Comm_Rate) / 100;
 
-    state.CPK = +state.Kms > 0 ? state.Shift_Total / +state.Kms : 0;
+    updatedValues.CPK =
+      +updatedValues.Kms > 0
+        ? updatedValues.Shift_Total / +updatedValues.Kms
+        : 0;
 
-    state.Unpaid_Kms = +state.Kms - +state.Paid_Kms;
+    updatedValues.Unpaid_Kms = +updatedValues.Kms - +updatedValues.Paid_Kms;
 
     //from save function
     let eftpos_without_lifting =
-      +state.Eftpos - state.Number_Of_Chairs * +state.Gov_Lifting_Fee;
+      +updatedValues.Eftpos -
+      updatedValues.Number_Of_Chairs * +updatedValues.Gov_Lifting_Fee;
 
     let cdeductions =
-      (Number(state.Driver_Lifting_Value) || 0) +
-      (Number(state.M3_Dockets) || 0) +
-      (Number(state.Electronic_Account_Payments) || 0) +
-      (Number(state.Total_Manual_MPTP31_And_MPTP_Values) || 0) +
-      (Number(eftpos_without_lifting) || 0);
+      +updatedValues.Driver_Lifting_Value +
+      +updatedValues.M3_Dockets +
+      +updatedValues.Electronic_Account_Payments +
+      +updatedValues.Total_Manual_MPTP31_And_MPTP_Values +
+      +eftpos_without_lifting;
 
     setCdeductions(cdeductions);
     let ddeductions =
       cdeductions +
-      (Number(state.Misc) || 0) +
-      (Number(state.Car_Wash) || 0) +
-      (Number(state.Fuel) || 0);
+      +updatedValues.Misc +
+      +updatedValues.Car_Wash +
+      +updatedValues.Fuel;
 
     setDdeductions(ddeductions);
-    let cnetpayin = state.Commission_Company - cdeductions;
+    let cnetpayin = updatedValues.Commission_Company - cdeductions;
     setCnetpayin(cnetpayin);
-    let dnetpayin = state.Commission_Company - ddeductions;
+    let dnetpayin = updatedValues.Commission_Company - ddeductions;
     setDnetpayin(dnetpayin);
 
-    // dispatch({type: 'INSERT', payload: {state, table: 'datatable'}});
+    dispatch({type: 'INSERT', payload: {updatedValues, table: 'datatable'}});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     dispatch,
@@ -276,7 +277,7 @@ const EnterData = () => {
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={{alignItems: 'center'}}>
           <Text style={[styles.titleText, {color: 'green', marginVertical: 5}]}>
-            Total Entries: {state.Number_Of_Entries}
+            Total Entries: {+state.Number_Of_Entries}
           </Text>
         </View>
         {liftingInputs.map(input => (
@@ -327,7 +328,7 @@ const EnterData = () => {
             editable={false}
             style={styles.textInput}>
             <Text style={[styles.titleText, {color: '#fff'}]}>
-              {state.Shift}
+              {String(state.Shift)}
             </Text>
           </TextInput>
           <Picker
@@ -384,7 +385,7 @@ const EnterData = () => {
               editable={false}
               style={styles.textInput}>
               <Text style={[styles.titleText, {color: '#fff'}]}>
-                {state.Taxi}
+                {String(state.Taxi)}
               </Text>
             </TextInput>
             <Picker
@@ -407,8 +408,8 @@ const EnterData = () => {
                 value="Select "
                 color={Platform.OS === 'ios' ? '#fff' : '#bbb'}
               />
-              {state.Cab_Data &&
-                state.Cab_Data.map((c, key) => (
+              {Array.isArray(state.Cab_Data) &&
+                (state.Cab_Data as Array<{Cab: string}>).map((c, key) => (
                   <Picker.Item
                     label={c.Cab}
                     key={key}
