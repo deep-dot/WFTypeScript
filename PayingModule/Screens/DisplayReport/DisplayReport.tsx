@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-native/no-inline-styles */
 import React, {
   useContext,
@@ -32,6 +31,7 @@ import {NavigationProp} from '@react-navigation/native';
 import {StackParamList} from '../../../App/App';
 import {useNavigation} from '@react-navigation/core';
 import {LogBox} from 'react-native';
+import {tableItems} from '../Components/EnterDataValues';
 LogBox.ignoreLogs([
   'Warning: Failed prop type: Invalid prop `style` of type `array` supplied to `Row`, expected `object`',
 ]);
@@ -46,7 +46,7 @@ export default function DisplayReport() {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {starRating, state, dispatch} = stateContext;
+  const {dispatch, starRating, state} = stateContext;
   const [total, setTotal] = useState<TotalType>({});
 
   let Report = useCallback(async () => {
@@ -61,7 +61,7 @@ export default function DisplayReport() {
     Report();
   }, [Report]);
 
-  let liftingData = useMemo(
+  state.liftingdata = useMemo(
     () => [
       Number(total.Number_Of_Chairs) * state.Gov_Lifting_Fee,
       Number(total.Number_Of_Chairs),
@@ -74,9 +74,12 @@ export default function DisplayReport() {
     ],
   );
 
-  let deductData = useMemo(
-    () => [total.Deductions, state.Net_Payin],
-    [state.Net_Payin, total.Deductions],
+  state.deductdata = useMemo(
+    () => [
+      total.Deductions, // Assuming `deductions` is part of `tableItems`
+      total.Net_Payin, // Assuming `netPayin` is part of `tableItems`
+    ],
+    [total.Net_Payin, total.Deductions],
   );
 
   return (
@@ -113,8 +116,8 @@ export default function DisplayReport() {
                 />
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
-                {state.tableData &&
-                  state.tableData.map((rowdata, index) => {
+                {state.tabledata &&
+                  state.tabledata.map((rowdata, index) => {
                     let keysToInclude = [
                       'Date',
                       'Day',
@@ -139,8 +142,9 @@ export default function DisplayReport() {
                       'Net_Payin',
                     ];
                     let dataObj: {[key: string]: any} = {};
+                    //allowing the dynamic access without changing the global definition of tableItems
                     keysToInclude.forEach(key => {
-                      dataObj[key] = rowdata[key];
+                      dataObj[key] = rowdata[key as keyof tableItems];
                     });
                     let data = Object.values(dataObj);
                     return (
@@ -214,7 +218,7 @@ export default function DisplayReport() {
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
                 <Row
-                  data={liftingData}
+                  data={state.liftingdata}
                   widthArr={widthArr}
                   style={styles.row}
                   textStyle={styles.text}
@@ -236,7 +240,7 @@ export default function DisplayReport() {
               </Table>
               <Table borderStyle={{borderWidth: 0, borderColor: '#C1C0B9'}}>
                 <Row
-                  data={deductData}
+                  data={state.deductdata}
                   widthArr={widthArr}
                   style={styles.row}
                   textStyle={styles.text}

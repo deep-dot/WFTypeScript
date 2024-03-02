@@ -1,10 +1,10 @@
 import {Linking, Alert} from 'react-native';
 import RNPrint from 'react-native-print';
-import {FormValues} from '../Components/EnterDataValues';
+import {appData} from '../Components/EnterDataValues';
 import {Action} from '../../Utilities/Actions';
 
 export const starRating = (
-  state: FormValues,
+  state: appData,
   dispatch: React.Dispatch<Action>,
 ) => {
   Alert.alert(
@@ -57,13 +57,14 @@ export const starRating = (
   );
 };
 
-let printHTML = async (state: FormValues) => {
+let printHTML = async (state: appData) => {
+  console.log('in printhtml==', state.liftingdata);
   try {
     var td = '';
-    state.tableData.forEach(le => {
+    state.tabledata.forEach(le => {
       // console.log('le', le);
       const currencyIndices = new Set([6, 7, 10, 11, 12, 13, 14, 16, 17, 18]);
-      td += le
+      td += Object.values(le)
         .map((entry, index) => {
           const formattedEntry = currencyIndices.has(index)
             ? `$${entry}`
@@ -75,19 +76,14 @@ let printHTML = async (state: FormValues) => {
         .join('\n');
       td += '</tr>\n';
     });
-
-    var td1 = '';
-    state.tableNameData.forEach(le => {
-      td1 = `<tr>
+    let td1 = `<tr>
                 <td>Name:</td>
-                <td>${le[0]}</td>
+                <td>${state.Name}</td>
                 <td>Week Ending Date:</td>
-                <td> ${le[1]} </td>
+                <td> ${state.Week_Ending_Date} </td>
                 <td>Report making date:</td>
-                <td> ${le[2]} </td>
+                <td> ${state.Week_Ending_Day} </td>
               </tr>`;
-    });
-
     let total = '';
     let le = state.datatotal;
     total += `
@@ -119,26 +115,16 @@ let printHTML = async (state: FormValues) => {
             <td style = "font-weight:900">${le[18]}</td>
             <td style = "font-weight:900">$${le[18]}</td>
         </tr>`;
-
-    var lifting = '';
-    state.liftingdata.forEach(le => {
-      console.log('le', le);
-      lifting += `<th>.</th>
+    let lifting = `<tr>
+                    <td>${state.Gov_Lifting_Fee}</td> 
+                    <td>$${state.Number_Of_Chairs}</td>
+                    <td>$${state.Driver_Share_In_LiftingFee}</td>
+                  </tr>`;
+    let deducting = `<th>.</th>
               <tr>
-                <td>$${le[0]}</td>
-                <td>${le[1]}</td>
-                <td>${le[2]}</td>
-                <td>$${le[3]}</td>
+              <td>${state.Deductions}</td> 
+              <td>$${state.Net_Payin}</td>
                 </tr>`;
-    });
-    let deducting = '';
-    state.Deductdata.forEach(le => {
-      deducting += `<th>.</th>
-              <tr>
-                <td>$${le[0]}</td>
-                <td>$${le[1]}</td>
-                </tr>`;
-    });
     await RNPrint.print({
       isLandscape: true,
       html: `
@@ -252,8 +238,7 @@ let printHTML = async (state: FormValues) => {
       </html>
          `,
     });
-  } catch (err) {
-    // catches errors both in fetch and response.json
+  } catch (err: any) {
     Alert.alert(err.message);
   }
 };

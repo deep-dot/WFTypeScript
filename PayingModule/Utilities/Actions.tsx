@@ -87,7 +87,10 @@ export function saveWeekEndingData(
             resolve(result);
             dispatch({
               type: 'INSERT',
-              payload: {modalVisible: false, table: 'weekEndingTable'},
+              payload: {
+                modalVisible: false,
+                table: 'weekEndingTable',
+              },
             });
             // Alert.alert(id ? 'Update successful' : 'Insert successful');
           } else {

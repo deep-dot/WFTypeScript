@@ -67,7 +67,7 @@ export const reducer = (state: appData, action: Action) => {
     case 'DELETE':
       if (action.payload.table === 'datatable') {
         // Assuming state.dataappData is an array of objects that includes a Date property
-        const updatedData = state.tableData.filter(
+        const updatedData = state.tabledata.filter(
           item => item.Date !== action.payload.date,
         );
         return {
@@ -88,6 +88,14 @@ export const reducer = (state: appData, action: Action) => {
           Taxi: action.payload.Taxi,
           Rego_Modal: action.payload.Rego_Modal,
           //Cab_Data
+        };
+      }
+      return state;
+    case 'REFRESH':
+      if (action.payload.table === 'datatable') {
+        return {
+          ...state,
+          ...refreshValues,
         };
       }
       return state;

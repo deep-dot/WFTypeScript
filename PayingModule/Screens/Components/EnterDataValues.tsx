@@ -146,8 +146,11 @@ export type appData = {
   Indicator: boolean;
 
   // display report
-  total: Record<string, unknown>;
-  datatotal: Record<string, unknown>;
+  tableNameData: {[key: string]: string};
+  liftingdata: Array<number>;
+  deductdata: Array<number>;
+  total: Array<number>;
+  datatotal: {[key: string]: number};
   done: boolean;
   usingservice: boolean;
 };
@@ -229,7 +232,10 @@ export const initialValues: appData = {
   show2Alert: false,
   Search_Date: '',
   // display report
-  total: {},
+  tableNameData: {},
+  liftingdata: [],
+  deductdata: [],
+  total: [],
   datatotal: {},
   done: false,
   usingservice: false,
