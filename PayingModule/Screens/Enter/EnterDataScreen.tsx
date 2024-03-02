@@ -70,58 +70,57 @@ const EnterData = () => {
   const calculateAndUpdateValues = useCallback(() => {
     //const calculateAndUpdateValues = () => {
     let updatedValues = {...state};
-    updatedValues.Levy = +updatedValues.Jobs_Done * +updatedValues.Gov_Levy;
-    // console.log(
-    //   'updatedValues.Jobs_Done==',
-    //   updatedValues.Eftpos_Liftings,
-    //   updatedValues.Number_Of_Manual_Liftings,
-    // );
-    updatedValues.Shift_Total = +updatedValues.meterTotal - updatedValues.Levy;
+    updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
+
+    console.log(
+      'updatedValues.Jobs_Done==',
+      updatedValues.Levy,
+      updatedValues.meterTotal,
+    );
+
+    updatedValues.Shift_Total = updatedValues.meterTotal - updatedValues.Levy;
 
     updatedValues.Kms;
 
     updatedValues.Paid_Kms;
 
     updatedValues.Number_Of_Chairs =
-      +updatedValues.Eftpos_Liftings + +updatedValues.Number_Of_Manual_Liftings;
+      updatedValues.Eftpos_Liftings + updatedValues.Number_Of_Manual_Liftings;
 
     updatedValues.Driver_Lifting_Value =
-      updatedValues.Number_Of_Chairs *
-      +updatedValues.Driver_Share_In_LiftingFee;
+      updatedValues.Number_Of_Chairs * updatedValues.Driver_Share_In_LiftingFee;
 
     updatedValues.Commission_Driver =
-      (updatedValues.Shift_Total * +updatedValues.Driver_Comm_Rate) / 100;
+      (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
 
-    updatedValues.Company_Comm_Rate = 100 - +updatedValues.Driver_Comm_Rate;
+    updatedValues.Company_Comm_Rate = 100 - updatedValues.Driver_Comm_Rate;
 
     updatedValues.Commission_Company =
       (updatedValues.Shift_Total * updatedValues.Company_Comm_Rate) / 100;
 
     updatedValues.CPK =
-      +updatedValues.Kms > 0
-        ? updatedValues.Shift_Total / +updatedValues.Kms
-        : 0;
+      updatedValues.Kms > 0 ? updatedValues.Shift_Total / updatedValues.Kms : 0;
 
-    updatedValues.Unpaid_Kms = +updatedValues.Kms - +updatedValues.Paid_Kms;
+    updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
 
     //from save function
     let eftpos_without_lifting =
-      +updatedValues.Eftpos -
-      updatedValues.Number_Of_Chairs * +updatedValues.Gov_Lifting_Fee;
+      updatedValues.Eftpos -
+      updatedValues.Number_Of_Chairs * updatedValues.Gov_Lifting_Fee;
 
     let cdeductions =
-      +updatedValues.Driver_Lifting_Value +
-      +updatedValues.M3_Dockets +
-      +updatedValues.Electronic_Account_Payments +
-      +updatedValues.Total_Manual_MPTP31_And_MPTP_Values +
-      +eftpos_without_lifting;
+      updatedValues.Driver_Lifting_Value +
+      updatedValues.M3_Dockets +
+      updatedValues.Electronic_Account_Payments +
+      updatedValues.Total_Manual_MPTP31_And_MPTP_Values +
+      eftpos_without_lifting;
 
     setCdeductions(cdeductions);
     let ddeductions =
       cdeductions +
-      +updatedValues.Misc +
-      +updatedValues.Car_Wash +
-      +updatedValues.Fuel;
+      updatedValues.Misc +
+      updatedValues.Car_Wash +
+      updatedValues.Fuel;
 
     setDdeductions(ddeductions);
     let cnetpayin = updatedValues.Commission_Company - cdeductions;
@@ -133,29 +132,22 @@ const EnterData = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     dispatch,
-    state.Hours_Worked,
-    state.Insurance,
     state.Jobs_Done,
+    state.Gov_Levy,
     state.meterTotal,
-    state.Kms,
-    state.Paid_Kms,
-    state.Eftpos,
     state.Eftpos_Liftings,
     state.Number_Of_Manual_Liftings,
-    state.Total_Manual_MPTP31_And_MPTP_Values,
+    state.Driver_Share_In_LiftingFee,
+    state.Driver_Comm_Rate,
+    state.Company_Comm_Rate,
+    state.Kms,
+    state.Eftpos,
     state.M3_Dockets,
     state.Electronic_Account_Payments,
+    state.Total_Manual_MPTP31_And_MPTP_Values,
     state.Misc,
     state.Car_Wash,
     state.Fuel,
-    state.Cab_Data,
-    state.Taxi,
-    state.Deductions,
-    state.Net_Payin,
-    Cnetpayin,
-    Dnetpayin,
-    Cdeductions,
-    Ddeductions,
   ]);
 
   useEffect(() => {
@@ -182,7 +174,7 @@ const EnterData = () => {
 
   let Save = () => {
     console.log('in save==', Cdeductions, Ddeductions, Cnetpayin, Dnetpayin);
-    if (+state.Car_Wash > 0 || +state.Misc > 0 || +state.Fuel > 0) {
+    if (state.Car_Wash > 0 || state.Misc > 0 || state.Fuel > 0) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
         '',
@@ -236,8 +228,7 @@ const EnterData = () => {
           text: 'Yes',
           onPress: async () => {
             try {
-              let res: any = await upsertData(state, dispatch);
-              console.log('upsert function===', res.Net_Payin);
+              await upsertData(state, dispatch);
             } catch (error) {
               console.log(error);
             }
@@ -328,13 +319,11 @@ const EnterData = () => {
             editable={false}
             style={styles.textInput}>
             <Text style={[styles.titleText, {color: '#fff'}]}>
-              {String(state.Shift)}
+              {state.Shift}
             </Text>
           </TextInput>
           <Picker
-            selectedValue={
-              state.Shift !== undefined ? String(state.Shift) : undefined
-            }
+            selectedValue={state.Shift}
             style={{
               width: 100,
             }}
@@ -469,7 +458,9 @@ const EnterData = () => {
                 // keyboardType="numeric"
                 onChangeText={(value: string) => onChange(input.name, value)}
                 value={
-                  state[input.name] !== 0 && state[input.name] !== undefined
+                  state &&
+                  state[input.name] !== 0 &&
+                  state[input.name] !== undefined
                     ? String(state[input.name])
                     : ''
                 }

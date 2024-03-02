@@ -1,11 +1,11 @@
 import React from 'react';
 import {Action} from './Actions';
-import {tableData} from '../Screens/Components/EnterDataValues';
+import {appData} from '../Screens/Components/EnterDataValues';
 
 interface ContextValue {
-  state: tableData;
+  state: appData;
   dispatch: React.Dispatch<Action>;
-  starRating: (state: tableData, dispatch: React.Dispatch<Action>) => void;
+  starRating: (state: appData, dispatch: React.Dispatch<Action>) => void;
   // UpdateData: (searchByDate: string | undefined) => Promise<any>;
   // updateDataInTable: (updateByDate: string | undefined) => Promise<any>;
 }

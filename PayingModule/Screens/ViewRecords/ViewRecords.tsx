@@ -27,7 +27,7 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import styles from '../screens.style';
 import { LogBox } from 'react-native';
-import { tableData } from '../Components/EnterDataValues';
+import { tableItems } from '../Components/EnterDataValues';
 
 LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.']);
 
@@ -40,13 +40,13 @@ const ViewRecords = () => {
   }
   const { state, dispatch } = stateContext;
   const [isLoading, setIsLoading] = useState(false);
-  const [ res, setRes] = useState<tableData[]>([]);
+  const [ res, setRes] = useState<tableItems[]>([]);
 
   const searchRecord = useCallback(async () => {
     setIsLoading(true);
     try {
-      let tem = await ViewRecordsByDate(String(state.start_date), String(state.finish_date), dispatch);
-      setRes(tem);
+      let item = await ViewRecordsByDate(String(state.start_date), String(state.finish_date), dispatch);
+      setRes(item);
       //console.log('res===',res[0].Net_Payin);
       setIsLoading(false);
     } catch (error) {
@@ -240,5 +240,4 @@ const ViewRecords = () => {
     </SafeAreaView>
   );
 };
-
 export default ViewRecords;

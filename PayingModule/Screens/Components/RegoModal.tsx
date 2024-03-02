@@ -41,9 +41,7 @@ export const RegoModal = () => {
   };
   return (
     <Modal
-      visible={
-        state.Rego_Modal !== undefined ? Boolean(state.Rego_Modal) : undefined
-      }
+      visible={state.Rego_Modal}
       animationType={'fade'}
       onRequestClose={() => {}}>
       <View style={[styles.model, {alignSelf: 'center'}]}>

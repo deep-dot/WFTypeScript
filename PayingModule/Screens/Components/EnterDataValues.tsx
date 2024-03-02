@@ -24,21 +24,141 @@ export const useInputRefs = () => {
 
 export type CabData = {
   Cab: string;
-  id?: number; // Assuming 'id' is optional since your original data includes objects without an 'id' property
+  id?: number;
 };
 
-export type tableData = {
-  [key: string]: string | number | CabData[] | boolean;
+export type tableItems = {
+  //main
+  Record_id: number;
+  Shift: string;
+  Taxi: string;
+  Current_Date: string;
+  Date: string;
+  Day: string;
+  Hours_Worked: number;
+  Insurance: number;
+  Jobs_Done: number;
+  Levy: number;
+  meterTotal: number;
+  Shift_Total: number;
+  Kms: number;
+  Paid_Kms: number;
+  Unpaid_Kms: number;
+  CPK: number;
+  Number_Of_Manual_Liftings: number;
+  Manual_Lifting_Value: number;
+  Total_Manual_MPTP31_And_MPTP_Values: number;
+  M3_Dockets: number;
+  Eftpos: number;
+  Eftpos_Liftings: number;
+  Electronic_Account_Payments: number;
+  Misc: number;
+  Car_Wash: number;
+  Fuel: number;
+  Total_Lifting_Value: number;
+  Number_Of_Chairs: number;
+  Driver_Lifting_Value: number;
+  Commission_Driver: number;
+  Commission_Company: number;
+  Deductions: number;
+  Average_Fare: number;
+  Net_Payin: number;
+  Net_Driver_Income: number;
 };
 
-export const initialValues = {
+export type appData = {
+  Number_Of_Entries: number;
+  //subscription
+  purchased: boolean;
+  products: Record<string, unknown>;
+  checking: boolean;
+  ShowAlert: boolean;
+  //Home Screen Modal
+  modalVisible: boolean;
+  WEid: number;
+  Name: string;
+  showAlert: boolean;
+  Week_Ending_Date: string;
+  Week_Ending_Day: string;
+  //Lifting Modal
+  liftingId: number;
+  Gov_Lifting_Fee: number;
+  Driver_Share_In_LiftingFee: number;
+  Gov_Levy: number;
+  Driver_Comm_Rate: number;
+  Company_Comm_Rate: number;
+  Lifting_Modal_Visible: boolean;
+  // rego
+  cabId: number;
+  // Taxi: string;
+  Cab_Data: CabData[];
+  Rego_Modal: false;
+
+  //main
+  tabledata: tableItems[];
+  Record_id: number;
+  Shift: string;
+  Taxi: string;
+  Current_Date: string;
+  Date: string;
+  Day: string;
+  Hours_Worked: number;
+  Insurance: number;
+  Jobs_Done: number;
+  Levy: number;
+  meterTotal: number;
+  Shift_Total: number;
+  Kms: number;
+  Paid_Kms: number;
+  Unpaid_Kms: number;
+  CPK: number;
+  Number_Of_Manual_Liftings: number;
+  Manual_Lifting_Value: number;
+  Total_Manual_MPTP31_And_MPTP_Values: number;
+  M3_Dockets: number;
+  Eftpos: number;
+  Eftpos_Liftings: number;
+  Electronic_Account_Payments: number;
+  Misc: number;
+  Car_Wash: number;
+  Fuel: number;
+  Total_Lifting_Value: number;
+  Number_Of_Chairs: number;
+  Driver_Lifting_Value: number;
+  Commission_Driver: number;
+  Commission_Company: number;
+  Deductions: number;
+  Average_Fare: number;
+  Net_Payin: number;
+  Net_Driver_Income: number;
+
+  //View Records
+  displayRecords: number;
+  start_date: string;
+  start_day: string;
+  finish_day: string;
+  finish_date: string;
+  sorryAlert: boolean;
+  show2Alert: boolean;
+  Search_Date: string;
+
+  Calculator_Modal_Visible: boolean;
+  Indicator: boolean;
+
+  // display report
+  total: Record<string, unknown>;
+  datatotal: Record<string, unknown>;
+  done: boolean;
+  usingservice: boolean;
+};
+
+export const initialValues: appData = {
   Number_Of_Entries: 0,
   //subscription
   purchased: false,
   products: {},
   checking: false,
   ShowAlert: false,
-
   //Home Screen Modal
   modalVisible: true,
   WEid: 0,
@@ -46,7 +166,6 @@ export const initialValues = {
   showAlert: false,
   Week_Ending_Date: '',
   Week_Ending_Day: '',
-
   //Lifting Modal
   liftingId: 0,
   Gov_Lifting_Fee: 0,
@@ -57,14 +176,10 @@ export const initialValues = {
   Lifting_Modal_Visible: false,
 
   //main
+  tabledata: [],
   Record_id: 0,
   Shift: '',
-
-  cabId: 0,
   Taxi: '',
-  Cab_Data: [],
-  Rego_Modal: false,
-
   Current_Date: '',
   Date: '',
   Day: '',
@@ -97,39 +212,34 @@ export const initialValues = {
   Average_Fare: 0,
   Net_Payin: 0,
   Net_Driver_Income: 0,
+
   Calculator_Modal_Visible: false,
   Indicator: false,
-  Search_Date: '',
-
+  //rego
+  cabId: 0,
+  Cab_Data: [],
+  Rego_Modal: false,
   //View Records
   displayRecords: 0,
-  tableData: [],
   start_date: '',
   start_day: '',
   finish_day: '',
   finish_date: '',
   sorryAlert: false,
   show2Alert: false,
-
+  Search_Date: '',
   // display report
-  //nametable: [],
-  //table: [],
   total: {},
-  tableNameData: [],
   datatotal: {},
-  liftingdata: [],
-  Deductdata: [],
   done: false,
   usingservice: false,
 };
 
 export const refreshValues = {
-  Lifting_Modal_Visible: false,
+  //main
+  Record_id: 0,
   Shift: '',
   Taxi: '',
-  Rego: '',
-  Cab_Data: [],
-  Rego_Modal: false,
   Current_Date: '',
   Date: '',
   Day: '',
@@ -138,9 +248,9 @@ export const refreshValues = {
   Jobs_Done: 0,
   Levy: 0,
   meterTotal: 0,
+  Shift_Total: 0,
   Kms: 0,
   Paid_Kms: 0,
-  Shift_Total: 0,
   Unpaid_Kms: 0,
   CPK: 0,
   Number_Of_Manual_Liftings: 0,
@@ -157,13 +267,11 @@ export const refreshValues = {
   Number_Of_Chairs: 0,
   Driver_Lifting_Value: 0,
   Commission_Driver: 0,
+  Commission_Company: 0,
   Deductions: 0,
   Average_Fare: 0,
   Net_Payin: 0,
   Net_Driver_Income: 0,
-  Calculator_Modal_Visible: false,
-  Indicator: false,
-  Search_Date: '',
 };
 
 export type Property1 =

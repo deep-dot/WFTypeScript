@@ -1,7 +1,7 @@
 import {Action} from './Actions';
-import {tableData, refreshValues} from '../Screens/Components/EnterDataValues';
+import {appData, refreshValues} from '../Screens/Components/EnterDataValues';
 
-export const reducer = (state: tableData, action: Action): tableData => {
+export const reducer = (state: appData, action: Action) => {
   switch (action.type) {
     case 'INSERT':
       if (action.payload.table === 'liftingTable') {
@@ -11,18 +11,19 @@ export const reducer = (state: tableData, action: Action): tableData => {
         //console.log('insert in weekEndingtable===', action.payload);
         return {...state, ...action.payload};
       } else if (action.payload.table === 'datatable') {
+        //console.log('insert in datatable===', action.payload.updatedValues);
         const newState = {
           ...state,
           ...action.payload,
-          ...action.payload.updatedValues,
+          tableData: action.payload.updatedValues,
         };
         return newState;
       } else if (action.payload.table === 'cab') {
         //console.log('cab insert===', action.payload);
         const newCab = {Cab: action.payload.rego};
-        const cabdata = (
-          state.Cab_Data as unknown as Array<{Cab: string}>
-        ).filter(cab => Object.keys(cab).length > 0);
+        const cabdata = state.Cab_Data.filter(
+          cab => Object.keys(cab).length > 0,
+        );
         return {
           ...state,
           ...action.payload,
@@ -50,7 +51,7 @@ export const reducer = (state: tableData, action: Action): tableData => {
           ...action.payload,
           // Number_Of_Entries: action.payload.Number_Of_Entries,
           // displayRecords: action.payload.displayRecords,
-          //tableData: action.payload.tableData,
+          //appData: action.payload.appData,
         };
       } else if (action.payload.table === 'cab') {
         return {...state, Cab_Data: action.payload.data};
@@ -65,10 +66,10 @@ export const reducer = (state: tableData, action: Action): tableData => {
       return state;
     case 'DELETE':
       if (action.payload.table === 'datatable') {
-        // Assuming state.datatableData is an array of objects that includes a Date property
-        const updatedData = Array.isArray(state.tableData)
-          ? state.tableData.filter(item => item.Date !== action.payload.date)
-          : state.tableData;
+        // Assuming state.dataappData is an array of objects that includes a Date property
+        const updatedData = state.tableData.filter(
+          item => item.Date !== action.payload.date,
+        );
         return {
           ...state,
           tableData: updatedData,
@@ -76,28 +77,22 @@ export const reducer = (state: tableData, action: Action): tableData => {
       }
 
       if (action.payload.table === 'cab') {
-        console.log(
-          'action.payload.delete Table ===',
-          // action.payload.deleteFromTable,
-          // rego,
-          state.Cab_Data,
-        );
+        // console.log(
+        //   'action.payload.delete Table ===',
+        //   // action.payload.deleteFromTable,
+        //   // rego,
+        //   state.Cab_Data,
+        //);
         return {
           ...state,
           Taxi: action.payload.Taxi,
           Rego_Modal: action.payload.Rego_Modal,
-          Cab_Data: Array.isArray(state.Cab_Data)
-            ? state.Cab_Data.filter(
-                item => item && item.Cab !== action.payload.rego,
-              )
-            : state.Cab_Data, // Keep the original state if it's not an array
+          //Cab_Data
         };
       }
-    // eslint-disable-next-line no-fallthrough
-    case 'REFRESH':
-      return {...state, ...refreshValues};
+      return state;
     case 'ERROR':
-      console.error(action.error);
+      //console.error(action.error);
       // return {...state, error: action.error.message};
       return {...state};
     default:

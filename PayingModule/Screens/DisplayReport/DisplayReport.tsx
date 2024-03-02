@@ -50,9 +50,9 @@ export default function DisplayReport() {
   const [total, setTotal] = useState<TotalType>({});
 
   let Report = useCallback(async () => {
-    let res = await totalTable(dispatch);
+    let res = await totalTable();
     setTotal(res);
-  }, [dispatch]);
+  }, []);
 
   // console.log('total:', total);
   // console.log('tableData:', state.tableData);
