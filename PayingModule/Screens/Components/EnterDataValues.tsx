@@ -22,65 +22,19 @@ export const useInputRefs = () => {
   return refs;
 };
 
-export type CabData = {
-  Cab: string;
-  id?: number;
-};
-
-export type tableItems = {
-  //main
-  Record_id: number;
-  Shift: string;
-  Taxi: string;
-  Current_Date: string;
-  Date: string;
-  Day: string;
-  Hours_Worked: number;
-  Insurance: number;
-  Jobs_Done: number;
-  Levy: number;
-  meterTotal: number;
-  Shift_Total: number;
-  Kms: number;
-  Paid_Kms: number;
-  Unpaid_Kms: number;
-  CPK: number;
-  Number_Of_Manual_Liftings: number;
-  Manual_Lifting_Value: number;
-  Total_Manual_MPTP31_And_MPTP_Values: number;
-  M3_Dockets: number;
-  Eftpos: number;
-  Eftpos_Liftings: number;
-  Electronic_Account_Payments: number;
-  Misc: number;
-  Car_Wash: number;
-  Fuel: number;
-  Total_Lifting_Value: number;
-  Number_Of_Chairs: number;
-  Driver_Lifting_Value: number;
-  Commission_Driver: number;
-  Commission_Company: number;
-  Deductions: number;
-  Average_Fare: number;
-  Net_Payin: number;
-  Net_Driver_Income: number;
-};
-
-export type appData = {
-  Number_Of_Entries: number;
-  //subscription
-  purchased: boolean;
-  products: Record<string, unknown>;
-  checking: boolean;
-  ShowAlert: boolean;
-  //Home Screen Modal
+export type weekEndingModel = {
   modalVisible: boolean;
   WEid: number;
   Name: string;
   showAlert: boolean;
   Week_Ending_Date: string;
   Week_Ending_Day: string;
-  //Lifting Modal
+};
+// export const initialValues: appData = {
+
+// }
+
+export type liftingModel = {
   liftingId: number;
   Gov_Lifting_Fee: number;
   Driver_Share_In_LiftingFee: number;
@@ -88,14 +42,19 @@ export type appData = {
   Driver_Comm_Rate: number;
   Company_Comm_Rate: number;
   Lifting_Modal_Visible: boolean;
-  // rego
-  cabId: number;
-  // Taxi: string;
-  Cab_Data: CabData[];
-  Rego_Modal: false;
+};
 
+export type cabModel = {
+  cabId: number;
+  Taxi: string;
+  Cab_Data: [];
+  Rego_Modal: false;
+};
+
+export type mainData = {
+  numberOfEntries: number;
+  Calculator_Modal_Visible: boolean;
   //main
-  tabledata: tableItems[];
   Record_id: number;
   Shift: string;
   Taxi: string;
@@ -131,8 +90,9 @@ export type appData = {
   Average_Fare: number;
   Net_Payin: number;
   Net_Driver_Income: number;
+};
 
-  //View Records
+export type viewRecords = {
   displayRecords: number;
   start_date: string;
   start_day: string;
@@ -141,11 +101,9 @@ export type appData = {
   sorryAlert: boolean;
   show2Alert: boolean;
   Search_Date: string;
+};
 
-  Calculator_Modal_Visible: boolean;
-  Indicator: boolean;
-
-  // display report
+export type displayReport = {
   tableNameData: {[key: string]: string};
   liftingdata: Array<number>;
   deductdata: Array<number>;
@@ -155,91 +113,183 @@ export type appData = {
   usingservice: boolean;
 };
 
-export const initialValues: appData = {
-  Number_Of_Entries: 0,
+export type appData = {
+  Number_Of_Entries: number;
   //subscription
-  purchased: false,
-  products: {},
-  checking: false,
-  ShowAlert: false,
+  purchased: boolean;
+  products: Record<string, unknown>;
+  checking: boolean;
+  ShowAlert: boolean;
+
   //Home Screen Modal
-  modalVisible: true,
-  WEid: 0,
-  Name: '',
-  showAlert: false,
-  Week_Ending_Date: '',
-  Week_Ending_Day: '',
+  // modalVisible: boolean;
+  // WEid: number;
+  // Name: string;
+  // showAlert: boolean;
+  // Week_Ending_Date: string;
+  // Week_Ending_Day: string;
+
   //Lifting Modal
-  liftingId: 0,
-  Gov_Lifting_Fee: 0,
-  Driver_Share_In_LiftingFee: 0,
-  Gov_Levy: 0,
-  Driver_Comm_Rate: 0,
-  Company_Comm_Rate: 0,
-  Lifting_Modal_Visible: false,
+  // liftingId: number;
+  // Gov_Lifting_Fee: number;
+  // Driver_Share_In_LiftingFee: number;
+  // Gov_Levy: number;
+  // Driver_Comm_Rate: number;
+  // Company_Comm_Rate: number;
+  // Lifting_Modal_Visible: boolean;
+
+  // rego
+  // cabId: number;
+  // // Taxi: string;
+  // Cab_Data: CabData[];
+  // Rego_Modal: false;
 
   //main
-  tabledata: [],
-  Record_id: 0,
-  Shift: '',
-  Taxi: '',
-  Current_Date: '',
-  Date: '',
-  Day: '',
-  Hours_Worked: 0,
-  Insurance: 0,
-  Jobs_Done: 0,
-  Levy: 0,
-  meterTotal: 0,
-  Shift_Total: 0,
-  Kms: 0,
-  Paid_Kms: 0,
-  Unpaid_Kms: 0,
-  CPK: 0,
-  Number_Of_Manual_Liftings: 0,
-  Manual_Lifting_Value: 0,
-  Total_Manual_MPTP31_And_MPTP_Values: 0,
-  M3_Dockets: 0,
-  Eftpos: 0,
-  Eftpos_Liftings: 0,
-  Electronic_Account_Payments: 0,
-  Misc: 0,
-  Car_Wash: 0,
-  Fuel: 0,
-  Total_Lifting_Value: 0,
-  Number_Of_Chairs: 0,
-  Driver_Lifting_Value: 0,
-  Commission_Driver: 0,
-  Commission_Company: 0,
-  Deductions: 0,
-  Average_Fare: 0,
-  Net_Payin: 0,
-  Net_Driver_Income: 0,
+  // tabledata: tableItems[];
+  // Record_id: number;
+  // Shift: string;
+  // Taxi: string;
+  // Current_Date: string;
+  // Date: string;
+  // Day: string;
+  // Hours_Worked: number;
+  // Insurance: number;
+  // Jobs_Done: number;
+  // Levy: number;
+  // meterTotal: number;
+  // Shift_Total: number;
+  // Kms: number;
+  // Paid_Kms: number;
+  // Unpaid_Kms: number;
+  // CPK: number;
+  // Number_Of_Manual_Liftings: number;
+  // Manual_Lifting_Value: number;
+  // Total_Manual_MPTP31_And_MPTP_Values: number;
+  // M3_Dockets: number;
+  // Eftpos: number;
+  // Eftpos_Liftings: number;
+  // Electronic_Account_Payments: number;
+  // Misc: number;
+  // Car_Wash: number;
+  // Fuel: number;
+  // Total_Lifting_Value: number;
+  // Number_Of_Chairs: number;
+  // Driver_Lifting_Value: number;
+  // Commission_Driver: number;
+  // Commission_Company: number;
+  // Deductions: number;
+  // Average_Fare: number;
+  // Net_Payin: number;
+  // Net_Driver_Income: number;
 
-  Calculator_Modal_Visible: false,
-  Indicator: false,
-  //rego
-  cabId: 0,
-  Cab_Data: [],
-  Rego_Modal: false,
   //View Records
-  displayRecords: 0,
-  start_date: '',
-  start_day: '',
-  finish_day: '',
-  finish_date: '',
-  sorryAlert: false,
-  show2Alert: false,
-  Search_Date: '',
+  // displayRecords: number;
+  // start_date: string;
+  // start_day: string;
+  // finish_day: string;
+  // finish_date: string;
+  // sorryAlert: boolean;
+  // show2Alert: boolean;
+  // Search_Date: string;
+
+  // Calculator_Modal_Visible: boolean;
+  // Indicator: boolean;
+
   // display report
-  tableNameData: {},
-  liftingdata: [],
-  deductdata: [],
-  total: [],
-  datatotal: {},
-  done: false,
-  usingservice: false,
+  // tableNameData: {[key: string]: string};
+  // liftingdata: Array<number>;
+  // deductdata: Array<number>;
+  // total: Array<number>;
+  // datatotal: {[key: string]: number};
+  // done: boolean;
+  // usingservice: boolean;
 };
+
+// export const initialValues: appData = {
+//   Number_Of_Entries: 0,
+//   //subscription
+//   purchased: false,
+//   products: {},
+//   checking: false,
+//   ShowAlert: false,
+//   //Home Screen Modal
+//   modalVisible: true,
+//   WEid: 0,
+//   Name: '',
+//   showAlert: false,
+//   Week_Ending_Date: '',
+//   Week_Ending_Day: '',
+//   //Lifting Modal
+//   liftingId: 0,
+//   Gov_Lifting_Fee: 0,
+//   Driver_Share_In_LiftingFee: 0,
+//   Gov_Levy: 0,
+//   Driver_Comm_Rate: 0,
+//   Company_Comm_Rate: 0,
+//   Lifting_Modal_Visible: false,
+
+//   //main
+//   tabledata: [],
+//   Record_id: 0,
+//   Shift: '',
+//   Taxi: '',
+//   Current_Date: '',
+//   Date: '',
+//   Day: '',
+//   Hours_Worked: 0,
+//   Insurance: 0,
+//   Jobs_Done: 0,
+//   Levy: 0,
+//   meterTotal: 0,
+//   Shift_Total: 0,
+//   Kms: 0,
+//   Paid_Kms: 0,
+//   Unpaid_Kms: 0,
+//   CPK: 0,
+//   Number_Of_Manual_Liftings: 0,
+//   Manual_Lifting_Value: 0,
+//   Total_Manual_MPTP31_And_MPTP_Values: 0,
+//   M3_Dockets: 0,
+//   Eftpos: 0,
+//   Eftpos_Liftings: 0,
+//   Electronic_Account_Payments: 0,
+//   Misc: 0,
+//   Car_Wash: 0,
+//   Fuel: 0,
+//   Total_Lifting_Value: 0,
+//   Number_Of_Chairs: 0,
+//   Driver_Lifting_Value: 0,
+//   Commission_Driver: 0,
+//   Commission_Company: 0,
+//   Deductions: 0,
+//   Average_Fare: 0,
+//   Net_Payin: 0,
+//   Net_Driver_Income: 0,
+
+//   Calculator_Modal_Visible: false,
+//   Indicator: false,
+//   //rego
+//   cabId: 0,
+//   Cab_Data: [],
+//   Rego_Modal: false,
+//   //View Records
+//   displayRecords: 0,
+//   start_date: '',
+//   start_day: '',
+//   finish_day: '',
+//   finish_date: '',
+//   sorryAlert: false,
+//   show2Alert: false,
+//   Search_Date: '',
+//   // display report
+//   tableNameData: {},
+//   liftingdata: [],
+//   deductdata: [],
+//   total: [],
+//   datatotal: {},
+//   done: false,
+//   usingservice: false,
+// };
 
 export const refreshValues = {
   //main

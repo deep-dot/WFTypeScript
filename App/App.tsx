@@ -107,6 +107,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 };
 
 export default function App() {
+
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
@@ -122,103 +123,103 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [checking, setChecking] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  type Receipt = {
-    productId: string;
-    purchaseToken: string;
-  };
+  // type Receipt = {
+  //   productId: string;
+  //   purchaseToken: string;
+  // };
 
-  const validate = async (receipt: string) => {
-    const parsedReceipt: Receipt = JSON.parse(receipt);
+  // const validate = async (receipt: string) => {
+  //   const parsedReceipt: Receipt = JSON.parse(receipt);
 
-    const receiptBody = {
-      productId: parsedReceipt.productId,
-      purchaseToken: parsedReceipt.purchaseToken,
-    };
+  //   const receiptBody = {
+  //     productId: parsedReceipt.productId,
+  //     purchaseToken: parsedReceipt.purchaseToken,
+  //   };
 
-    // console.log(
-    //   'receipt body=======',
-    //   receiptBody,
-    //   //IOS_SANDTEST_URL,
-    //   RECIEPT_VALIDATE_URL,
-    // );
+  //   console.log(
+  //     'receipt body=======',
+  //     receiptBody,
+  //     //IOS_SANDTEST_URL,
+  //     RECIEPT_VALIDATE_URL,
+  //   );
 
-    try {
-      const response = await fetch(RECIEPT_VALIDATE_URL, {
-        //const response = await fetch(IOS_SANDTEST_URL, {
-        headers: {'Content-Type': 'application/json'},
-        method: 'POST',
-        body: JSON.stringify({data: receiptBody}),
-      });
+  //   try {
+  //     const response = await fetch(RECIEPT_VALIDATE_URL, {
+  //       //const response = await fetch(IOS_SANDTEST_URL, {
+  //       headers: {'Content-Type': 'application/json'},
+  //       method: 'POST',
+  //       body: JSON.stringify({data: receiptBody}),
+  //     });
 
-      if (!response.ok) {
-        throw new Error(`Server responded with status ${response.status}`);
-      }
+  //     console.log('result in app', response);
+  //     const result = await response.json();
+  //     if (result.ok) {
+  //       throw new Error(`Server responded with status ${response.status}`);
+  //     }
+  //     if (result.error === -1) {
+  //       setChecking(true);
+  //       //Alert.alert('Oops!', 'There is something wrong with your purchase');
+  //     } else if (result.isActiveSubscription) {
+  //       setPurchased(true);
+  //     } else {
+  //       setShowAlert(true);
+  //     }
+  //   } catch (error) {
+  //     // console.error('Error during receipt validation:', error);
+  //     Alert.alert(
+  //       'Error',
+  //       'Could not connect to the store. Please try again later.',
+  //     );
+  //   }
+  // };
+  // useEffect(() => {
+  //   let isMounted = true; // Flag to handle async operation in case the component is unmounted
 
-      const result = await response.json();
-      if (result.error === -1) {
-        setChecking(true);
-        //Alert.alert('Oops!', 'There is something wrong with your purchase');
-      } else if (result.isActiveSubscription) {
-        setPurchased(true);
-      } else {
-        setShowAlert(true);
-      }
-    } catch (error) {
-      // console.error('Error during receipt validation:', error);
-      Alert.alert(
-        'Error',
-        'Could not connect to the store. Please try again later.',
-      );
-    }
-  };
-  useEffect(() => {
-    let isMounted = true; // Flag to handle async operation in case the component is unmounted
+  //   const initializeIAP = async () => {
+  //     try {
+  //       await IAP.initConnection();
+  //       if (isMounted) {
+  //         //console.log('Connection to the IAP store was successful');
+  //         const subscriptions = await IAP.getSubscriptions({skus: items || []});
+  //         if (!subscriptions || subscriptions.length === 0) {
+  //           return Alert.alert('Please check your internet access.');
+  //         } else {
+  //           const productsArray = subscriptions.map(sub => ({
+  //             productId: sub.productId,
+  //             title: sub.title,
+  //             localizedPrice: '$0.99', // Assuming 'localizedPrice' exists
+  //             //localizedPrice: sub.localizedPrice, // Assuming 'localizedPrice' exists
+  //           }));
+  //           setProducts(productsArray);
+  //           //  console.log('Products received:', products[0], products.length);
+  //         }
 
-    const initializeIAP = async () => {
-      try {
-        await IAP.initConnection();
-        if (isMounted) {
-          //console.log('Connection to the IAP store was successful');
-          const subscriptions = await IAP.getSubscriptions({skus: items || []});
-          if (!subscriptions || subscriptions.length === 0) {
-            return Alert.alert('Please check your internet access.');
-          } else {
-            const productsArray = subscriptions.map(sub => ({
-              productId: sub.productId,
-              title: sub.title,
-              localizedPrice: '$0.99', // Assuming 'localizedPrice' exists
-              //localizedPrice: sub.localizedPrice, // Assuming 'localizedPrice' exists
-            }));
-            setProducts(productsArray);
-            //  console.log('Products received:', products[0], products.length);
-          }
+  //         const history = await IAP.getPurchaseHistory();
+  //         try {
+  //           const receipt = history[history.length - 1].transactionReceipt;
+  //           if (receipt) {
+  //             validate(receipt);
+  //           }
+  //         } catch (error) {
+  //           console.log('Error getting the receipt:', error);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       if (isMounted) {
+  //         console.log(
+  //           'Error initializing IAP connection or fetching products:',
+  //         );
+  //       }
+  //     }
+  //   };
 
-          const history = await IAP.getPurchaseHistory();
-          try {
-            const receipt = history[history.length - 1].transactionReceipt;
-            if (receipt) {
-              // validate(receipt);
-            }
-          } catch (error) {
-            console.log('Error getting the receipt:', error);
-          }
-        }
-      } catch (error) {
-        if (isMounted) {
-          console.log(
-            'Error initializing IAP connection or fetching products:',
-          );
-        }
-      }
-    };
+  //   initializeIAP();
 
-    initializeIAP();
-
-    return () => {
-      isMounted = false;
-      IAP.endConnection?.(); // Clean up the IAP connection when the component unmounts
-    };
-  }, []);
+  //   return () => {
+  //     isMounted = false;
+  //     IAP.endConnection?.(); // Clean up the IAP connection when the component unmounts
+  //   };
+  // }, []);
 
   return (
     <ThemeProvider>
@@ -227,7 +228,7 @@ export default function App() {
           <View style={styles.container}>
             <Text style={styles.Title}>Checking for previous purchase...</Text>
           </View>
-        ) : products.length === 0 ? (
+        ) : products.length !== 0 ? (
           <View style={styles.container}>
             <StatusBar backgroundColor="#35363A" />
             <Text style={styles.Title}>Fetching products please wait...</Text>

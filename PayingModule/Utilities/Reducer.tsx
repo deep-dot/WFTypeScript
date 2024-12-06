@@ -1,7 +1,15 @@
 import {Action} from './Actions';
-import {appData, refreshValues} from '../Screens/Components/EnterDataValues';
+import {
+  weekEndingModel,
+  liftingModel,
+  cabModel,
+  mainData,
+  viewRecords,
+  displayReport,
+  refreshValues,
+} from '../Screens/Components/EnterDataValues';
 
-export const reducer = (state: appData, action: Action) => {
+export const reducer = (state: mainData, action: Action) => {
   switch (action.type) {
     case 'INSERT':
       if (action.payload.table === 'liftingTable') {
@@ -67,13 +75,10 @@ export const reducer = (state: appData, action: Action) => {
     case 'DELETE':
       if (action.payload.table === 'datatable') {
         // Assuming state.dataappData is an array of objects that includes a Date property
-        const updatedData = state.tabledata.filter(
-          item => item.Date !== action.payload.date,
-        );
-        return {
-          ...state,
-          tableData: updatedData,
-        };
+        // const updatedData = state.filter(
+        //   item => item.Date !== action.payload.date,
+        // );
+        return {...state, ...action.payload};
       }
 
       if (action.payload.table === 'cab') {

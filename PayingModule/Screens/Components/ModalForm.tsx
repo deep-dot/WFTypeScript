@@ -65,7 +65,7 @@ const ModalForm = () => {
               color: '#000',
               marginTop: 20,
               fontSize: 13,
-              alignSelf: 'center',
+              textAlign: 'center',
             }}
             onChangeText={(Name: string) => {
               dispatch({

@@ -45,7 +45,8 @@ const EnterData = () => {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {state, dispatch} = stateContext;
+  const {mainDataState, liftingModelState, cabModelState, dispatch} =
+    stateContext;
   const inputRefs = useInputRefs();
   const [Cnetpayin, setCnetpayin] = useState(0);
   const [Dnetpayin, setDnetpayin] = useState(0);
@@ -69,11 +70,12 @@ const EnterData = () => {
 
   const calculateAndUpdateValues = useCallback(() => {
     //const calculateAndUpdateValues = () => {
-    let updatedValues = {...state};
+    let updatedValues = {...mainDataState, ...liftingModelState};
     updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
 
     console.log(
       'updatedValues.Jobs_Done==',
+      updatedValues.Gov_Levy,
       updatedValues.Levy,
       updatedValues.meterTotal,
     );
@@ -132,22 +134,22 @@ const EnterData = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     dispatch,
-    state.Jobs_Done,
-    state.Gov_Levy,
-    state.meterTotal,
-    state.Eftpos_Liftings,
-    state.Number_Of_Manual_Liftings,
-    state.Driver_Share_In_LiftingFee,
-    state.Driver_Comm_Rate,
-    state.Company_Comm_Rate,
-    state.Kms,
-    state.Eftpos,
-    state.M3_Dockets,
-    state.Electronic_Account_Payments,
-    state.Total_Manual_MPTP31_And_MPTP_Values,
-    state.Misc,
-    state.Car_Wash,
-    state.Fuel,
+    mainDataState.Jobs_Done,
+    liftingModelState.Gov_Levy,
+    mainDataState.meterTotal,
+    mainDataState.Eftpos_Liftings,
+    mainDataState.Number_Of_Manual_Liftings,
+    liftingModelState.Driver_Share_In_LiftingFee,
+    liftingModelState.Driver_Comm_Rate,
+    liftingModelState.Company_Comm_Rate,
+    mainDataState.Kms,
+    mainDataState.Eftpos,
+    mainDataState.M3_Dockets,
+    mainDataState.Electronic_Account_Payments,
+    mainDataState.Total_Manual_MPTP31_And_MPTP_Values,
+    mainDataState.Misc,
+    mainDataState.Car_Wash,
+    mainDataState.Fuel,
   ]);
 
   useEffect(() => {
@@ -173,8 +175,12 @@ const EnterData = () => {
   };
 
   let Save = () => {
-    console.log('in save==', Cdeductions, Ddeductions, Cnetpayin, Dnetpayin);
-    if (state.Car_Wash > 0 || state.Misc > 0 || state.Fuel > 0) {
+    // console.log('in save==', Cdeductions, Ddeductions, Cnetpayin, Dnetpayin);
+    if (
+      mainDataState.Car_Wash > 0 ||
+      mainDataState.Misc > 0 ||
+      mainDataState.Fuel > 0
+    ) {
       Alert.alert(
         'Are fuel, washing, miscellaneous expenses',
         '',
@@ -227,8 +233,9 @@ const EnterData = () => {
         {
           text: 'Yes',
           onPress: async () => {
+            // console.log('state in enterdatascreen alertConfirm ===', state);
             try {
-              await upsertData(state, dispatch);
+              await upsertData(mainDataState, dispatch);
             } catch (error) {
               console.log(error);
             }
@@ -250,14 +257,14 @@ const EnterData = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ModalForm />
-      <AwesomeAlert
+      {/* <AwesomeAlert
         show={
           state.Indicator !== undefined ? Boolean(state.Indicator) : undefined
         }
         showProgress={true}
         title="Please wait"
         closeOnTouchOutside={false}
-      />
+      /> */}
 
       <Calculator />
 
@@ -268,7 +275,7 @@ const EnterData = () => {
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={{alignItems: 'center'}}>
           <Text style={[styles.titleText, {color: 'green', marginVertical: 5}]}>
-            Total Entries: {+state.Number_Of_Entries}
+            Total Entries: {mainDataState.numberOfEntries}
           </Text>
         </View>
         {liftingInputs.map(input => (
@@ -277,7 +284,7 @@ const EnterData = () => {
               {input.title}
             </Text>
             <Text style={[styles.titleText, {color: '#55a8fa'}]}>
-              {Number(state[input.name]).toFixed(2)}
+              {Number(liftingModelState[input.name]).toFixed(2)}
             </Text>
             {/* <TextInput
               placeholder="0.00"
@@ -295,7 +302,7 @@ const EnterData = () => {
             dispatch({
               type: 'UPDATE',
               payload: {
-                Lifting_Modal_Visible: !state.Lifting_Modal_Visible,
+                Lifting_Modal_Visible: !liftingModelState.Lifting_Modal_Visible,
                 table: 'datatable',
               },
             })
@@ -319,11 +326,11 @@ const EnterData = () => {
             editable={false}
             style={styles.textInput}>
             <Text style={[styles.titleText, {color: '#fff'}]}>
-              {state.Shift}
+              {mainDataState.Shift}
             </Text>
           </TextInput>
           <Picker
-            selectedValue={state.Shift}
+            selectedValue={mainDataState.Shift}
             style={{
               width: 100,
             }}
@@ -374,11 +381,11 @@ const EnterData = () => {
               editable={false}
               style={styles.textInput}>
               <Text style={[styles.titleText, {color: '#fff'}]}>
-                {String(state.Taxi)}
+                {String(mainDataState.Taxi)}
               </Text>
             </TextInput>
             <Picker
-              selectedValue={state.Taxi}
+              selectedValue={cabModelState.Taxi}
               style={styles.picker}
               itemStyle={styles.pickerItem}
               onValueChange={Taxi => {
@@ -397,12 +404,12 @@ const EnterData = () => {
                 value="Select "
                 color={Platform.OS === 'ios' ? '#fff' : '#bbb'}
               />
-              {Array.isArray(state.Cab_Data) &&
-                (state.Cab_Data as Array<{Cab: string}>).map((c, key) => (
+              {cabModelState.Cab_Data &&
+                cabModelState.Cab_Data.map((c, key) => (
                   <Picker.Item
-                    label={c.Cab}
+                    label={c}
                     key={key}
-                    value={c.Cab}
+                    value={c}
                     color={Platform.OS === 'ios' ? '#fff' : '#999'}
                   />
                 ))}
@@ -414,7 +421,7 @@ const EnterData = () => {
               dispatch({
                 type: 'INSERT',
                 payload: {
-                  Rego_Modal: !state.Rego_Modal,
+                  Rego_Modal: !cabModelState.Rego_Modal,
                   table: 'cab',
                 },
               });
@@ -425,7 +432,7 @@ const EnterData = () => {
 
         <View style={styles.textinputview}>
           <Calendar
-            value={String(state.Date)}
+            value={String(mainDataState.Date)}
             onChange={(date: string, day: string) => {
               dispatch({
                 type: 'INSERT',
@@ -438,8 +445,8 @@ const EnterData = () => {
             }}
           />
           <Text style={styles.Textinput}>
-            {state.Date
-              ? state.Day + ' ' + state.Date
+            {mainDataState.Date
+              ? mainDataState.Day + ' ' + mainDataState.Date
               : moment(new Date()).format('dddd, YYYY/MM/DD')}
           </Text>
         </View>
@@ -458,16 +465,19 @@ const EnterData = () => {
                 // keyboardType="numeric"
                 onChangeText={(value: string) => onChange(input.name, value)}
                 value={
-                  state &&
-                  state[input.name] !== 0 &&
-                  state[input.name] !== undefined
-                    ? String(state[input.name])
+                  mainDataState &&
+                  mainDataState[input.name] !== 0 &&
+                  mainDataState[input.name] !== undefined
+                    ? String(mainDataState[input.name])
                     : ''
                 }
                 ref={inputRefs[input.name]}
                 onSubmitEditing={() => {
                   if (input.name) {
-                    SubmitEditing(input.name, String(state[input.name]));
+                    SubmitEditing(
+                      input.name,
+                      String(mainDataState[input.name]),
+                    );
                     if (index < inputs.length - 1) {
                       // Check if it's not the last input
                       const nextInputRef = inputRefs[inputs[index + 1].name];
@@ -484,7 +494,8 @@ const EnterData = () => {
               dispatch({
                 type: 'UPDATE',
                 payload: {
-                  Calculator_Modal_Visible: !state.Calculator_Modal_Visible,
+                  Calculator_Modal_Visible:
+                    !mainDataState.Calculator_Modal_Visible,
                   table: 'datatable',
                 },
               });
@@ -509,7 +520,7 @@ const EnterData = () => {
                 {input.title}
               </Text>
               <Text style={[styles.titleText, {color: '#55a8fa'}]}>
-                {Number(state[input.name]).toFixed(2)}
+                {Number(mainDataState[input.name]).toFixed(2)}
               </Text>
               {/* <TextInput
                 placeholder={input.placeholder}

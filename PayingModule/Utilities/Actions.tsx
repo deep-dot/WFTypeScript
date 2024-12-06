@@ -2,7 +2,7 @@ import React from 'react';
 import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
 import db from '../Database/databaseService';
-import {appData, tableItems} from '../Screens/Components/EnterDataValues';
+import {mainData, viewRecords} from '../Screens/Components/EnterDataValues';
 
 export type Action =
   | {type: 'INSERT'; payload: any}
@@ -323,7 +323,7 @@ export function deleteCab(
 //main data
 
 export const upsertData = (
-  state: appData,
+  state: mainData,
   dispatch: React.Dispatch<Action>,
 ) => {
   return new Promise((resolve, reject) => {
@@ -455,7 +455,7 @@ export const upsertData = (
                 payload: {
                   Record_id: resultSet.insertId,
                   table: 'datatable',
-                  Number_Of_Entries: Number(state.Number_Of_Entries) + 1,
+                  Number_Of_Entries: Number(state.numberOfEntries) + 1,
                 },
               });
             }
@@ -482,7 +482,7 @@ export const ViewRecordsByDate = (
   start_date: string,
   finish_date: string,
   dispatch: React.Dispatch<Action>,
-): Promise<tableItems[]> => {
+): Promise<mainData[]> => {
   return new Promise((resolve, reject) => {
     //console.log('state.start_date, state.finish_date', start_date, finish_date);
     if (!db) {
@@ -494,7 +494,7 @@ export const ViewRecordsByDate = (
         [start_date, finish_date],
         (_tx, results) => {
           if (results.rows.length > 0) {
-            const temp: tableItems[] = [];
+            const temp: mainData[] = [];
             for (let j = 0; j < results.rows.length; j++) {
               temp.push(results.rows.item(j));
             }
@@ -524,7 +524,7 @@ export const ViewRecordsByDate = (
 
 export const SelectFromDataTable = (
   dispatch: React.Dispatch<Action>,
-): Promise<appData[]> => {
+): Promise<mainData[]> => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -590,7 +590,7 @@ export const UpdateData = (
 
 export const deleteDataInTable = (
   date: string,
-  state: appData,
+  state: mainData,
   dispatch: React.Dispatch<Action>,
 ) => {
   //console.log('date in deleteDatatable',date);
@@ -630,7 +630,7 @@ export const deleteDataInTable = (
 export const totalTable = (
   // dispatch: React.Dispatch<Action>,
 // eslint-disable-next-line prettier/prettier
-): Promise<tableItems[]> => {
+): Promise<mainData[]> => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {

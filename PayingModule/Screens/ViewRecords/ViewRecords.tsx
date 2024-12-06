@@ -29,7 +29,9 @@ import styles from '../screens.style';
 import { LogBox } from 'react-native';
 import { tableItems } from '../Components/EnterDataValues';
 
-LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.']);
+// LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.']);
+LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle`']);
+
 
 const ViewRecords = () => {
   const navigation =
@@ -47,7 +49,7 @@ const ViewRecords = () => {
     try {
       let item = await ViewRecordsByDate(String(state.start_date), String(state.finish_date), dispatch);
       setRes(item);
-      //console.log('res===',res[0].Net_Payin);
+      console.log('res===',res[0].Insurance);
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching records:', error);
