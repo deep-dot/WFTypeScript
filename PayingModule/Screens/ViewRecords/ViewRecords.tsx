@@ -27,7 +27,7 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import styles from '../screens.style';
 import { LogBox } from 'react-native';
-import { tableItems } from '../Components/EnterDataValues';
+import { mainDataType } from '../Components/EnterDataValues';
 
 // LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`.']);
 LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `textStyle`']);
@@ -40,14 +40,14 @@ const ViewRecords = () => {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const { state, dispatch } = stateContext;
+  const { allDataTypeState, dispatch } = stateContext;
   const [isLoading, setIsLoading] = useState(false);
-  const [ res, setRes] = useState<tableItems[]>([]);
+  const [ res, setRes] = useState<mainDataType[]>([]);
 
   const searchRecord = useCallback(async () => {
     setIsLoading(true);
     try {
-      let item = await ViewRecordsByDate(String(state.start_date), String(state.finish_date), dispatch);
+      let item = await ViewRecordsByDate(allDataTypeState.viewRecords.start_date, allDataTypeState.viewRecords.finish_date, dispatch);
       setRes(item);
       console.log('res===',res[0].Insurance);
       setIsLoading(false);
@@ -55,13 +55,13 @@ const ViewRecords = () => {
       console.error('Error fetching records:', error);
       setIsLoading(false);
     }
-  },[ dispatch, state.start_date, state.finish_date]);
+  },[allDataTypeState.viewRecords.start_date, allDataTypeState.viewRecords.finish_date, dispatch, res]);
 
   useEffect(() => {
-    if (state.start_date && state.finish_date)  {
+    if (allDataTypeState.viewRecords.start_date && allDataTypeState.viewRecords.finish_date)  {
       searchRecord();
     }
-}, [searchRecord, state.finish_date, state.start_date]);
+}, [searchRecord, allDataTypeState.viewRecords.finish_date, allDataTypeState.viewRecords.start_date]);
 
   const DeleteRecord = async (date: string) => {
     Alert.alert(
@@ -71,7 +71,7 @@ const ViewRecords = () => {
         {
           text: 'Yes',
           onPress: () => {
-            deleteDataInTable(date, state, dispatch);
+            deleteDataInTable(date, allDataTypeState.mainData[0], dispatch);
           },
         },
         {
@@ -103,23 +103,24 @@ const ViewRecords = () => {
           borderBottomWidth: 0.5,
         }}>
         <Text style={{ textAlign: 'center', color: 'green', paddingTop: 20 }}>
-          Total Entries = {Number(state.Number_Of_Entries)}
+          Total Entries = {Number(allDataTypeState.mainData[0].numberOfEntries)}
         </Text>
 
         <View style={[styles.textinputview, { borderColor: '#fff' }]}>
           <Calendar
-            value={String(state.start_date)}
+            value={String(allDataTypeState.viewRecords.start_date)}
             onChange={(date: string, day: string) => {
               dispatch({
                 type: 'UPDATE',
-                payload: { start_date: date, start_day: day, finish_date: '', table: 'datatable' },
+                payload: {
+                  data: {start_date: date, start_day: day, finish_date: ''}, table: 'datatable' },
               });
              // SearchRecord(date, state.finish_date);
             }}
           />
           <Text style={styles.Textinput}>
-            {state.start_date
-              ? state.start_day + ' ' + state.start_date
+            {allDataTypeState.viewRecords.start_date
+              ? allDataTypeState.viewRecords.start_day + ' ' + allDataTypeState.viewRecords.start_date
               // : moment(new Date()).format('dddd, YYYY/MM/DD')
               : 'Select'
             }
@@ -128,17 +129,18 @@ const ViewRecords = () => {
 
         <View style={[styles.textinputview, { borderColor: '#fff' }]}>
           <Calendar
-            value={String(state.finish_date)}
+            value={String(allDataTypeState.viewRecords.finish_date)}
             onChange={(date: string, day: string) => {
               dispatch({
                 type: 'UPDATE',
-                payload: { finish_date: date, finish_day: day, table: 'datatable' },
+                payload: {
+                  data: {finish_date: date, finish_day: day}, table: 'datatable' },
               });
             }}
           />
           <Text style={styles.Textinput}>
-            {state.finish_date
-              ? state.finish_day + ' ' + state.finish_date
+            {allDataTypeState.viewRecords.finish_date
+              ? allDataTypeState.viewRecords.finish_day + ' ' + allDataTypeState.viewRecords.finish_date
               // : moment(new Date()).format('dddd, YYYY/MM/DD')
               : 'Select'
             }
@@ -147,7 +149,7 @@ const ViewRecords = () => {
 
         <Text style={[styles.Textinput, { alignSelf: 'center' }]}>
           {' '}
-          Display Records = {Number(state.displayRecords)}
+          Display Records = {Number(allDataTypeState.viewRecords.displayRecords)}
         </Text>
       </View>
 
@@ -156,7 +158,7 @@ const ViewRecords = () => {
     ) : (
       <ScrollView horizontal={true}>
         <View>
-         {state.start_date !== '' && state.finish_date !== '' ?
+         {allDataTypeState.viewRecords.start_date !== '' && allDataTypeState.viewRecords.finish_date !== '' ?
           <Table borderStyle={{ borderWidth: 0, borderColor: '#C1C0B9' }}>
             <Row
               data={tableHead}
@@ -232,7 +234,7 @@ const ViewRecords = () => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            state.displayRecords ?
+            allDataTypeState.viewRecords.displayRecords ?
             navigation.navigate('Display Report') :
             Alert.alert('No records');
           }}>

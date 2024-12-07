@@ -2,7 +2,10 @@ import React from 'react';
 import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
 import db from '../Database/databaseService';
-import {allDataTypes} from '../Screens/Components/EnterDataValues';
+import {
+  allDataTypes,
+  mainDataType,
+} from '../Screens/Components/EnterDataValues';
 
 // export type Action =
 //   | {type: 'INSERT'; payload: any}
@@ -253,7 +256,10 @@ export function insertCab(
             resolve(result);
             dispatch({
               type: 'INSERT',
-              payload: {table: 'cab', rego, Rego_Modal: false, Taxi: ''},
+              payload: {
+                table: 'cab',
+                data: {rego, Rego_Modal: false},
+              },
             });
           } else {
             reject(new Error('Insert operation failed'));
@@ -348,12 +354,13 @@ export const upsertData = (
       Alert.alert('Database not initialized');
       return;
     }
-    if (!state.Date || state.Date === '') {
+    if (!state.mainData[0].Date || state.mainData[0].Date === '') {
       Alert.alert('Please select a date');
       return;
     }
     //console.log('in upsertData===', state.Net_Payin);
-    const isUpdate = state.Search_Date && state.Search_Date !== '';
+    const isUpdate =
+      state.viewRecords.Search_Date && state.viewRecords.Search_Date !== '';
 
     const query = isUpdate
       ? `UPDATE datatable
@@ -384,65 +391,65 @@ export const upsertData = (
 
     const params = isUpdate
       ? [
-          state.Date,
-          state.Day,
-          state.Shift,
-          state.Taxi,
-          state.Jobs_Done,
-          state.Hours_Worked,
-          state.meterTotal,
-          state.Kms,
-          state.Paid_Kms,
-          state.Eftpos,
-          state.M3_Dockets,
-          state.Electronic_Account_Payments,
-          state.Total_Manual_MPTP31_And_MPTP_Values,
-          state.Number_Of_Manual_Liftings,
-          state.Eftpos_Liftings,
-          state.Car_Wash,
-          state.Misc,
-          state.Fuel,
-          state.Insurance,
-          state.Shift_Total,
-          state.Levy,
-          state.Unpaid_Kms,
-          state.CPK,
-          state.Number_Of_Chairs,
-          state.Driver_Lifting_Value,
-          state.Commission_Driver,
-          state.Deductions,
-          state.Net_Payin,
-          state.Search_Date,
+          state.mainData[0].Date,
+          state.mainData[0].Day,
+          state.mainData[0].Shift,
+          state.mainData[0].Taxi,
+          state.mainData[0].Jobs_Done,
+          state.mainData[0].Hours_Worked,
+          state.mainData[0].meterTotal,
+          state.mainData[0].Kms,
+          state.mainData[0].Paid_Kms,
+          state.mainData[0].Eftpos,
+          state.mainData[0].M3_Dockets,
+          state.mainData[0].Electronic_Account_Payments,
+          state.mainData[0].Total_Manual_MPTP31_And_MPTP_Values,
+          state.mainData[0].Number_Of_Manual_Liftings,
+          state.mainData[0].Eftpos_Liftings,
+          state.mainData[0].Car_Wash,
+          state.mainData[0].Misc,
+          state.mainData[0].Fuel,
+          state.mainData[0].Insurance,
+          state.mainData[0].Shift_Total,
+          state.mainData[0].Levy,
+          state.mainData[0].Unpaid_Kms,
+          state.mainData[0].CPK,
+          state.mainData[0].Number_Of_Chairs,
+          state.mainData[0].Driver_Lifting_Value,
+          state.mainData[0].Commission_Driver,
+          state.mainData[0].Deductions,
+          state.mainData[0].Net_Payin,
+          state.viewRecords.Search_Date,
         ]
       : [
-          state.Date,
-          state.Day,
-          state.Shift,
-          state.Taxi,
-          state.Jobs_Done,
-          state.Hours_Worked,
-          state.meterTotal,
-          state.Kms,
-          state.Paid_Kms,
-          state.Eftpos,
-          state.M3_Dockets,
-          state.Electronic_Account_Payments,
-          state.Total_Manual_MPTP31_And_MPTP_Values,
-          state.Number_Of_Manual_Liftings,
-          state.Eftpos_Liftings,
-          state.Car_Wash,
-          state.Misc,
-          state.Fuel,
-          state.Insurance,
-          state.Shift_Total,
-          state.Levy,
-          state.Unpaid_Kms,
-          state.CPK,
-          state.Number_Of_Chairs,
-          state.Driver_Lifting_Value,
-          state.Commission_Driver,
-          state.Deductions,
-          state.Net_Payin,
+          state.mainData[0].Date,
+          state.mainData[0].Day,
+          state.mainData[0].Shift,
+          state.mainData[0].Taxi,
+          state.mainData[0].Jobs_Done,
+          state.mainData[0].Hours_Worked,
+          state.mainData[0].meterTotal,
+          state.mainData[0].Kms,
+          state.mainData[0].Paid_Kms,
+          state.mainData[0].Eftpos,
+          state.mainData[0].M3_Dockets,
+          state.mainData[0].Electronic_Account_Payments,
+          state.mainData[0].Total_Manual_MPTP31_And_MPTP_Values,
+          state.mainData[0].Number_Of_Manual_Liftings,
+          state.mainData[0].Eftpos_Liftings,
+          state.mainData[0].Car_Wash,
+          state.mainData[0].Misc,
+          state.mainData[0].Fuel,
+          state.mainData[0].Insurance,
+          state.mainData[0].Shift_Total,
+          state.mainData[0].Levy,
+          state.mainData[0].Unpaid_Kms,
+          state.mainData[0].CPK,
+          state.mainData[0].Number_Of_Chairs,
+          state.mainData[0].Driver_Lifting_Value,
+          state.mainData[0].Commission_Driver,
+          state.mainData[0].Deductions,
+          state.mainData[0].Net_Payin,
         ];
 
     db.transaction((txn: Transaction) => {
@@ -462,7 +469,9 @@ export const upsertData = (
               dispatch({
                 type: actionType,
                 payload: {
-                  Record_id: resultSet.insertId,
+                  data: {
+                    Record_id: resultSet.insertId,
+                  },
                   table: 'datatable',
                 },
               });
@@ -470,9 +479,11 @@ export const upsertData = (
               dispatch({
                 type: actionType,
                 payload: {
-                  Record_id: resultSet.insertId,
+                  data: {
+                    Record_id: resultSet.insertId,
+                    numberOfEntries: Number(state.mainData[0].numberOfEntries) + 1,
+                  },
                   table: 'datatable',
-                  Number_Of_Entries: Number(state.numberOfEntries) + 1,
                 },
               });
             }
@@ -499,7 +510,7 @@ export const ViewRecordsByDate = (
   start_date: string,
   finish_date: string,
   dispatch: React.Dispatch<Action>,
-): Promise<mainData[]> => {
+): Promise<mainDataType[]> => {
   return new Promise((resolve, reject) => {
     //console.log('state.start_date, state.finish_date', start_date, finish_date);
     if (!db) {
@@ -511,7 +522,7 @@ export const ViewRecordsByDate = (
         [start_date, finish_date],
         (_tx, results) => {
           if (results.rows.length > 0) {
-            const temp: mainData[] = [];
+            const temp: mainDataType[] = [];
             for (let j = 0; j < results.rows.length; j++) {
               temp.push(results.rows.item(j));
             }
@@ -519,8 +530,10 @@ export const ViewRecordsByDate = (
             dispatch({
               type: 'SELECT',
               payload: {
-                tabledata: temp,
-                displayRecords: temp.length,
+                data: {
+                  tabledata: temp,
+                  displayRecords: temp.length,
+                },
                 table: 'datatable',
               },
             });
@@ -541,7 +554,7 @@ export const ViewRecordsByDate = (
 
 export const SelectFromDataTable = (
   dispatch: React.Dispatch<Action>,
-): Promise<mainData[]> => {
+): Promise<mainDataType[]> => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {
@@ -553,7 +566,9 @@ export const SelectFromDataTable = (
             dispatch({
               type: 'SELECT',
               payload: {
-                Number_Of_Entries: results.rows.length,
+                data: {
+                  numberOfEntries: results.rows.length,
+                },
                 table: 'datatable',
               },
             });
@@ -607,7 +622,7 @@ export const UpdateData = (
 
 export const deleteDataInTable = (
   date: string,
-  state: mainData,
+  state: mainDataType,
   dispatch: React.Dispatch<Action>,
 ) => {
   //console.log('date in deleteDatatable',date);
@@ -624,7 +639,7 @@ export const deleteDataInTable = (
               // SelectFromDataTable(dispatch);
               dispatch({
                 type: 'DELETE',
-                payload: {table: 'datatable', date: date},
+                payload: {table: 'datatable', data: {date: date}},
               });
             } else {
               reject(new Error('No data found for the provided date'));
@@ -647,7 +662,7 @@ export const deleteDataInTable = (
 export const totalTable = (
   // dispatch: React.Dispatch<Action>,
 // eslint-disable-next-line prettier/prettier
-): Promise<mainData[]> => {
+): Promise<mainDataType[]> => {
   return new Promise((resolve, reject) => {
     if (db) {
       db.transaction((txn: Transaction) => {

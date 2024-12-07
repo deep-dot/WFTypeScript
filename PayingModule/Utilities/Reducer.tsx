@@ -27,11 +27,13 @@ export const reducer = (
             mainData: {...state.mainData, ...data},
           };
         case 'cab':
+          const {rego, Rego_Modal} = data;
           return {
             ...state,
             cabData: {
               ...state.cabData,
-              ...data,
+              Cab_Data: [...state.cabData.Cab_Data, {cab: rego}],
+              Rego_Modal: Rego_Modal,
             },
           };
         default:
@@ -81,7 +83,9 @@ export const reducer = (
         case 'datatable':
           return {
             ...state,
-            mainData: {...state.mainData, ...data},
+            mainData: state.mainData.map(entry =>
+              entry.Record_id === data.Record_id ? {...entry, ...data} : entry,
+            ),
           };
         case 'cab':
           return {
@@ -130,7 +134,7 @@ export const reducer = (
             mainData: {
               ...state.mainData,
               ...data,
-            }
+            },
           };
         default:
           return state;

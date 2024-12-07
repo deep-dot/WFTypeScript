@@ -23,7 +23,7 @@ export const useInputRefs = () => {
 };
 
 export type allDataTypes = {
-  mainData: mainDataType;
+  mainData: mainDataType[];
   weekEndingData: weekEndingModelType;
   liftingData: liftingModelType;
   cabData: cabModelType;
@@ -32,45 +32,47 @@ export type allDataTypes = {
 };
 
 export const initialState: allDataTypes = {
-  mainData: {
-    numberOfEntries: 0,
-    Calculator_Modal_Visible: false,
-    Record_id: 0,
-    Shift: '',
-    Taxi: '',
-    Current_Date: '',
-    Date: '',
-    Day: '',
-    Hours_Worked: 0,
-    Insurance: 0,
-    Jobs_Done: 0,
-    Levy: 0,
-    meterTotal: 0,
-    Shift_Total: 0,
-    Kms: 0,
-    Paid_Kms: 0,
-    Unpaid_Kms: 0,
-    CPK: 0,
-    Number_Of_Manual_Liftings: 0,
-    Manual_Lifting_Value: 0,
-    Total_Manual_MPTP31_And_MPTP_Values: 0,
-    M3_Dockets: 0,
-    Eftpos: 0,
-    Eftpos_Liftings: 0,
-    Electronic_Account_Payments: 0,
-    Misc: 0,
-    Car_Wash: 0,
-    Fuel: 0,
-    Total_Lifting_Value: 0,
-    Number_Of_Chairs: 0,
-    Driver_Lifting_Value: 0,
-    Commission_Driver: 0,
-    Commission_Company: 0,
-    Deductions: 0,
-    Average_Fare: 0,
-    Net_Payin: 0,
-    Net_Driver_Income: 0,
-  },
+  mainData: [
+    {
+      numberOfEntries: 0,
+      Calculator_Modal_Visible: false,
+      Record_id: 0,
+      Shift: '',
+      Taxi: '',
+      Current_Date: '',
+      Date: '',
+      Day: '',
+      Hours_Worked: 0,
+      Insurance: 0,
+      Jobs_Done: 0,
+      Levy: 0,
+      meterTotal: 0,
+      Shift_Total: 0,
+      Kms: 0,
+      Paid_Kms: 0,
+      Unpaid_Kms: 0,
+      CPK: 0,
+      Number_Of_Manual_Liftings: 0,
+      Manual_Lifting_Value: 0,
+      Total_Manual_MPTP31_And_MPTP_Values: 0,
+      M3_Dockets: 0,
+      Eftpos: 0,
+      Eftpos_Liftings: 0,
+      Electronic_Account_Payments: 0,
+      Misc: 0,
+      Car_Wash: 0,
+      Fuel: 0,
+      Total_Lifting_Value: 0,
+      Number_Of_Chairs: 0,
+      Driver_Lifting_Value: 0,
+      Commission_Driver: 0,
+      Commission_Company: 0,
+      Deductions: 0,
+      Average_Fare: 0,
+      Net_Payin: 0,
+      Net_Driver_Income: 0,
+    },
+  ],
   weekEndingData: {
     modalVisible: false,
     WEid: 0,
@@ -135,7 +137,7 @@ export type liftingModelType = {
 
 export type cabModelType = {
   cabId: number;
-  Cab_Data: [{cab: string}];
+  Cab_Data: Array<{cab: string}>; //array of objects or Cab_Data : {cab: string}[]
   Rego_Modal: false;
 };
 

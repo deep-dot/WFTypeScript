@@ -14,7 +14,7 @@ import {LiftingModel} from '../Components/LiftingModel';
 import {Picker} from '@react-native-picker/picker';
 import {Calculator} from '../Components/Calculator';
 import {Calendar} from '../Components/Calendar';
-import AwesomeAlert from 'react-native-awesome-alerts';
+//import AwesomeAlert from 'react-native-awesome-alerts';
 import styles from '../screens.style';
 import {
   selectWeekEndingTable,
@@ -77,64 +77,78 @@ const EnterData = () => {
 
   const calculateAndUpdateValues = useCallback(() => {
     //const calculateAndUpdateValues = () => {
-    let updatedValues = {...mainDataState, ...liftingModelState};
-    updatedValues.Levy = updatedValues.Jobs_Done * updatedValues.Gov_Levy;
+    let updatedValues = {...allDataTypeState};
+    updatedValues.mainData[0].Levy =
+      updatedValues.mainData[0]?.Jobs_Done ||
+      0 * updatedValues.liftingData.Gov_Levy;
 
     console.log(
       'updatedValues.Jobs_Done==',
-      updatedValues.Gov_Levy,
-      updatedValues.Levy,
-      updatedValues.meterTotal,
+      updatedValues.liftingData.Gov_Levy,
+      updatedValues.mainData[0]?.Levy || 0,
+      updatedValues.mainData[0]?.meterTotal || 0,
     );
 
-    updatedValues.Shift_Total = updatedValues.meterTotal - updatedValues.Levy;
+    updatedValues.mainData[0].Shift_Total =
+      updatedValues.mainData[0].meterTotal - updatedValues.mainData[0].Levy;
 
-    updatedValues.Kms;
+    updatedValues.mainData[0]?.Kms || 0;
 
-    updatedValues.Paid_Kms;
+    updatedValues.mainData[0]?.Paid_Kms || 0;
 
-    updatedValues.Number_Of_Chairs =
-      updatedValues.Eftpos_Liftings + updatedValues.Number_Of_Manual_Liftings;
+    updatedValues.mainData[0].Number_Of_Chairs =
+      updatedValues.mainData[0].Eftpos_Liftings +
+      updatedValues.mainData[0].Number_Of_Manual_Liftings;
 
-    updatedValues.Driver_Lifting_Value =
-      updatedValues.Number_Of_Chairs * updatedValues.Driver_Share_In_LiftingFee;
+    updatedValues.mainData[0].Driver_Lifting_Value =
+      updatedValues.mainData[0].Number_Of_Chairs *
+      updatedValues.liftingData.Driver_Share_In_LiftingFee;
 
-    updatedValues.Commission_Driver =
-      (updatedValues.Shift_Total * updatedValues.Driver_Comm_Rate) / 100;
+    updatedValues.mainData[0].Commission_Driver =
+      (updatedValues.mainData[0].Shift_Total *
+        updatedValues.liftingData.Driver_Comm_Rate) /
+      100;
 
-    updatedValues.Company_Comm_Rate = 100 - updatedValues.Driver_Comm_Rate;
+    updatedValues.liftingData.Company_Comm_Rate =
+      100 - updatedValues.liftingData.Driver_Comm_Rate;
 
-    updatedValues.Commission_Company =
-      (updatedValues.Shift_Total * updatedValues.Company_Comm_Rate) / 100;
+    updatedValues.mainData[0].Commission_Company =
+      (updatedValues.mainData[0].Shift_Total *
+        updatedValues.liftingData.Company_Comm_Rate) /
+      100;
 
-    updatedValues.CPK =
-      updatedValues.Kms > 0 ? updatedValues.Shift_Total / updatedValues.Kms : 0;
+    updatedValues.mainData[0].CPK =
+      updatedValues.mainData[0].Kms > 0
+        ? updatedValues.mainData[0].Shift_Total / updatedValues.mainData[0].Kms
+        : 0;
 
-    updatedValues.Unpaid_Kms = updatedValues.Kms - updatedValues.Paid_Kms;
+    updatedValues.mainData[0].Unpaid_Kms =
+      updatedValues.mainData[0].Kms - updatedValues.mainData[0].Paid_Kms;
 
     //from save function
     let eftpos_without_lifting =
-      updatedValues.Eftpos -
-      updatedValues.Number_Of_Chairs * updatedValues.Gov_Lifting_Fee;
+      updatedValues.mainData[0].Eftpos -
+      updatedValues.mainData[0].Number_Of_Chairs *
+        updatedValues.liftingData.Gov_Lifting_Fee;
 
     let cdeductions =
-      updatedValues.Driver_Lifting_Value +
-      updatedValues.M3_Dockets +
-      updatedValues.Electronic_Account_Payments +
-      updatedValues.Total_Manual_MPTP31_And_MPTP_Values +
+      updatedValues.mainData[0].Driver_Lifting_Value +
+      updatedValues.mainData[0].M3_Dockets +
+      updatedValues.mainData[0].Electronic_Account_Payments +
+      updatedValues.mainData[0].Total_Manual_MPTP31_And_MPTP_Values +
       eftpos_without_lifting;
 
     setCdeductions(cdeductions);
     let ddeductions =
       cdeductions +
-      updatedValues.Misc +
-      updatedValues.Car_Wash +
-      updatedValues.Fuel;
+      updatedValues.mainData[0].Misc +
+      updatedValues.mainData[0].Car_Wash +
+      updatedValues.mainData[0].Fuel;
 
     setDdeductions(ddeductions);
-    let cnetpayin = updatedValues.Commission_Company - cdeductions;
+    let cnetpayin = updatedValues.mainData[0].Commission_Company - cdeductions;
     setCnetpayin(cnetpayin);
-    let dnetpayin = updatedValues.Commission_Company - ddeductions;
+    let dnetpayin = updatedValues.mainData[0].Commission_Company - ddeductions;
     setDnetpayin(dnetpayin);
 
     dispatch({
@@ -144,22 +158,22 @@ const EnterData = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     dispatch,
-    mainDataState.Jobs_Done,
-    liftingModelState.Gov_Levy,
-    mainDataState.meterTotal,
-    mainDataState.Eftpos_Liftings,
-    mainDataState.Number_Of_Manual_Liftings,
-    liftingModelState.Driver_Share_In_LiftingFee,
-    liftingModelState.Driver_Comm_Rate,
-    liftingModelState.Company_Comm_Rate,
-    mainDataState.Kms,
-    mainDataState.Eftpos,
-    mainDataState.M3_Dockets,
-    mainDataState.Electronic_Account_Payments,
-    mainDataState.Total_Manual_MPTP31_And_MPTP_Values,
-    mainDataState.Misc,
-    mainDataState.Car_Wash,
-    mainDataState.Fuel,
+    // updatedValues.mainData[0].Jobs_Done,
+    // liftingModelState.Gov_Levy,
+    // mainDataState.meterTotal,
+    // mainDataState.Eftpos_Liftings,
+    // mainDataState.Number_Of_Manual_Liftings,
+    // liftingModelState.Driver_Share_In_LiftingFee,
+    // liftingModelState.Driver_Comm_Rate,
+    // liftingModelState.Company_Comm_Rate,
+    // mainDataState.Kms,
+    // mainDataState.Eftpos,
+    // mainDataState.M3_Dockets,
+    // mainDataState.Electronic_Account_Payments,
+    // mainDataState.Total_Manual_MPTP31_And_MPTP_Values,
+    // mainDataState.Misc,
+    // mainDataState.Car_Wash,
+    // mainDataState.Fuel,
   ]);
 
   useEffect(() => {
@@ -292,7 +306,7 @@ const EnterData = () => {
       <ScrollView keyboardShouldPersistTaps="handled">
         <View style={{alignItems: 'center'}}>
           <Text style={[styles.titleText, {color: 'green', marginVertical: 5}]}>
-            Total Entries: {mainDataState.numberOfEntries}
+            Total Entries: {allDataTypeState.mainData[0].numberOfEntries}
           </Text>
         </View>
         {liftingInputs.map(input => (
@@ -431,9 +445,9 @@ const EnterData = () => {
               {cabModelState.Cab_Data &&
                 cabModelState.Cab_Data.map((c, key) => (
                   <Picker.Item
-                    label={c}
+                    label={c.cab}
                     key={key}
-                    value={c}
+                    value={c.cab}
                     color={Platform.OS === 'ios' ? '#fff' : '#999'}
                   />
                 ))}
@@ -586,9 +600,12 @@ const EnterData = () => {
             dispatch({
               type: 'UPDATE',
               payload: {
-                start_date: '',
-                finish_date: '',
-                totalrecords: 0,
+                data: {
+                  start_date: '',
+                  finish_date: '',
+                  totalrecords: 0,
+                },
+                table: 'datatable',
               },
             });
             navigation.navigate('View Records');
