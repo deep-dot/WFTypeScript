@@ -29,6 +29,7 @@ import {
   inputs,
   liftingInputs,
   payinInputs,
+  initialState,
 } from '../Components/EnterDataValues';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackParamList} from '../../../App/App';
@@ -45,8 +46,14 @@ const EnterData = () => {
   if (!stateContext) {
     throw new Error('Component must be used within a StateProvider');
   }
-  const {mainDataState, liftingModelState, cabModelState, dispatch} =
-    stateContext;
+  const {
+    allDataTypeState,
+    mainDataState,
+    liftingModelState,
+    cabModelState,
+    dispatch,
+  } = stateContext;
+
   const inputRefs = useInputRefs();
   const [Cnetpayin, setCnetpayin] = useState(0);
   const [Dnetpayin, setDnetpayin] = useState(0);
@@ -130,7 +137,10 @@ const EnterData = () => {
     let dnetpayin = updatedValues.Commission_Company - ddeductions;
     setDnetpayin(dnetpayin);
 
-    dispatch({type: 'INSERT', payload: {updatedValues, table: 'datatable'}});
+    dispatch({
+      type: 'INSERT',
+      payload: {data: updatedValues, table: 'datatable'},
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     dispatch,
@@ -165,12 +175,12 @@ const EnterData = () => {
     if (!isNaN(Number(value))) {
       dispatch({
         type: 'INSERT',
-        payload: {[name]: Number(value), table: 'datatable'},
+        payload: {data: value, table: 'datatable'},
       });
       calculateAndUpdateValues();
     } else {
       Alert.alert('Please input a correct number');
-      dispatch({type: 'INSERT', payload: {[name]: '', table: 'datatable'}});
+      dispatch({type: 'INSERT', payload: {data: '', table: 'datatable'}});
     }
   };
 
@@ -191,9 +201,11 @@ const EnterData = () => {
               dispatch({
                 type: 'INSERT',
                 payload: {
-                  Deductions: isNaN(Ddeductions) ? 0 : Ddeductions,
-                  Net_Payin: isNaN(Dnetpayin) ? 0 : Dnetpayin,
                   table: 'datatable',
+                  data: {
+                    Deductions: isNaN(Ddeductions) ? 0 : Ddeductions,
+                    Net_Payin: isNaN(Dnetpayin) ? 0 : Dnetpayin,
+                  },
                 },
               });
               alertConfirm();
@@ -205,9 +217,11 @@ const EnterData = () => {
               dispatch({
                 type: 'INSERT',
                 payload: {
-                  Deductions: isNaN(Cdeductions) ? 0 : Cdeductions,
-                  Net_Payin: isNaN(Cnetpayin) ? 0 : Cnetpayin,
                   table: 'datatable',
+                  data: {
+                    Deductions: isNaN(Cdeductions) ? 0 : Cdeductions,
+                    Net_Payin: isNaN(Cnetpayin) ? 0 : Cnetpayin,
+                  },
                 },
               });
               alertConfirm();
@@ -235,7 +249,7 @@ const EnterData = () => {
           onPress: async () => {
             // console.log('state in enterdatascreen alertConfirm ===', state);
             try {
-              await upsertData(mainDataState, dispatch);
+              await upsertData(allDataTypeState, dispatch);
             } catch (error) {
               console.log(error);
             }
@@ -251,7 +265,10 @@ const EnterData = () => {
   };
 
   const Refresh = async () => {
-    dispatch({type: 'REFRESH', payload: null});
+    dispatch({
+      type: 'REFRESH',
+      payload: {table: 'datatable', data: initialState.mainData},
+    });
   };
 
   return (
@@ -302,7 +319,10 @@ const EnterData = () => {
             dispatch({
               type: 'UPDATE',
               payload: {
-                Lifting_Modal_Visible: !liftingModelState.Lifting_Modal_Visible,
+                data: {
+                  Lifting_Modal_Visible:
+                    !liftingModelState.Lifting_Modal_Visible,
+                },
                 table: 'datatable',
               },
             })
@@ -338,7 +358,9 @@ const EnterData = () => {
               dispatch({
                 type: 'INSERT',
                 payload: {
-                  Shift,
+                  data: {
+                    Shift,
+                  },
                   table: 'datatable',
                 },
               });
@@ -385,15 +407,17 @@ const EnterData = () => {
               </Text>
             </TextInput>
             <Picker
-              selectedValue={cabModelState.Taxi}
+              selectedValue={mainDataState.Taxi}
               style={styles.picker}
               itemStyle={styles.pickerItem}
               onValueChange={Taxi => {
                 dispatch({
                   type: 'INSERT',
                   payload: {
-                    Taxi,
-                    Rego_Modal: false,
+                    data: {
+                      Taxi,
+                      Rego_Modal: false,
+                    },
                     table: 'cab',
                   },
                 });
@@ -421,7 +445,9 @@ const EnterData = () => {
               dispatch({
                 type: 'INSERT',
                 payload: {
-                  Rego_Modal: !cabModelState.Rego_Modal,
+                  data: {
+                    Rego_Modal: !cabModelState.Rego_Modal,
+                  },
                   table: 'cab',
                 },
               });
@@ -437,8 +463,10 @@ const EnterData = () => {
               dispatch({
                 type: 'INSERT',
                 payload: {
-                  Date: date,
-                  Day: day,
+                  data: {
+                    Date: date,
+                    Day: day,
+                  },
                   table: 'datatable',
                 },
               });
@@ -494,8 +522,10 @@ const EnterData = () => {
               dispatch({
                 type: 'UPDATE',
                 payload: {
-                  Calculator_Modal_Visible:
-                    !mainDataState.Calculator_Modal_Visible,
+                  data: {
+                    Calculator_Modal_Visible:
+                      !mainDataState.Calculator_Modal_Visible,
+                  },
                   table: 'datatable',
                 },
               });

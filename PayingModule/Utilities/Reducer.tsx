@@ -1,115 +1,144 @@
 import {Action} from './Actions';
 import {
-  weekEndingModel,
-  liftingModel,
-  cabModel,
-  mainData,
-  viewRecords,
-  displayReport,
-  refreshValues,
+  allDataTypes,
+  initialState,
 } from '../Screens/Components/EnterDataValues';
-
-export const reducer = (state: mainData, action: Action) => {
+export const reducer = (
+  state: allDataTypes = initialState,
+  action: Action,
+): allDataTypes => {
   switch (action.type) {
-    case 'INSERT':
-      if (action.payload.table === 'liftingTable') {
-        //console.log('insert in liftingtable===', action.payload);
-        return {...state, ...action.payload};
-      } else if (action.payload.table === 'weekEndingTable') {
-        //console.log('insert in weekEndingtable===', action.payload);
-        return {...state, ...action.payload};
-      } else if (action.payload.table === 'datatable') {
-        //console.log('insert in datatable===', action.payload.updatedValues);
-        const newState = {
-          ...state,
-          ...action.payload,
-          tableData: action.payload.updatedValues,
-        };
-        return newState;
-      } else if (action.payload.table === 'cab') {
-        //console.log('cab insert===', action.payload);
-        const newCab = {Cab: action.payload.rego};
-        const cabdata = state.Cab_Data.filter(
-          cab => Object.keys(cab).length > 0,
-        );
-        return {
-          ...state,
-          ...action.payload,
-          // Rego_Modal: action.payload.Rego_Modal,
-          // Taxi: action.payload.Taxi,
-          Cab_Data: [...cabdata, newCab],
-        };
+    case 'INSERT': {
+      const {table, data} = action.payload;
+      switch (table) {
+        case 'liftingTable':
+          return {
+            ...state,
+            liftingData: {...state.liftingData, ...data},
+          };
+        case 'weekEndingTable':
+          return {
+            ...state,
+            weekEndingData: {...state.weekEndingData, ...data},
+          };
+        case 'datatable':
+          return {
+            ...state,
+            mainData: {...state.mainData, ...data},
+          };
+        case 'cab':
+          return {
+            ...state,
+            cabData: {
+              ...state.cabData,
+              ...data,
+            },
+          };
+        default:
+          return state;
       }
-      return state;
-    case 'SELECT':
-      //console.log('action.payload===', action.payload);
-      if (action.payload.table === 'liftingTable') {
-        return {
-          ...state,
-          ...action.payload,
-        };
-      } else if (action.payload.table === 'weekEndingTable') {
-        return {
-          ...state,
-          ...action.payload,
-        };
-      } else if (action.payload.table === 'datatable') {
-        return {
-          ...state,
-          ...action.payload,
-          // Number_Of_Entries: action.payload.Number_Of_Entries,
-          // displayRecords: action.payload.displayRecords,
-          //appData: action.payload.appData,
-        };
-      } else if (action.payload.table === 'cab') {
-        return {...state, Cab_Data: action.payload.data};
+    }
+    case 'SELECT': {
+      const {table, data} = action.payload;
+      switch (table) {
+        case 'liftingTable':
+          return {
+            ...state,
+            liftingData: {...state.liftingData, ...data},
+          };
+        case 'weekEndingTable':
+          return {
+            ...state,
+            weekEndingData: {...state.weekEndingData, ...data},
+          };
+        case 'datatable':
+          return {
+            ...state,
+            mainData: {...state.mainData, ...data},
+          };
+        case 'cab':
+          return {
+            ...state,
+            cabData: {...state.cabData, ...data},
+          };
+        default:
+          return state;
       }
-      return state;
-    case 'UPDATE':
-      if (action.payload.table === 'datatable') {
-        return {...state, ...action.payload};
-      } else if (action.payload.table === 'weekEndingTable') {
-        return {...state, ...action.payload};
+    }
+    case 'UPDATE': {
+      const {table, data} = action.payload;
+      switch (table) {
+        case 'liftingTable':
+          return {
+            ...state,
+            liftingData: {...state.liftingData, ...data},
+          };
+        case 'weekEndingTable':
+          return {
+            ...state,
+            weekEndingData: {...state.weekEndingData, ...data},
+          };
+        case 'datatable':
+          return {
+            ...state,
+            mainData: {...state.mainData, ...data},
+          };
+        case 'cab':
+          return {
+            ...state,
+            cabData: {
+              ...state.cabData,
+              ...action.payload.data,
+            },
+          };
+        default:
+          return state;
       }
-      return state;
-    case 'DELETE':
-      if (action.payload.table === 'datatable') {
-        // Assuming state.dataappData is an array of objects that includes a Date property
-        // const updatedData = state.filter(
-        //   item => item.Date !== action.payload.date,
-        // );
-        return {...state, ...action.payload};
+    }
+    case 'DELETE': {
+      const {table, data} = action.payload;
+      switch (table) {
+        case 'liftingTable':
+          // Implement deletion logic specific to liftingTable
+          return state;
+        case 'weekEndingTable':
+          // Implement deletion logic specific to weekEndingTable
+          return state;
+        case 'datatable':
+          return state;
+        case 'cab':
+          const updatedCabData = state.cabData.Cab_Data.filter(
+            (_, index) => index !== data.cabIndex, // Remove the cab at the specified index
+          );
+          return {
+            ...state,
+            cabData: {
+              ...state.cabData,
+              ...updatedCabData,
+            },
+          };
+        default:
+          return state;
       }
-
-      if (action.payload.table === 'cab') {
-        // console.log(
-        //   'action.payload.delete Table ===',
-        //   // action.payload.deleteFromTable,
-        //   // rego,
-        //   state.Cab_Data,
-        //);
-        return {
-          ...state,
-          Taxi: action.payload.Taxi,
-          Rego_Modal: action.payload.Rego_Modal,
-          //Cab_Data
-        };
-      }
-      return state;
+    }
     case 'REFRESH':
-      if (action.payload.table === 'datatable') {
-        return {
-          ...state,
-          ...refreshValues,
-        };
+      const {table, data} = action.payload;
+      switch (table) {
+        case 'datatable':
+          return {
+            ...state,
+            mainData: {
+              ...state.mainData,
+              ...data,
+            }
+          };
+        default:
+          return state;
       }
-      return state;
     case 'ERROR':
-      //console.error(action.error);
-      // return {...state, error: action.error.message};
-      return {...state};
+      console.error('Error action:', action.payload.message);
+      return state;
     default:
-      console.error('Unhandled action type:', action);
       throw new Error(`Unhandled action type: ${action}`);
   }
 };

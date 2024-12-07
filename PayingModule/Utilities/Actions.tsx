@@ -2,15 +2,28 @@ import React from 'react';
 import {Transaction, ResultSet} from '../Database/databaseTypes';
 import {Alert} from 'react-native';
 import db from '../Database/databaseService';
-import {mainData, viewRecords} from '../Screens/Components/EnterDataValues';
+import {allDataTypes} from '../Screens/Components/EnterDataValues';
+
+// export type Action =
+//   | {type: 'INSERT'; payload: any}
+//   | {type: 'SELECT'; payload: any}
+//   | {type: 'UPDATE'; payload: any}
+//   | {type: 'DELETE'; payload: any}
+//   | {type: 'REFRESH'; payload: any}
+//   | {type: 'ERROR'; error: Error};
 
 export type Action =
-  | {type: 'INSERT'; payload: any}
-  | {type: 'SELECT'; payload: any}
-  | {type: 'UPDATE'; payload: any}
-  | {type: 'DELETE'; payload: any}
-  | {type: 'REFRESH'; payload: any}
-  | {type: 'ERROR'; error: Error};
+  | {
+      type: 'INSERT' | 'SELECT' | 'UPDATE' | 'DELETE' | 'REFRESH';
+      payload: {
+        table: 'liftingTable' | 'weekEndingTable' | 'cab' | 'datatable';
+        data: any; // Adjust with specific payload structures as needed
+      };
+    }
+  | {
+      type: 'ERROR';
+      payload: {message: string};
+    };
 
 // weekEndingTable
 
@@ -30,9 +43,11 @@ export const selectWeekEndingTable = (dispatch: React.Dispatch<Action>) => {
             dispatch({
               type: 'SELECT',
               payload: {
-                Name: data.Name,
-                Week_Ending_Date: data.Week_Ending_Date,
-                Week_Ending_Day: data.Week_Ending_Day,
+                data: {
+                  Name: data.Name,
+                  Week_Ending_Date: data.Week_Ending_Date,
+                  Week_Ending_Day: data.Week_Ending_Day,
+                },
                 table: 'weekEndingTable',
               },
             });
@@ -128,11 +143,13 @@ export const selectLiftingTable = (dispatch: React.Dispatch<Action>) => {
             dispatch({
               type: 'SELECT',
               payload: {
-                Gov_Lifting_Fee: data.Gov_Lifting_Fee,
-                Driver_Share_In_LiftingFee: data.Driver_Share_In_LiftingFee,
-                Gov_Levy: data.Gov_Levy,
-                Driver_Comm_Rate: data.Driver_Comm_Rate,
-                Company_Comm_Rate: data.Company_Comm_Rate,
+                data: {
+                  Gov_Lifting_Fee: data.Gov_Lifting_Fee,
+                  Driver_Share_In_LiftingFee: data.Driver_Share_In_LiftingFee,
+                  Gov_Levy: data.Gov_Levy,
+                  Driver_Comm_Rate: data.Driver_Comm_Rate,
+                  Company_Comm_Rate: data.Company_Comm_Rate,
+                },
                 table: 'liftingTable',
               },
             });
@@ -323,7 +340,7 @@ export function deleteCab(
 //main data
 
 export const upsertData = (
-  state: mainData,
+  state: allDataTypes,
   dispatch: React.Dispatch<Action>,
 ) => {
   return new Promise((resolve, reject) => {

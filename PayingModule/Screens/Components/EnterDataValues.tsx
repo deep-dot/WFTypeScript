@@ -22,7 +22,99 @@ export const useInputRefs = () => {
   return refs;
 };
 
-export type weekEndingModel = {
+export type allDataTypes = {
+  mainData: mainDataType;
+  weekEndingData: weekEndingModelType;
+  liftingData: liftingModelType;
+  cabData: cabModelType;
+  viewRecords: viewRecordsType;
+  displayReport: displayReportType;
+};
+
+export const initialState: allDataTypes = {
+  mainData: {
+    numberOfEntries: 0,
+    Calculator_Modal_Visible: false,
+    Record_id: 0,
+    Shift: '',
+    Taxi: '',
+    Current_Date: '',
+    Date: '',
+    Day: '',
+    Hours_Worked: 0,
+    Insurance: 0,
+    Jobs_Done: 0,
+    Levy: 0,
+    meterTotal: 0,
+    Shift_Total: 0,
+    Kms: 0,
+    Paid_Kms: 0,
+    Unpaid_Kms: 0,
+    CPK: 0,
+    Number_Of_Manual_Liftings: 0,
+    Manual_Lifting_Value: 0,
+    Total_Manual_MPTP31_And_MPTP_Values: 0,
+    M3_Dockets: 0,
+    Eftpos: 0,
+    Eftpos_Liftings: 0,
+    Electronic_Account_Payments: 0,
+    Misc: 0,
+    Car_Wash: 0,
+    Fuel: 0,
+    Total_Lifting_Value: 0,
+    Number_Of_Chairs: 0,
+    Driver_Lifting_Value: 0,
+    Commission_Driver: 0,
+    Commission_Company: 0,
+    Deductions: 0,
+    Average_Fare: 0,
+    Net_Payin: 0,
+    Net_Driver_Income: 0,
+  },
+  weekEndingData: {
+    modalVisible: false,
+    WEid: 0,
+    Name: '',
+    showAlert: false,
+    Week_Ending_Date: '',
+    Week_Ending_Day: '',
+  },
+  liftingData: {
+    liftingId: 0,
+    Gov_Lifting_Fee: 0,
+    Driver_Share_In_LiftingFee: 0,
+    Gov_Levy: 0,
+    Driver_Comm_Rate: 0,
+    Company_Comm_Rate: 0,
+    Lifting_Modal_Visible: false,
+  },
+  cabData: {
+    cabId: 0,
+    Cab_Data: [{cab: ''}], // Array with one object containing an empty string
+    Rego_Modal: false,
+  },
+  viewRecords: {
+    displayRecords: 0,
+    start_date: '',
+    start_day: '',
+    finish_day: '',
+    finish_date: '',
+    sorryAlert: false,
+    show2Alert: false,
+    Search_Date: '',
+  },
+  displayReport: {
+    tableNameData: {},
+    liftingdata: [],
+    deductdata: [],
+    total: [],
+    datatotal: {},
+    done: false,
+    usingservice: false,
+  },
+};
+
+export type weekEndingModelType = {
   modalVisible: boolean;
   WEid: number;
   Name: string;
@@ -30,11 +122,8 @@ export type weekEndingModel = {
   Week_Ending_Date: string;
   Week_Ending_Day: string;
 };
-// export const initialValues: appData = {
 
-// }
-
-export type liftingModel = {
+export type liftingModelType = {
   liftingId: number;
   Gov_Lifting_Fee: number;
   Driver_Share_In_LiftingFee: number;
@@ -44,14 +133,13 @@ export type liftingModel = {
   Lifting_Modal_Visible: boolean;
 };
 
-export type cabModel = {
+export type cabModelType = {
   cabId: number;
-  Taxi: string;
-  Cab_Data: [];
+  Cab_Data: [{cab: string}];
   Rego_Modal: false;
 };
 
-export type mainData = {
+export type mainDataType = {
   numberOfEntries: number;
   Calculator_Modal_Visible: boolean;
   //main
@@ -92,7 +180,7 @@ export type mainData = {
   Net_Driver_Income: number;
 };
 
-export type viewRecords = {
+export type viewRecordsType = {
   displayRecords: number;
   start_date: string;
   start_day: string;
@@ -103,7 +191,7 @@ export type viewRecords = {
   Search_Date: string;
 };
 
-export type displayReport = {
+export type displayReportType = {
   tableNameData: {[key: string]: string};
   liftingdata: Array<number>;
   deductdata: Array<number>;
@@ -114,13 +202,11 @@ export type displayReport = {
 };
 
 export type appData = {
-  Number_Of_Entries: number;
   //subscription
-  purchased: boolean;
-  products: Record<string, unknown>;
-  checking: boolean;
-  ShowAlert: boolean;
-
+  // purchased: boolean;
+  // products: Record<string, unknown>;
+  // checking: boolean;
+  // ShowAlert: boolean;
   //Home Screen Modal
   // modalVisible: boolean;
   // WEid: number;
@@ -128,7 +214,6 @@ export type appData = {
   // showAlert: boolean;
   // Week_Ending_Date: string;
   // Week_Ending_Day: string;
-
   //Lifting Modal
   // liftingId: number;
   // Gov_Lifting_Fee: number;
@@ -137,13 +222,11 @@ export type appData = {
   // Driver_Comm_Rate: number;
   // Company_Comm_Rate: number;
   // Lifting_Modal_Visible: boolean;
-
   // rego
   // cabId: number;
   // // Taxi: string;
   // Cab_Data: CabData[];
   // Rego_Modal: false;
-
   //main
   // tabledata: tableItems[];
   // Record_id: number;
@@ -181,7 +264,6 @@ export type appData = {
   // Average_Fare: number;
   // Net_Payin: number;
   // Net_Driver_Income: number;
-
   //View Records
   // displayRecords: number;
   // start_date: string;
@@ -191,10 +273,8 @@ export type appData = {
   // sorryAlert: boolean;
   // show2Alert: boolean;
   // Search_Date: string;
-
   // Calculator_Modal_Visible: boolean;
   // Indicator: boolean;
-
   // display report
   // tableNameData: {[key: string]: string};
   // liftingdata: Array<number>;
